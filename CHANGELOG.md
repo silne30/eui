@@ -1,6 +1,38 @@
 ## [`master`](https://github.com/elastic/eui/tree/master)
 
+No public interface changes since `0.0.44`.
+
+## [`0.0.44`](https://github.com/elastic/eui/tree/v0.0.44)
+
+- Reduced `EuiToast` title size ([#703](https://github.com/elastic/eui/pull/703))
+
+**Bug fixes**
+
+- Fixed inherited `line-height` of inputs and buttons ([#702](https://github.com/elastic/eui/pull/702))
+- Fixed card title sizing in K6 theme. ([#704](https://github.com/elastic/eui/pull/704))
+
+## [`0.0.43`](https://github.com/elastic/eui/tree/v0.0.43)
+
 - Added `status` prop to `EuiStep` for additional styling ([#673](https://github.com/elastic/eui/pull/673))
+- `EuiForm` and `EuiFormRow` now accept nodes for `errors` prop ([#685](https://github.com/elastic/eui/pull/685))
+- Removed the default `max-width` from `EuiText`. This can still be applied by setting `grow={false}` ([#683](https://github.com/elastic/eui/pull/683))
+- Added support for text alignment with `EuiTextAlign` ([#683](https://github.com/elastic/eui/pull/683))
+- `EuiBasicTable` added the `compressed` prop to allow for tables with smaller fonts and padding.  ([#687](https://github.com/elastic/eui/pull/687))
+
+**Breaking changes**
+
+- Added responsive support for tables. This isn't technically a breaking change, but you will need to apply some new props (`hasActions`, `isSelectable`) for certain tables to make them look their best in mobile. **Responsive table views are on by default.**  ([#584](https://github.com/elastic/eui/pull/584))
+
+**Bug fixes**
+
+- Added a `paddingSize` prop to `EuiAccordion` to better mitigate situations where a nested `EuiFlexGroup` causes scrollbars ([#701](https://github.com/elastic/eui/pull/701))
+- Fixed `EuiCard` `icon` prop to include user provided className ([#684](https://github.com/elastic/eui/pull/684))
+- `EuiInMemoryTable` pagination state is now reset automatically when a search is executed ([#686](https://github.com/elastic/eui/pull/686))
+- Fixed slow performance of `EuiComboBox` when there are hundreds or thousands of options by virtualizing `EuiComboBoxOptionsList` ([#670](https://github.com/elastic/eui/pull/670))
+- Fixed some text styles  ([#683](https://github.com/elastic/eui/pull/683))
+    - Fixed font-family of input, textarea, select, and buttons
+    - Fixed style of code, pre, and dl’s inside `EuiText`
+    - Fixed ghost text color which was being set to a dark gray
 
 ## [`0.0.42`](https://github.com/elastic/eui/tree/v0.0.42)
 
@@ -35,6 +67,10 @@
 **Bug fixes**
 
 - Fix visual shadow glitch on hover of `EuiToast` ([#632](https://github.com/elastic/eui/pull/632))
+
+**Breaking changes**
+
+- **Note: This breaking change is reversed in 0.0.43.** Added a default `max-width` to `EuiText`. ([#627](https://github.com/elastic/eui/pull/627))
 
 ## [`0.0.39`](https://github.com/elastic/eui/tree/v0.0.39)
 

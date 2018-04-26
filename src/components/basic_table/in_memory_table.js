@@ -23,6 +23,7 @@ const InMemoryTablePropTypes = {
   loading: PropTypes.bool,
   message: PropTypes.node,
   error: PropTypes.string,
+  compressed: PropTypes.bool,
   search: PropTypes.oneOfType([PropTypes.bool, PropTypes.shape({
     defaultQuery: QueryType,
     box: PropTypes.shape({
@@ -116,7 +117,8 @@ export class EuiInMemoryTable extends Component {
   static defaultProps = {
     items: [],
     pagination: false,
-    sorting: false
+    sorting: false,
+    responsive: true,
   };
 
   constructor(props) {
@@ -155,17 +157,20 @@ export class EuiInMemoryTable extends Component {
     });
   };
 
-  onQueryChange(query) {
+  onQueryChange = (query) => {
     if (this.props.search.onChange) {
       const shouldQueryInMemory = this.props.search.onChange(query);
       if (!shouldQueryInMemory) {
         return;
       }
     }
+
+    // Reset pagination state.
     this.setState({
-      query
+      query,
+      pageIndex: 0,
     });
-  }
+  };
 
   renderSearchBar() {
     const { search } = this.props;
@@ -181,7 +186,7 @@ export class EuiInMemoryTable extends Component {
 
       return (
         <EuiSearchBar
-          onChange={this.onQueryChange.bind(this)}
+          onChange={this.onQueryChange}
           {...searchBarProps}
         />
       );
@@ -233,6 +238,15 @@ export class EuiInMemoryTable extends Component {
     };
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.items !== this.props.items) {
+      // We have new items because an external search has completed, so reset pagination state.
+      this.setState({
+        pageIndex: 0,
+      });
+    }
+  }
+
   render() {
     const {
       columns,
@@ -240,6 +254,9 @@ export class EuiInMemoryTable extends Component {
       message,
       error,
       selection,
+      isSelectable,
+      hasActions,
+      compressed,
       pagination: hasPagination,
       sorting: hasSorting,
     } = this.props;
@@ -281,10 +298,13 @@ export class EuiInMemoryTable extends Component {
         pagination={pagination}
         sorting={sorting}
         selection={selection}
+        isSelectable={isSelectable}
+        hasActions={hasActions}
         onChange={this.onTableChange}
         error={error}
         loading={loading}
         noItemsMessage={message}
+        compressed={compressed}
       />
     );
 

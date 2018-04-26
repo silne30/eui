@@ -1,10 +1,6 @@
 import React from 'react';
 
 import {
-  Link,
-} from 'react-router';
-
-import {
   GuidePage,
   GuideRule,
   GuideRuleTitle,
@@ -34,15 +30,9 @@ import ContextMenu from '../context_menu/context_menu';
 import imageButtonPlacement from '../../images/button_placement.png';
 
 export default() => (
-  <GuidePage title="Button guidelines">
+  <GuidePage title="Button guidelines" componentLinkTo="/navigation/button">
 
-    <Link to="/navigation/button">
-      <EuiButton className="guideRule__goToButton">
-        View component code
-      </EuiButton>
-    </Link>
-
-    <EuiText className="guideSection__text">
+    <EuiText className="guideSection__text" grow={false}>
       <p>
         This page documents patterns for button design, including types, placement, color, and size.
       </p>
@@ -462,7 +452,7 @@ export default() => (
 
     <GuideRuleTitle>Labels that say what the button does</GuideRuleTitle>
 
-    <EuiText className="guideSection__text">
+    <EuiText grow={false} className="guideSection__text">
       <p>
         Labels should provide a clear indication of
         that action that occurs when the user clicks the button.
@@ -489,7 +479,7 @@ export default() => (
 
       <EuiTableBody>
         <EuiTableRow>
-          <EuiTableRowCell>
+          <EuiTableRowCell isMobileHeader>
             <EuiButton>
               Add thing
             </EuiButton>
@@ -503,7 +493,7 @@ export default() => (
         </EuiTableRow>
 
         <EuiTableRow>
-          <EuiTableRowCell>
+          <EuiTableRowCell isMobileHeader>
             <EuiButtonEmpty size="s">
               Cancel
             </EuiButtonEmpty>
@@ -515,7 +505,7 @@ export default() => (
         </EuiTableRow>
 
         <EuiTableRow>
-          <EuiTableRowCell>
+          <EuiTableRowCell isMobileHeader>
             <EuiButton fill>
               Create thing
             </EuiButton>
@@ -529,7 +519,7 @@ export default() => (
         </EuiTableRow>
 
         <EuiTableRow>
-          <EuiTableRowCell>
+          <EuiTableRowCell isMobileHeader>
             <EuiButton color="danger" fill>
               Delete
             </EuiButton>&nbsp;&nbsp;
@@ -546,7 +536,7 @@ export default() => (
         </EuiTableRow>
 
         <EuiTableRow>
-          <EuiTableRowCell>
+          <EuiTableRowCell isMobileHeader>
             <EuiButton color="danger">
               Remove
             </EuiButton>&nbsp;&nbsp;
@@ -559,7 +549,7 @@ export default() => (
         </EuiTableRow>
 
         <EuiTableRow>
-          <EuiTableRowCell>
+          <EuiTableRowCell isMobileHeader>
             <EuiButton fill>
               Save
             </EuiButton>&nbsp;&nbsp;
@@ -584,7 +574,7 @@ export default() => (
 
     <EuiSpacer/>
 
-    <EuiTable>
+    <EuiTable responsive={false}>
       <EuiTableHeader>
         <EuiTableHeaderCell>
           Text

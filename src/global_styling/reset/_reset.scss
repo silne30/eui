@@ -34,6 +34,10 @@ time, mark, audio, video {
   vertical-align: baseline;
 }
 
+input, textarea, select, button {
+  font-family: inherit; /* 1 */
+}
+
 em {
   font-style: italic;
 }

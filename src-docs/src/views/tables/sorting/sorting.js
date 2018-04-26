@@ -83,10 +83,20 @@ export class Table extends Component {
       name: 'First Name',
       sortable: true,
       truncateText: true,
+      hideForMobile: true,
     }, {
       field: 'lastName',
       name: 'Last Name',
       truncateText: true,
+      hideForMobile: true,
+    }, {
+      field: 'firstName',
+      name: 'Full Name',
+      sortable: true,
+      isMobileHeader: true,
+      render: (name, item) => (
+        <span>{item.firstName} {item.lastName}</span>
+      )
     }, {
       field: 'github',
       name: 'Github',

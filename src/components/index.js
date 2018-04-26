@@ -251,6 +251,9 @@ export {
   EuiTableRow,
   EuiTableRowCell,
   EuiTableRowCellCheckbox,
+  EuiTableHeaderMobile,
+  EuiTableSortMobile,
+  EuiTableSortMobileItem,
 } from './table';
 
 export {
@@ -285,4 +288,5 @@ export {
 export {
   EuiText,
   EuiTextColor,
+  EuiTextAlign,
 } from './text';
