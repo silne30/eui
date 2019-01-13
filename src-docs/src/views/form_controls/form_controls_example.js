@@ -1,4 +1,8 @@
-import React from 'react';
+import React, { Fragment } from 'react';
+
+import {
+  Link,
+} from 'react-router';
 
 import { renderToHtml } from '../../services';
 
@@ -7,15 +11,20 @@ import {
 } from '../../components';
 
 import {
+  EuiBadge,
+  EuiCallOut,
   EuiCheckbox,
   EuiCheckboxGroup,
   EuiCode,
+  EuiFieldNumber,
   EuiFieldPassword,
   EuiFieldSearch,
   EuiFieldText,
   EuiFilePicker,
+  EuiFormControlLayout,
   EuiLink,
   EuiRadio,
+  EuiRadioGroup,
   EuiRange,
   EuiSelect,
   EuiSwitch,
@@ -66,13 +75,17 @@ import RadioGroup from './radio_group';
 const radioGroupSource = require('!!raw-loader!./radio_group');
 const radioGroupHtml = renderToHtml(RadioGroup);
 
-import Range from './range';
+import RangeExample from './range';
 const rangeSource = require('!!raw-loader!./range');
-const rangeHtml = renderToHtml(Range);
+const rangeHtml = renderToHtml(RangeExample);
 
 import Switch from './switch';
 const switchSource = require('!!raw-loader!./switch');
 const switchHtml = renderToHtml(Switch);
+
+import FormControlLayout from './form_control_layout';
+const formControlLayoutSource = require('!!raw-loader!./form_control_layout');
+const formControlLayoutHtml = renderToHtml(FormControlLayout);
 
 export const FormControlsExample = {
   title: 'Form controls',
@@ -112,7 +125,7 @@ export const FormControlsExample = {
       code: fieldNumberHtml,
     }],
     props: {
-      EuiFieldText,
+      EuiFieldNumber,
     },
     demo: <FieldNumber />,
   }, {
@@ -173,6 +186,14 @@ export const FormControlsExample = {
       type: GuideSectionTypes.HTML,
       code: selectHtml,
     }],
+    text: (
+      <p>
+        This component renders a basic HTML <code>&lt;select&gt;</code> element. If you need more customization
+        for how the options and/or selected values render, use the <Link to="/forms/superselect">EuiSuperSelect</Link>.
+        Another option is to use the <Link to="/forms/combo-box">EuiComboBox</Link>, which has search and multi-select
+        capabilities, but also has restrictions on how items are rendered.
+      </p>
+    ),
     props: {
       EuiSelect,
     },
@@ -226,11 +247,28 @@ export const FormControlsExample = {
       code: radioGroupHtml,
     }],
     props: {
-      EuiRadio,
+      EuiRadioGroup,
     },
     demo: <RadioGroup />,
   }, {
     title: 'Range',
+    text: (
+      <Fragment>
+        <EuiCallOut color="warning" title="Understanding precision">
+          <p>
+            The base slider should only be used
+            when <strong>the precise value is not considered important</strong>. If
+            the precise value does matter, add the <code>showInput</code> prop or use
+            a <code>EuiFieldNumber</code> instead.
+          </p>
+        </EuiCallOut>
+        <br/>
+        <p>
+          While currently considered optional, the <code>showLabels</code> property should
+          be added to explicitly state the range to the user.
+        </p>
+      </Fragment>
+    ),
     source: [{
       type: GuideSectionTypes.JS,
       code: rangeSource,
@@ -241,7 +279,7 @@ export const FormControlsExample = {
     props: {
       EuiRange,
     },
-    demo: <Range />,
+    demo: <RangeExample />,
   }, {
     title: 'Switch',
     source: [{
@@ -255,6 +293,42 @@ export const FormControlsExample = {
       EuiSwitch,
     },
     demo: <Switch />,
+  }, {
+    title: 'Form control layout',
+    source: [{
+      type: GuideSectionTypes.JS,
+      code: formControlLayoutSource,
+    }, {
+      type: GuideSectionTypes.HTML,
+      code: formControlLayoutHtml,
+    }],
+    text: (
+      <Fragment>
+        <p>
+          <EuiBadge color={'warning'}>
+            Building block only
+          </EuiBadge>
+        </p>
+
+        <p>
+          <EuiCode>EuiFormControlLayout</EuiCode> is generally used internally to consistently style
+          form controls, but it&rsquo;s published in case you want to create your own form control
+          which matches those of EUI. The examples below demonstrate its various states.
+        </p>
+
+        <EuiCallOut title="Additional padding required" color="warning">
+          <p>
+            The padding on the <EuiCode>input</EuiCode> itself doesn&rsquo;t take into account the presence
+            of the various icons supported by <EuiCode>EuiFormControlLayout</EuiCode>. Any input component
+            provided to <EuiCode>EuiFormControlLayout</EuiCode> is responsible for its own padding.
+          </p>
+        </EuiCallOut>
+
+      </Fragment>
+    ),
+    props: {
+      EuiFormControlLayout,
+    },
+    demo: <FormControlLayout />,
   }],
 };
-

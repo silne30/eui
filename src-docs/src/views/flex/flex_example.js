@@ -15,6 +15,7 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiFlexGrid,
+  EuiLink,
 } from '../../../../src/components';
 
 import FlexGroup from './flex_group';
@@ -48,6 +49,10 @@ const flexGrowNumericHtml = renderToHtml(FlexGrowNumeric);
 import FlexJustify from './flex_justify';
 const flexJustifySource = require('!!raw-loader!./flex_justify');
 const flexJustifyHtml = renderToHtml(FlexJustify);
+
+import Direction from './direction';
+const directionSource = require('!!raw-loader!./direction');
+const directionHtml = renderToHtml(Direction);
 
 import FlexGrid from './flex_grid';
 const flexGridSource = require('!!raw-loader!./flex_grid');
@@ -117,11 +122,21 @@ export const FlexExample = {
       code: flexGroupWrapHtml,
     }],
     text: (
-      <p>
-        You can set <EuiCode>wrap</EuiCode> on <EuiCode>FlexGroup</EuiCode> if it
-        contains <EuiCode>FlexItem</EuiCode>s with minimum widths, which you want to wrap as
-        the container becomes narrower.
-      </p>
+      <Fragment>
+        <p>
+          You can set <EuiCode>wrap</EuiCode> on <EuiCode>FlexGroup</EuiCode> if it
+          contains <EuiCode>FlexItem</EuiCode>s with minimum widths, which you want to wrap as
+          the container becomes narrower.
+        </p>
+        <EuiCallOut color="warning" title="IE Warning">
+          <p>
+            IE11 does not properly wrap flex items if the <strong>group</strong> is also within a flex item.
+            To fix this rendering issue, you need to add a class of <EuiCode>.euiIEFlexWrapFix</EuiCode> to the flex-item
+            that <strong>contains</strong> the wrapping group.
+          </p>
+        </EuiCallOut>
+      </Fragment>
+
     ),
     demo: <div className="guideDemo__highlightGrid"><FlexGroupWrap /></div>,
   }, {
@@ -216,7 +231,7 @@ export const FlexExample = {
     text: (
       <p>
         <EuiCode>FlexGroup</EuiCode>s can also
-        use <EuiCode>justifyContent</EuiCode> and <EuiCode>alignItems</EuiCode>props
+        use <EuiCode>justifyContent</EuiCode> and <EuiCode>alignItems</EuiCode> props
         that accept normal flex-box paramenters. Below are some common scenarios,
         where you need to separate two items, center justify a single one, or
         center an item vertically. Note the usage
@@ -224,6 +239,32 @@ export const FlexExample = {
       </p>
     ),
     demo: <div className="guideDemo__highlightGrid"><FlexJustify /></div>,
+  }, {
+    title: 'FlexGroup can change direction',
+    source: [{
+      type: GuideSectionTypes.JS,
+      code: directionSource,
+    }, {
+      type: GuideSectionTypes.HTML,
+      code: directionHtml,
+    }],
+    text: (
+      <div>
+        <p>
+          You can change direction using the <EuiCode>direction</EuiCode> prop.
+        </p>
+        <EuiCallOut color="warning" title="IE11 Warning">
+          <p>
+            Depending on the nested structure of your flex groups, it is possible that
+            flex-items inside a column directed flex group will not show. To counter this,
+            add the <code>grow</code> prop and set to either <code>false</code> or a number.
+            Setting <code>grow</code> to <code>true</code> will not suffice. You may also need
+            to adjust the <code>flex-basis</code> value.
+          </p>
+        </EuiCallOut>
+      </div>
+    ),
+    demo: <div className="guideDemo__highlightGrid"><Direction /></div>,
   }, {
     title: 'FlexGrids are for repeatable grids',
     source: [{
@@ -253,7 +294,7 @@ export const FlexExample = {
     text: (
       <p>
         You can set a <EuiCode>columns</EuiCode> prop to specify
-        anywhere between 2-4 columns. Any more would likely break on laptop screens.
+        anywhere between 1-4 columns. Any more would likely break on laptop screens.
       </p>
     ),
     demo: <div className="guideDemo__highlightGridWrap"><FlexGridColumns /></div>,
@@ -267,11 +308,21 @@ export const FlexExample = {
       code: flexNestHtml,
     }],
     text: (
-      <p>
-        <EuiCode>FlexGroup</EuiCode> and <EuiCode>FlexGrid</EuiCode> can nest
-        within themselves indefinitely. For example, here we turn off the growth on a
-        <EuiCode>FlexGroup</EuiCode>, then nest a grid inside of it.
-      </p>
+      <Fragment>
+        <p>
+          <EuiCode>FlexGroup</EuiCode> and <EuiCode>FlexGrid</EuiCode> can nest
+      within themselves indefinitely. For example, here we turn off the growth on a
+          <EuiCode>FlexGroup</EuiCode>, then nest a grid inside of it.
+        </p>
+        <EuiCallOut color="warning" title="IE11 Warning">
+          <p>
+            Nesting can cause some nasty bugs in IE11. There is no generalized way to fix IE
+            without knowing the exact intention of the layout. Please refer
+            to <EuiLink href="https://github.com/philipwalton/flexbugs">Flexbugs</EuiLink> if
+            you see rendering issues in IE.
+          </p>
+        </EuiCallOut>
+      </Fragment>
     ),
     demo: <div className="guideDemo__highlightGrid"><FlexNest /></div>,
   }, {

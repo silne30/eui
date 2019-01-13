@@ -4,6 +4,7 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import { dropWhile, slice } from 'lodash';
 import {
   formatAuto, formatBoolean, formatDate, formatNumber, formatText, LEFT_ALIGNMENT, PropertySortType,
   RIGHT_ALIGNMENT, SortDirection
@@ -16,6 +17,8 @@ import { EuiCheckbox } from '../form/checkbox/checkbox';
 import { EuiTableHeaderCell } from '../table/table_header_cell';
 import { EuiTableHeader } from '../table/table_header';
 import { EuiTableBody } from '../table/table_body';
+import { EuiTableFooterCell } from '../table/table_footer_cell';
+import { EuiTableFooter } from '../table/table_footer';
 import { EuiTableRowCellCheckbox } from '../table/table_row_cell_checkbox';
 import { COLORS as BUTTON_ICON_COLORS } from '../button/button_icon/button_icon';
 import { ICON_TYPES } from '../icon';
@@ -28,6 +31,8 @@ import { EuiIcon } from '../icon/icon';
 import { LoadingTableBody } from './loading_table_body';
 import { EuiTableHeaderMobile } from '../table/mobile/table_header_mobile';
 import { EuiTableSortMobile } from '../table/mobile/table_sort_mobile';
+import { withRequiredProp } from '../../utils/prop_types/with_required_prop';
+import { EuiScreenReaderOnly, EuiKeyboardAccessible } from '../accessibility';
 
 const dataTypesProfiles = {
   auto: {
@@ -55,12 +60,15 @@ const dataTypesProfiles = {
 const DATA_TYPES = Object.keys(dataTypesProfiles);
 
 const DefaultItemActionType = PropTypes.shape({
-  type: PropTypes.oneOf([ 'icon', 'button' ]), // default is 'button'
+  type: PropTypes.oneOf(['icon', 'button']), // default is 'button'
   name: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
-  onClick: PropTypes.func.isRequired, // (item) => void,
+  onClick: PropTypes.func, // (item) => void,
+  href: PropTypes.string,
+  target: PropTypes.string,
   available: PropTypes.func, // (item) => boolean;
   enabled: PropTypes.func, // (item) => boolean;
+  isPrimary: PropTypes.bool,
   icon: PropTypes.oneOfType([ // required when type is 'icon'
     PropTypes.oneOf(ICON_TYPES),
     PropTypes.func // (item) => oneOf(ICON_TYPES)
@@ -74,7 +82,8 @@ const DefaultItemActionType = PropTypes.shape({
 const CustomItemActionType = PropTypes.shape({
   render: PropTypes.func.isRequired,  // (item, enabled) => PropTypes.node;
   available: PropTypes.func, // (item) => boolean;
-  enabled: PropTypes.func // (item) => boolean;
+  enabled: PropTypes.func, // (item) => boolean;
+  isPrimary: PropTypes.bool,
 });
 
 const SupportedItemActionType = PropTypes.oneOfType([
@@ -82,28 +91,34 @@ const SupportedItemActionType = PropTypes.oneOfType([
   CustomItemActionType
 ]);
 
-const ActionsColumnType = PropTypes.shape({
+export const ActionsColumnType = PropTypes.shape({
   actions: PropTypes.arrayOf(SupportedItemActionType).isRequired,
-  name: PropTypes.string,
+  name: PropTypes.node,
   description: PropTypes.string,
   width: PropTypes.string
 });
 
-export const FieldDataColumnType = PropTypes.shape({
+export const FieldDataColumnTypeShape = {
   field: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
+  name: PropTypes.node.isRequired,
   description: PropTypes.string,
   dataType: PropTypes.oneOf(DATA_TYPES),
   width: PropTypes.string,
   sortable: PropTypes.bool,
   align: PropTypes.oneOf([LEFT_ALIGNMENT, RIGHT_ALIGNMENT]),
   truncateText: PropTypes.bool,
-  render: PropTypes.func // ((value, record) => PropTypes.node (also see [services/value_renderer] for basic implementations)
-});
+  render: PropTypes.func, // ((value, record) => PropTypes.node (also see [services/value_renderer] for basic implementations)
+  footer: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.element,
+    PropTypes.func, // ({ items, pagination }) => PropTypes.node
+  ])
+};
+export const FieldDataColumnType = PropTypes.shape(FieldDataColumnTypeShape);
 
 export const ComputedColumnType = PropTypes.shape({
   render: PropTypes.func.isRequired, // (record) => PropTypes.node
-  name: PropTypes.string,
+  name: PropTypes.node,
   description: PropTypes.string,
   width: PropTypes.string,
   truncateText: PropTypes.bool
@@ -111,14 +126,13 @@ export const ComputedColumnType = PropTypes.shape({
 
 export const ColumnType = PropTypes.oneOfType([FieldDataColumnType, ComputedColumnType, ActionsColumnType]);
 
-const ItemIdType = PropTypes.oneOfType([
+export const ItemIdType = PropTypes.oneOfType([
   PropTypes.string, // the name of the item id property
   PropTypes.func    // (item) => string
 ]);
 
 export const SelectionType = PropTypes.shape({
-  itemId: ItemIdType.isRequired,
-  onSelectionChange: PropTypes.func, // (selection: Record[]) => void;,
+  onSelectionChange: PropTypes.func, // (selection: item[]) => void;,
   selectable: PropTypes.func, // (item) => boolean;
   selectableMessage: PropTypes.func // (selectable, item) => boolean;
 });
@@ -129,26 +143,96 @@ const SortingType = PropTypes.shape({
 
 const BasicTablePropTypes = {
   items: PropTypes.array.isRequired,
+  itemId: ItemIdType,
   columns: PropTypes.arrayOf(ColumnType).isRequired,
   pagination: PaginationType,
   sorting: SortingType,
-  selection: SelectionType,
+  selection: withRequiredProp(SelectionType, 'itemId', 'row selection uses the itemId prop to identify each row'),
   onChange: PropTypes.func,
   error: PropTypes.string,
   loading: PropTypes.bool,
   noItemsMessage: PropTypes.node,
   className: PropTypes.string,
   compressed: PropTypes.bool,
+  itemIdToExpandedRowMap: withRequiredProp(PropTypes.object, 'itemId', 'row expansion uses the itemId prop to identify each row'),
+  responsive: PropTypes.bool,
+  isSelectable: PropTypes.bool,
+  isExpandable: PropTypes.bool,
+  hasActions: PropTypes.bool,
+  rowProps: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
+  cellProps: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
 };
 
-export class EuiBasicTable extends Component {
+export function getItemId(item, itemId) {
+  if (itemId) {
+    if (isFunction(itemId)) {
+      return itemId(item);
+    }
+    return item[itemId];
+  }
+}
 
+function getRowProps(item, rowProps) {
+  if (rowProps) {
+    if (isFunction(rowProps)) {
+      return rowProps(item);
+    }
+    return rowProps;
+  }
+
+  return {};
+}
+
+function getCellProps(item, column, cellProps) {
+  if (cellProps) {
+    if (isFunction(cellProps)) {
+      return cellProps(item, column);
+    }
+    return cellProps;
+  }
+
+  return {};
+}
+
+function getColumnFooter(column, { items, pagination }) {
+  if (column.footer) {
+    if (isFunction(column.footer)) {
+      return column.footer({ items, pagination });
+    }
+    return column.footer;
+  }
+
+  return undefined;
+}
+
+export class EuiBasicTable extends Component {
   static propTypes = BasicTablePropTypes;
   static defaultProps = {
     responsive: true,
     noItemsMessage: 'No items found',
-    itemIdToExpandedRowMap: {},
   };
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (!nextProps.selection) {
+      // next props doesn't have a selection, reset our state
+      return { selection: [] };
+    }
+
+    const { itemId } = nextProps;
+    const selection = prevState.selection.filter(selectedItem => (
+      nextProps.items.findIndex(item => getItemId(item, itemId) === getItemId(selectedItem, itemId)) !== -1
+    ));
+
+    if (selection.length !== prevState.selection.length) {
+      if (nextProps.selection.onSelectionChange) {
+        nextProps.selection.onSelectionChange(selection);
+      }
+
+      return { selection };
+    }
+
+    return null;
+  }
 
   constructor(props) {
     super(props);
@@ -169,16 +253,6 @@ export class EuiBasicTable extends Component {
       criteria.sort = props.sorting.sort;
     }
     return criteria;
-  }
-
-  itemId(item) {
-    const { selection } = this.props;
-    if (selection) {
-      if (isFunction(selection.itemId)) {
-        return selection.itemId(item);
-      }
-      return item[selection.itemId];
-    }
   }
 
   changeSelection(selection) {
@@ -243,31 +317,29 @@ export class EuiBasicTable extends Component {
     this.props.onChange(criteria);
   }
 
-  componentWillReceiveProps(nextProps) {
-    // Don't call changeSelection here or else we can get into an infinite loop:
-    // changeSelection calls props.onSelectionChanged on owner ->
-    // owner may react by changing props ->
-    // we receive new props, calling componentWillReceiveProps ->
-    // and we're in an infinite loop
-    if (!this.props.selection) {
-      return;
-    }
-
-    if (!nextProps.selection) {
-      this.setState({ selection: [] });
-      return;
-    }
-
-    this.setState(prevState => {
-      const selection = prevState.selection.filter(selectedItem => (
-        nextProps.items.findIndex(item => this.itemId(item) === this.itemId(selectedItem)) !== -1
-      ));
-      return { selection };
-    });
-  }
-
   render() {
-    const { className, loading } = this.props;
+    const {
+      className,
+      loading,
+      items, // eslint-disable-line no-unused-vars
+      itemId, // eslint-disable-line no-unused-vars
+      columns, // eslint-disable-line no-unused-vars
+      pagination, // eslint-disable-line no-unused-vars
+      sorting, // eslint-disable-line no-unused-vars
+      selection, // eslint-disable-line no-unused-vars
+      onChange, // eslint-disable-line no-unused-vars
+      error, // eslint-disable-line no-unused-vars
+      noItemsMessage, // eslint-disable-line no-unused-vars
+      compressed, // eslint-disable-line no-unused-vars
+      itemIdToExpandedRowMap, // eslint-disable-line no-unused-vars
+      responsive, // eslint-disable-line no-unused-vars
+      isSelectable, // eslint-disable-line no-unused-vars
+      isExpandable, // eslint-disable-line no-unused-vars
+      hasActions, // eslint-disable-line no-unused-vars
+      rowProps, // eslint-disable-line no-unused-vars
+      cellProps, // eslint-disable-line no-unused-vars
+      ...rest
+    } = this.props;
 
     const classes = classNames(
       'euiBasicTable',
@@ -281,7 +353,7 @@ export class EuiBasicTable extends Component {
     const paginationBar = this.renderPaginationBar();
 
     return (
-      <div className={classes}>
+      <div className={classes} {...rest}>
         {table}
         {paginationBar}
       </div>
@@ -293,14 +365,21 @@ export class EuiBasicTable extends Component {
     const { compressed, responsive } = this.props;
 
     const mobileHeader = responsive ? (<EuiTableHeaderMobile>{this.renderTableMobileSort()}</EuiTableHeaderMobile>) : undefined;
+    const caption = this.renderTableCaption();
     const head = this.renderTableHead();
     const body = this.renderTableBody();
+    const footer = this.renderTableFooter();
     return (
       <div
         ref={element => { this.tableElement = element; }}
       >
         {mobileHeader}
-        <EuiTable responsive={responsive} compressed={compressed}>{head}{body}</EuiTable>
+        <EuiTable responsive={responsive} compressed={compressed}>
+          {caption}
+          {head}
+          {body}
+          {footer}
+        </EuiTable>
       </div>
     );
   }
@@ -314,7 +393,7 @@ export class EuiBasicTable extends Component {
     }
 
     columns.forEach((column, index) => {
-      if(!column.sortable || column.hideForMobile) {
+      if (!column.sortable || column.hideForMobile) {
         return;
       }
 
@@ -330,6 +409,17 @@ export class EuiBasicTable extends Component {
     });
 
     return items.length ? <EuiTableSortMobile items={items} /> : null;
+  }
+
+  renderTableCaption() {
+
+    const { items } = this.props;
+
+    return (
+      <EuiScreenReaderOnly>
+        <caption role="status" aria-relevant="text" aria-live="polite">Below is a table of {items.length} items.</caption>
+      </EuiScreenReaderOnly>
+    );
   }
 
   renderTableHead() {
@@ -366,37 +456,50 @@ export class EuiBasicTable extends Component {
             disabled={disabled}
             onChange={onChange}
             data-test-subj="checkboxSelectAll"
+            aria-label="Select all rows"
           />
         </EuiTableHeaderCellCheckbox>
       );
     }
 
     columns.forEach((column, index) => {
+      const {
+        actions,
+        width,
+        name,
+        field,
+        align,
+        dataType,
+        sortable,
+        isMobileHeader,
+        hideForMobile,
+      } = column;
+
+      const columnAlign = align || this.getAlignForDataType(dataType);
+
       // actions column
-      if (column.actions) {
+      if (actions) {
         headers.push(
           <EuiTableHeaderCell
             key={`_actions_h_${index}`}
             align="right"
-            width={column.width}
+            width={width}
           >
-            {column.name}
+            {name}
           </EuiTableHeaderCell>
         );
         return;
       }
 
-      const align = this.resolveColumnAlign(column);
-
       // computed column
-      if (!column.field) {
+      if (!field) {
         headers.push(
           <EuiTableHeaderCell
             key={`_computed_column_h_${index}`}
-            align={align}
-            width={column.width}
+            align={columnAlign}
+            width={width}
           >
-            {column.name}
+            {name}
           </EuiTableHeaderCell>
         );
         return;
@@ -404,7 +507,7 @@ export class EuiBasicTable extends Component {
 
       // field data column
       const sorting = {};
-      if (this.props.sorting && column.sortable) {
+      if (this.props.sorting && sortable) {
         const sortDirection = this.resolveColumnSortDirection(column);
         sorting.isSorted = !!sortDirection;
         sorting.isSortAscending = sortDirection ? SortDirection.isAsc(sortDirection) : undefined;
@@ -412,19 +515,67 @@ export class EuiBasicTable extends Component {
       }
       headers.push(
         <EuiTableHeaderCell
-          key={`_data_h_${column.field}_${index}`}
-          align={align}
-          width={column.width}
-          isMobileHeader={column.isMobileHeader}
-          hideForMobile={column.hideForMobile}
+          key={`_data_h_${field}_${index}`}
+          align={columnAlign}
+          width={width}
+          isMobileHeader={isMobileHeader}
+          hideForMobile={hideForMobile}
+          data-test-subj={`tableHeaderCell_${field}_${index}`}
           {...sorting}
         >
-          {column.name}
+          {name}
         </EuiTableHeaderCell>
       );
     });
 
     return <EuiTableHeader>{headers}</EuiTableHeader>;
+  }
+
+  renderTableFooter() {
+    const { items, columns, pagination, selection } = this.props;
+
+    const footers = [];
+    let hasDefinedFooter = false;
+
+    if (selection) {
+      // Create an empty cell to compensate for additional selection column
+      footers.push(
+        <EuiTableFooterCell key="_selection_column_f">
+          {undefined}
+        </EuiTableFooterCell>
+      );
+    }
+
+    columns.forEach(column => {
+      const footer = getColumnFooter(column, { items, pagination });
+      if (column.isMobileHeader) {
+        return; // exclude columns that only exist for mobile headers
+      }
+
+      if (footer) {
+        footers.push(
+          <EuiTableFooterCell
+            key={`footer_${column.field}`}
+            align={column.align}
+          >
+            {footer}
+          </EuiTableFooterCell>
+        );
+        hasDefinedFooter = true;
+      } else {
+        // Footer is undefined, so create an empty cell to preserve layout
+        footers.push(
+          <EuiTableFooterCell
+            key={`footer_empty_${footers.length - 1}`}
+            align={column.align}
+          >
+            {undefined}
+          </EuiTableFooterCell>
+        );
+      }
+    });
+
+    return footers.length && hasDefinedFooter ? <EuiTableFooter>{footers}</EuiTableFooter> : null;
   }
 
   renderTableBody() {
@@ -435,8 +586,13 @@ export class EuiBasicTable extends Component {
     if (items.length === 0) {
       return this.renderEmptyBody();
     }
+
     const rows = items.map((item, index) => {
-      return this.renderItemRow(item, index);
+      // if there's pagination the item's index must be adjusted to the where it is in the whole dataset
+      const tableItemIndex = this.props.pagination ?
+        this.props.pagination.pageIndex * this.props.pagination.pageSize + index
+        : index;
+      return this.renderItemRow(item, tableItemIndex);
     });
     if (this.props.loading) {
       return <LoadingTableBody>{rows}</LoadingTableBody>;
@@ -450,7 +606,7 @@ export class EuiBasicTable extends Component {
       <EuiTableBody>
         <EuiTableRow>
           <EuiTableRowCell align="center" colSpan={colSpan} isMobileFullWidth={true}>
-            <EuiIcon type="minusInCircle" color="danger"/> {error}
+            <EuiIcon type="minusInCircle" color="danger" /> {error}
           </EuiTableRowCell>
         </EuiTableRow>
       </EuiTableBody>
@@ -472,22 +628,27 @@ export class EuiBasicTable extends Component {
   }
 
   renderItemRow(item, rowIndex) {
-    const { columns, selection, isSelectable, hasActions, itemIdToExpandedRowMap, isExpandable } = this.props;
+    const { columns, selection, isSelectable, hasActions, itemIdToExpandedRowMap = {}, isExpandable } = this.props;
 
     const cells = [];
 
-    const itemId = selection ? this.itemId(item) : rowIndex;
-    const selected = !selection ? false : this.state.selection && !!this.state.selection.find(selectedRecord => (
-      this.itemId(selectedRecord) === itemId
+    const { itemId: itemIdCallback } = this.props;
+    const itemId = getItemId(item, itemIdCallback) || rowIndex;
+    const selected = !selection ? false : this.state.selection && !!this.state.selection.find(selectedItem => (
+      getItemId(selectedItem, itemIdCallback) === itemId
     ));
 
+    let calculatedHasSelection;
     if (selection) {
       cells.push(this.renderItemSelectionCell(itemId, item, selected));
+      calculatedHasSelection = true;
     }
 
+    let calculatedHasActions;
     columns.forEach((column, columnIndex) => {
       if (column.actions) {
         cells.push(this.renderItemActionsCell(itemId, item, column, columnIndex, rowIndex));
+        calculatedHasActions = true;
       } else if (column.field) {
         cells.push(this.renderItemFieldDataCell(itemId, item, column, columnIndex));
       } else {
@@ -505,26 +666,37 @@ export class EuiBasicTable extends Component {
     expandedRowColSpan = expandedRowColSpan - mobileOnlyCols;
 
     // We'll use the ID to associate the expanded row with the original.
-    const expandedRowId = itemIdToExpandedRowMap.length > 0 ? `row_${itemId}_expansion` : undefined;
-    const expandedRow = itemIdToExpandedRowMap[itemId] ? (
-      <EuiTableRow id={expandedRowId} key={expandedRowId} isExpandedRow={true} isSelectable={isSelectable}>
+    const hasExpandedRow = itemIdToExpandedRowMap.hasOwnProperty(itemId);
+    const expandedRowId = hasExpandedRow ? `row_${itemId}_expansion` : undefined;
+    const expandedRow = hasExpandedRow ? (
+      <EuiTableRow id={expandedRowId} isExpandedRow={true} isSelectable={isSelectable}>
         <EuiTableRowCell colSpan={expandedRowColSpan}>
           {itemIdToExpandedRowMap[itemId]}
         </EuiTableRowCell>
       </EuiTableRow>
     ) : undefined;
 
+    const { rowProps: rowPropsCallback } = this.props;
+    const rowProps = getRowProps(item, rowPropsCallback);
+    const row = (
+      <EuiTableRow
+        aria-owns={expandedRowId}
+        isSelectable={isSelectable == null ? calculatedHasSelection : isSelectable}
+        isSelected={selected}
+        hasActions={hasActions == null ? calculatedHasActions : hasActions}
+        isExpandable={isExpandable}
+        {...rowProps}
+      >
+        {cells}
+      </EuiTableRow>
+    );
+
     return (
       <Fragment key={`row_${itemId}`}>
-        <EuiTableRow
-          aria-owns={expandedRowId}
-          isSelectable={isSelectable}
-          isSelected={selected}
-          hasActions={hasActions}
-          isExpandable={isExpandable}
-        >
-          {cells}
-        </EuiTableRow>
+        {rowProps.onClick
+          ? <EuiKeyboardAccessible>{row}</EuiKeyboardAccessible>
+          : row
+        }
         {expandedRow}
       </Fragment>
     );
@@ -540,8 +712,9 @@ export class EuiBasicTable extends Component {
       if (event.target.checked) {
         this.changeSelection([...this.state.selection, item]);
       } else {
+        const { itemId: itemIdCallback } = this.props;
         this.changeSelection(this.state.selection.reduce((selection, selectedItem) => {
-          if (this.itemId(selectedItem) !== itemId) {
+          if (getItemId(selectedItem, itemIdCallback) !== itemId) {
             selection.push(selectedItem);
           }
           return selection;
@@ -557,6 +730,7 @@ export class EuiBasicTable extends Component {
           checked={checked}
           onChange={onChange}
           title={title}
+          aria-label="Select this row"
           data-test-subj={`checkboxSelectRow-${itemId}`}
         />
       </EuiTableRowCellCheckbox>
@@ -568,7 +742,10 @@ export class EuiBasicTable extends Component {
       this.state.selection.length === 0 && (!action.enabled || action.enabled(item));
 
     let actualActions = column.actions;
-    if (column.actions.length > 1) {
+    if (column.actions.length > 2) {
+
+      // if any of the actions `isPrimary`, add them inline as well, but only the first 2
+      actualActions = slice(dropWhile(column.actions, function (o) { return !o.isPrimary; }), 0, 2);
 
       // if we have more than 1 action, we don't show them all in the cell, instead we
       // put them all in a popover tool. This effectively means we can only have a maximum
@@ -576,9 +753,9 @@ export class EuiBasicTable extends Component {
       //
       // here we create a single custom action that triggers the popover with all the configured actions
 
-      actualActions = [
+      actualActions.push(
         {
-          name: 'Actions',
+          name: 'All actions',
           render: (item) => {
             return (
               <CollapsedItemActions
@@ -590,7 +767,7 @@ export class EuiBasicTable extends Component {
             );
           }
         }
-      ];
+      );
     }
 
     const tools = (
@@ -604,81 +781,74 @@ export class EuiBasicTable extends Component {
 
     const key = `record_actions_${itemId}_${columnIndex}`;
     return (
-      <EuiTableRowCell showOnHover={true} key={key} align="right" textOnly={false} hasActions={true}  >
+      <EuiTableRowCell
+        showOnHover={true}
+        key={key}
+        align="right"
+        textOnly={false}
+        hasActions={true}
+      >
         {tools}
       </EuiTableRowCell>
     );
   }
 
   renderItemFieldDataCell(itemId, item, column, columnIndex) {
-    const {
-      field,
-      render,
-      textOnly,
-      name, // eslint-disable-line no-unused-vars
-      description, // eslint-disable-line no-unused-vars
-      dataType, // eslint-disable-line no-unused-vars
-      sortable, // eslint-disable-line no-unused-vars
-      ...rest
-    } = column;
+    const { field, render, dataType } = column;
 
     const key = `_data_column_${field}_${itemId}_${columnIndex}`;
-    const align = this.resolveColumnAlign(column);
+    const contentRenderer = render || this.getRendererForDataType(dataType);
     const value = get(item, field);
-    const contentRenderer = this.resolveContentRenderer(column);
     const content = contentRenderer(value, item);
-    return (
-      <EuiTableRowCell
-        key={key}
-        align={align}
-        header={column.name}
-        // If there's no render function defined then we're only going to render text.
-        textOnly={textOnly || !render}
-        {...rest}
-      >
-        {content}
-      </EuiTableRowCell>
-    );
+
+    return this.renderItemCell(item, column, key, content);
   }
 
   renderItemComputedCell(itemId, item, column, columnIndex) {
-    const {
-      field, // eslint-disable-line no-unused-vars
-      render, // eslint-disable-line no-unused-vars
-      name, // eslint-disable-line no-unused-vars
-      description, // eslint-disable-line no-unused-vars
-      dataType, // eslint-disable-line no-unused-vars
-      sortable, // eslint-disable-line no-unused-vars
-      ...rest
-    } = column;
+    const { render, dataType } = column;
 
     const key = `_computed_column_${itemId}_${columnIndex}`;
-    const align = this.resolveColumnAlign(column);
-    const contentRenderer = this.resolveContentRenderer(column);
+    const contentRenderer = render || this.getRendererForDataType(dataType);
     const content = contentRenderer(item);
+
+    return this.renderItemCell(item, column, key, content);
+  }
+
+  renderItemCell(item, column, key, content) {
+    const {
+      align,
+      render,
+      dataType,
+      isExpander,
+      textOnly,
+      name,
+      field, // eslint-disable-line no-unused-vars
+      description, // eslint-disable-line no-unused-vars
+      sortable, // eslint-disable-line no-unused-vars
+      footer, // eslint-disable-line no-unused-vars
+      ...rest
+    } = column;
+    const columnAlign = align || this.getAlignForDataType(dataType);
+    const { cellProps: cellPropsCallback } = this.props;
+    const cellProps = getCellProps(item, column, cellPropsCallback);
+    // Name can also be an array or an element, so we need to convert it to undefined. We can't
+    // stringify the value, because this value is rendered directly in the mobile layout. So the
+    // best thing we can do is render no header at all.
+    const header = typeof name === 'string' ? name : undefined;
+
     return (
       <EuiTableRowCell
         key={key}
-        align={align}
-        header={column.name}
-        isExpander={column.isExpander}
+        align={columnAlign}
+        header={header}
+        isExpander={isExpander}
+        textOnly={textOnly || !render}
+        {...cellProps}
         {...rest}
       >
         {content}
       </EuiTableRowCell>
     );
-  }
-
-  resolveColumnAlign(column) {
-    if (column.align) {
-      return column.align;
-    }
-    const dataType = column.dataType || 'auto';
-    const profile = dataTypesProfiles[dataType];
-    if (!profile) {
-      throw new Error(`Unknown dataType [${dataType}]. The supported data types are [${DATA_TYPES.join(', ')}]`);
-    }
-    return profile.align;
   }
 
   resolveColumnSortDirection = (column) => {
@@ -703,16 +873,20 @@ export class EuiBasicTable extends Component {
     return () => this.onColumnSortChange(column);
   }
 
-  resolveContentRenderer(column) {
-    if (column.render) {
-      return column.render;
-    }
-    const dataType = column.dataType || 'auto';
+  getRendererForDataType(dataType = 'auto') {
     const profile = dataTypesProfiles[dataType];
     if (!profile) {
       throw new Error(`Unknown dataType [${dataType}]. The supported data types are [${DATA_TYPES.join(', ')}]`);
     }
     return profile.render;
+  }
+
+  getAlignForDataType(dataType = 'auto') {
+    const profile = dataTypesProfiles[dataType];
+    if (!profile) {
+      throw new Error(`Unknown dataType [${dataType}]. The supported data types are [${DATA_TYPES.join(', ')}]`);
+    }
+    return profile.align;
   }
 
   renderPaginationBar() {

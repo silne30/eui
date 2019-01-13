@@ -162,24 +162,28 @@ export class GuideSection extends Component {
       } = props[propName];
 
       let humanizedName = (
-        <strong>{propName}</strong>
+        <strong className="eui-textBreakNormal">{propName}</strong>
       );
 
       if (required) {
         humanizedName = (
           <span>
-            <strong>{humanizedName}</strong> <EuiTextColor color="danger">(required)</EuiTextColor>
+            {humanizedName} <EuiTextColor color="danger">(required)</EuiTextColor>
           </span>
         );
       }
 
       const humanizedType = humanizeType(type);
 
-      const typeMarkup = markup(humanizedType);
+      const typeMarkup = (<span className="eui-textBreakNormal">{markup(humanizedType)}</span>);
       const descriptionMarkup = markup(propDescription);
       let defaultValueMarkup = '';
       if (defaultValue) {
-        defaultValueMarkup = [ <EuiCode key={`defaultValue-${propName}`}>{defaultValue.value}</EuiCode> ];
+        defaultValueMarkup = [(
+          <EuiCode key={`defaultValue-${propName}`}>
+            <span className="eui-textBreakNormal">{defaultValue.value}</span>
+          </EuiCode>
+        )];
         if (defaultValue.comment) {
           defaultValueMarkup.push(`(${defaultValue.comment})`);
         }
@@ -313,7 +317,9 @@ export class GuideSection extends Component {
     const { code } = this.props.source.find(sourceObject => sourceObject.type === name);
     const npmImports = code
       .replace(/(from )'(..\/)+src\/components(\/?';)/, `from '@elastic/eui';`)
-      .replace(/(from )'(..\/)+src\/services(\/?';)/, `from '@elastic/eui/services';`);
+      .replace(/(from )'(..\/)+src\/services(\/?';)/, `from '@elastic/eui/lib/services';`)
+      .replace(/(from )'(..\/)+src\/experimental(\/?';)/, `from '@elastic/eui/lib/experimental';`)
+      .replace(/(from )'(..\/)+src\/components\/.*?';/, `from '@elastic/eui';`);
 
     return (
       <div key={name} ref={name}>

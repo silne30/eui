@@ -11,6 +11,8 @@ import {
   EuiContextMenuItem,
 } from './context_menu_item';
 
+import { tick } from './context_menu.test';
+
 import { keyCodes } from '../../services';
 
 const items = [
@@ -162,13 +164,15 @@ describe('EuiContextMenuPanel', () => {
     });
 
     describe('initialFocusedItemIndex', () => {
-      it('sets focus on the item occupying that index', () => {
+      it('sets focus on the item occupying that index', async () => {
         const component = mount(
           <EuiContextMenuPanel
             items={items}
             initialFocusedItemIndex={1}
           />
         );
+
+        await tick(20);
 
         expect(findTestSubject(component, 'itemB').getDOMNode()).toBe(document.activeElement);
       });
@@ -269,12 +273,14 @@ describe('EuiContextMenuPanel', () => {
 
   describe('behavior', () => {
     describe('focus', () => {
-      it('is set on the first focusable element by default if there are no items and hasFocus is true', () => {
+      it('is set on the first focusable element by default if there are no items and hasFocus is true', async () => {
         const component = mount(
           <EuiContextMenuPanel>
             <button data-test-subj="button" />
           </EuiContextMenuPanel>
         );
+
+        await tick(20);
 
         expect(findTestSubject(component, 'button').getDOMNode()).toBe(document.activeElement);
       });
@@ -308,47 +314,55 @@ describe('EuiContextMenuPanel', () => {
         );
       });
 
-      it(`focuses the panel by default`, () => {
+      it(`focuses the panel by default`, async () => {
+        await tick(20);
+
         expect(component.getDOMNode()).toBe(document.activeElement);
       });
 
-      it('down arrow key focuses the first menu item', () => {
+      it('down arrow key focuses the first menu item',  async () => {
         component.simulate('keydown', { keyCode: keyCodes.DOWN });
 
+        await tick(20);
         expect(findTestSubject(component, 'itemA').getDOMNode()).toBe(document.activeElement);
       });
 
-      it('subsequently, down arrow key focuses the next menu item', () => {
+      it('subsequently, down arrow key focuses the next menu item', async () => {
         component.simulate('keydown', { keyCode: keyCodes.DOWN });
         component.simulate('keydown', { keyCode: keyCodes.DOWN });
 
+        await tick(20);
         expect(findTestSubject(component, 'itemB').getDOMNode()).toBe(document.activeElement);
       });
 
-      it('down arrow key wraps to first menu item', () => {
+      it('down arrow key wraps to first menu item', async () => {
         component.simulate('keydown', { keyCode: keyCodes.UP });
         component.simulate('keydown', { keyCode: keyCodes.DOWN });
 
+        await tick(20);
         expect(findTestSubject(component, 'itemA').getDOMNode()).toBe(document.activeElement);
       });
 
-      it('up arrow key focuses the last menu item', () => {
+      it('up arrow key focuses the last menu item', async () => {
         component.simulate('keydown', { keyCode: keyCodes.UP });
 
+        await tick(20);
         expect(findTestSubject(component, 'itemC').getDOMNode()).toBe(document.activeElement);
       });
 
-      it('subsequently, up arrow key focuses the previous menu item', () => {
+      it('subsequently, up arrow key focuses the previous menu item', async () => {
         component.simulate('keydown', { keyCode: keyCodes.UP });
         component.simulate('keydown', { keyCode: keyCodes.UP });
 
+        await tick(20);
         expect(findTestSubject(component, 'itemB').getDOMNode()).toBe(document.activeElement);
       });
 
-      it('up arrow key wraps to last menu item', () => {
+      it('up arrow key wraps to last menu item', async () => {
         component.simulate('keydown', { keyCode: keyCodes.DOWN });
         component.simulate('keydown', { keyCode: keyCodes.UP });
 
+        await tick(20);
         expect(findTestSubject(component, 'itemC').getDOMNode()).toBe(document.activeElement);
       });
 
@@ -361,6 +375,87 @@ describe('EuiContextMenuPanel', () => {
       it('left arrow key shows previous panel', () => {
         component.simulate('keydown', { keyCode: keyCodes.LEFT });
         sinon.assert.calledOnce(showPreviousPanelHandler);
+      });
+    });
+  });
+
+  describe('updating items and content', () => {
+    describe('updates to items', () => {
+      it(`should not re-render if any items's watchedItemProps did not change`, () => {
+        expect.assertions(2); // make sure the assertion in the `setProps` callback is executed
+
+        // by not passing `watchedItemProps` no changes to items should cause a re-render
+        const component = mount(
+          <EuiContextMenuPanel
+            items={[
+              <EuiContextMenuItem key="A" data-counter={0}>Option A</EuiContextMenuItem>,
+              <EuiContextMenuItem key="B" data-counter={1}>Option B</EuiContextMenuItem>,
+            ]}
+          />
+        );
+
+        expect(component.debug()).toMatchSnapshot();
+
+        component.setProps(
+          {
+            items: [
+              <EuiContextMenuItem key="A" data-counter={2}>Option A</EuiContextMenuItem>,
+              <EuiContextMenuItem key="B" data-counter={3}>Option B</EuiContextMenuItem>
+            ]
+          },
+          () => {
+            expect(component.debug()).toMatchSnapshot();
+          }
+        );
+      });
+
+      it(`should re-render if any items's watchedItemProps did change`, () => {
+        expect.assertions(2); // make sure the assertion in the `setProps` callback is executed
+
+        // by referencing the `data-counter` property in `watchedItemProps`
+        // changes to the items should be picked up and re-rendered
+        const component = mount(
+          <EuiContextMenuPanel
+            watchedItemProps={['data-counter']}
+            items={[
+              <EuiContextMenuItem key="A" data-counter={0}>Option A</EuiContextMenuItem>,
+              <EuiContextMenuItem key="B" data-counter={1}>Option B</EuiContextMenuItem>,
+            ]}
+          />
+        );
+
+        expect(component.debug()).toMatchSnapshot();
+
+        component.setProps(
+          {
+            items: [
+              <EuiContextMenuItem key="A" data-counter={2}>Option A</EuiContextMenuItem>,
+              <EuiContextMenuItem key="B" data-counter={3}>Option B</EuiContextMenuItem>,
+            ]
+          },
+          () => {
+            expect(component.debug()).toMatchSnapshot();
+          }
+        );
+      });
+
+      it(`should re-render at all times when children exists`, () => {
+        expect.assertions(2); // make sure the assertion in the `setProps` callback is executed
+
+        const component = mount(
+          <EuiContextMenuPanel>
+            Hello World
+          </EuiContextMenuPanel>
+        );
+
+        expect(component.debug()).toMatchSnapshot();
+
+        component.setProps(
+          { children: 'More Salutations' },
+          () => {
+            expect(component.debug()).toMatchSnapshot();
+          }
+        );
       });
     });
   });

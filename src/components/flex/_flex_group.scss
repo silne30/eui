@@ -9,8 +9,12 @@
   flex-grow: 1; /* 1 */
 
   .euiFlexItem {
+    @include internetExplorerOnly {
+      min-width: 1px;
+    }
+
     flex-grow: 1;
-    flex-basis: 0%; /* 1 */
+    flex-basis: 0%; /* 2 */
   }
 }
 
@@ -24,9 +28,9 @@ $gutterTypes: (
 
 // Gutter Sizes
 @each $gutterName, $gutterSize in $gutterTypes {
-  $halfGutterSize: $gutterSize * 0.5;
+  $halfGutterSize: $gutterSize * .5;
 
-  &.euiFlexGroup--#{$gutterName} {
+  .euiFlexGroup--#{$gutterName} {
     margin: -$halfGutterSize;
 
     & > .euiFlexItem {
@@ -73,12 +77,30 @@ $gutterTypes: (
   align-items: baseline;
 }
 
+// Direction
+
+.euiFlexGroup--directionRow {
+  flex-direction: row;
+}
+
+.euiFlexGroup--directionRowReverse {
+  flex-direction: row-reverse;
+}
+
+.euiFlexGroup--directionColumn {
+  flex-direction: column;
+}
+
+.euiFlexGroup--directionColumnReverse {
+  flex-direction: column-reverse;
+}
+
 // Wrap
 .euiFlexGroup--wrap {
   flex-wrap: wrap;
 }
 
-@include screenXSmall {
+@include euiBreakpoint('xs', 's') {
   .euiFlexGroup--responsive {
     flex-wrap: wrap;
     margin-left: 0;

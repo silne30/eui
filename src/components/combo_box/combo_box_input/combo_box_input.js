@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import AutosizeInput from 'react-input-autosize';
 
@@ -15,14 +16,33 @@ export class EuiComboBoxInput extends Component {
     placeholder: PropTypes.string,
     selectedOptions: PropTypes.array,
     onRemoveOption: PropTypes.func,
+    onBlur: PropTypes.func,
     onClick: PropTypes.func,
-    onFocus: PropTypes.func,
+    onFocus: PropTypes.func.isRequired,
     onChange: PropTypes.func,
     value: PropTypes.string,
     searchValue: PropTypes.string,
     autoSizeInputRef: PropTypes.func,
     inputRef: PropTypes.func,
     updatePosition: PropTypes.func.isRequired,
+    onClear: PropTypes.func,
+    hasSelectedOptions: PropTypes.bool.isRequired,
+    isListOpen: PropTypes.bool.isRequired,
+    noIcon: PropTypes.bool.isRequired,
+    onOpenListClick: PropTypes.func.isRequired,
+    onCloseListClick: PropTypes.func.isRequired,
+    singleSelection: PropTypes.oneOfType([
+      PropTypes.bool,
+      PropTypes.shape({
+        asPlainText: PropTypes.bool,
+      }),
+    ]),
+    isDisabled: PropTypes.bool,
+    toggleButtonRef: PropTypes.func,
+    fullWidth: PropTypes.bool,
+    rootId: PropTypes.func.isRequired,
+    focusedOptionId: PropTypes.string,
+    compressed: PropTypes.bool.isRequired,
   }
 
   constructor(props) {
@@ -48,13 +68,16 @@ export class EuiComboBoxInput extends Component {
   };
 
   onBlur = () => {
+    if (this.props.onBlur) {
+      this.props.onBlur();
+    }
     this.setState({
       hasFocus: false,
     });
   };
 
-  componentWillUpdate(nextProps) {
-    const { searchValue } = nextProps;
+  componentDidUpdate(prevProps) {
+    const { searchValue } = prevProps;
 
     // We need to update the position of everything if the user enters enough input to change
     // the size of the input.
@@ -75,26 +98,45 @@ export class EuiComboBoxInput extends Component {
       searchValue,
       autoSizeInputRef,
       inputRef,
+      onClear,
+      hasSelectedOptions,
+      isListOpen,
+      onOpenListClick,
+      onCloseListClick,
+      singleSelection,
+      isDisabled,
+      toggleButtonRef,
+      fullWidth,
+      noIcon,
+      rootId,
+      focusedOptionId,
+      compressed,
     } = this.props;
 
     const pills = selectedOptions.map((option) => {
       const {
         label,
         color,
+        onClick,
         ...rest
       } = option;
+
+      const asPlainText = singleSelection && singleSelection.asPlainText;
 
       return (
         <EuiComboBoxPill
           option={option}
-          onClose={onRemoveOption}
+          onClose={(isDisabled || singleSelection || onClick) ? null : onRemoveOption}
           key={label.toLowerCase()}
           color={color}
+          onClick={onClick}
+          onClickAriaLabel={onClick ? 'Change' : null}
+          asPlainText={asPlainText}
           {...rest}
         >
           {label}
         </EuiComboBoxPill>
-      )
+      );
     });
 
     let removeOptionMessage;
@@ -102,10 +144,10 @@ export class EuiComboBoxInput extends Component {
 
     if (this.state.hasFocus) {
       const removeOptionMessageContent =
-        `Combo box. Selected. ` +
-        (searchValue ? `${searchValue}. Selected. ` : '') +
-        (selectedOptions.length ? `${value}. Unselected. Press Backspace to delete ${selectedOptions[selectedOptions.length - 1].label}. ` : '') +
-        `You are currently on a combo box. Type text or, to display a list of choices, press Down Arrow. ` +
+        `Combo box. Selected. ${
+          searchValue ? `${searchValue}. Selected. ` : ''
+        }${selectedOptions.length ? `${value}. Press Backspace to delete ${selectedOptions[selectedOptions.length - 1].label}. ` : ''
+        }You are currently on a combo box. Type text or, to display a list of choices, press Down Arrow. ` +
         `To exit the list of choices, press Escape.`;
 
       removeOptionMessageId = makeId();
@@ -131,20 +173,54 @@ export class EuiComboBoxInput extends Component {
       );
     }
 
+    const clickProps = {};
+
+    if (!isDisabled && onClear && hasSelectedOptions) {
+      clickProps.clear = {
+        onClick: onClear,
+        'data-test-subj': 'comboBoxClearButton',
+      };
+    }
+
+    let icon;
+    if (!noIcon) {
+      icon = {
+        type: 'arrowDown',
+        side: 'right',
+        onClick: isListOpen && !isDisabled ? onCloseListClick : onOpenListClick,
+        ref: toggleButtonRef,
+        'aria-label': isListOpen ? 'Close list of options' : 'Open list of options',
+        disabled: isDisabled,
+        'data-test-subj': 'comboBoxToggleListButton',
+      };
+    }
+
+    const wrapClasses = classNames('euiComboBox__inputWrap', {
+      'euiComboBox__inputWrap--compressed': compressed,
+      'euiComboBox__inputWrap--fullWidth': fullWidth,
+      'euiComboBox__inputWrap--noWrap': singleSelection,
+      'euiComboBox__inputWrap-isClearable': onClear,
+    });
+
     return (
       <EuiFormControlLayout
-        icon="arrowDown"
-        iconSide="right"
+        icon={icon}
+        {...clickProps}
+        fullWidth={fullWidth}
+        compressed={compressed}
       >
         <div
-          className="euiComboBox__inputWrap"
+          className={wrapClasses}
           onClick={onClick}
+          tabIndex="-1" // becomes onBlur event's relatedTarget, otherwise relatedTarget is null when clicking on this div
           data-test-subj="comboBoxInput"
         >
           {pills}
           {placeholderMessage}
           <AutosizeInput
-            aria-hidden
+            role="textbox"
+            aria-controls={isListOpen ? rootId('listbox') : null}
+            aria-activedescendant={focusedOptionId}
             id={id}
             style={{ fontSize: 14 }}
             className="euiComboBox__input"
@@ -154,6 +230,8 @@ export class EuiComboBoxInput extends Component {
             value={searchValue}
             ref={autoSizeInputRef}
             inputRef={inputRef}
+            disabled={isDisabled}
+            data-test-subj="comboBoxSearchInput"
           />
           {removeOptionMessage}
         </div>

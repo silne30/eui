@@ -5,7 +5,7 @@ import { EuiPropTypes } from '../../../utils/prop_types';
 import { Query } from '../query';
 
 export const FieldValueToggleGroupFilterItemType = PropTypes.shape({
-  value: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]).isRequired,
   name: PropTypes.string.isRequired,
   negatedName: PropTypes.string
 });
@@ -60,11 +60,13 @@ export class FieldValueToggleGroupFilter extends Component {
         this.valueChanged(item, active);
       };
       const key = `field_value_toggle_filter_item_${index}`;
+      const isLastItem = index === config.items.length - 1;
       return (
         <EuiFilterButton
           key={key}
           onClick={onClick}
           hasActiveFilters={active}
+          noDivider={!isLastItem}
         >
           {name}
         </EuiFilterButton>

@@ -10,6 +10,7 @@ import { section as basicSection } from './basic';
 import { section as paginatedSection } from './paginated';
 import { section as sortingSection } from './sorting';
 import { section as selectionSection } from './selection';
+import { section as footerSection } from './footer';
 import { section as expandingRowsSection } from './expanding_rows';
 import { section as actionsSection } from './actions';
 import {
@@ -17,6 +18,7 @@ import {
   selectionSection as inMemorySelectionSection,
   searchSection as inMemorySearchSection,
   searchCallbackSection as inMemorySearchCallbackSection,
+  customSortingSection as inMemoryCustomSortingSection,
 } from './in_memory';
 import { section as customSection } from './custom';
 import { section as mobileSection } from './mobile';
@@ -47,12 +49,14 @@ export const TableExample = {
     paginatedSection,
     sortingSection,
     selectionSection,
+    footerSection,
     expandingRowsSection,
     actionsSection,
     inMemorySection,
     inMemorySelectionSection,
     inMemorySearchSection,
     inMemorySearchCallbackSection,
+    inMemoryCustomSortingSection,
     mobileSection,
     customSection,
   ],

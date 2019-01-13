@@ -6,10 +6,13 @@
   align-items: center;
 }
 
-@include screenXSmall {
+@include euiBreakpoint('xs', 's') {
   .euiPageHeader {
-    flex-direction: column;
-    padding: 0 $euiSize;
+    padding: $euiSize 0;
     margin-bottom: 0;
+  }
+
+  .euiPageHeader--responsive {
+    flex-direction: column;
   }
 }

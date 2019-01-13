@@ -1,12 +1,8 @@
-import React, {
-  Component,
-} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-import {
-  EuiBadge,
-} from '../../badge';
+import { EuiBadge } from '../../badge';
 
 export class EuiComboBoxPill extends Component {
   static propTypes = {
@@ -14,7 +10,10 @@ export class EuiComboBoxPill extends Component {
     children: PropTypes.string,
     className: PropTypes.string,
     color: PropTypes.string,
-    onClose: PropTypes.func.isRequired,
+    onClose: PropTypes.func,
+    asPlainText: PropTypes.bool,
+    onClick: PropTypes.func,
+    onClickAriaLabel: PropTypes.string,
   };
 
   static defaultProps = {
@@ -33,22 +32,57 @@ export class EuiComboBoxPill extends Component {
       option, // eslint-disable-line no-unused-vars
       onClose, // eslint-disable-line no-unused-vars
       color,
+      onClick,
+      onClickAriaLabel,
+      asPlainText,
       ...rest
     } = this.props;
-    const classes = classNames('euiComboBoxPill', className);
+    const classes = classNames(
+      'euiComboBoxPill',
+      {
+        'euiComboBoxPill--plainText': asPlainText,
+      },
+      className
+    );
+
+    if (onClose) {
+      return (
+        <EuiBadge
+          className={classes}
+          title={children}
+          iconOnClick={this.onCloseButtonClick}
+          iconOnClickAriaLabel={`Remove ${children} from selection in this group`}
+          iconType="cross"
+          iconSide="right"
+          color={color}
+          closeButtonProps={{
+            tabIndex: '-1',
+          }}
+          onClick={onClick}
+          onClickAriaLabel={onClickAriaLabel}
+          {...rest}
+        >
+          {children}
+        </EuiBadge>
+      );
+    }
+
+    if (asPlainText) {
+      return (
+        <span className={classes} {...rest}>
+          {children}
+        </span>
+      );
+    }
 
     return (
       <EuiBadge
         className={classes}
         title={children}
-        iconOnClick={this.onCloseButtonClick}
-        iconType="cross"
-        iconSide="right"
         color={color}
-        closeButtonProps={{
-          tabIndex: '-1'
-        }}
         {...rest}
+        onClick={onClick}
+        onClickAriaLabel={onClickAriaLabel}
       >
         {children}
       </EuiBadge>

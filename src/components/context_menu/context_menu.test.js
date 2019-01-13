@@ -17,6 +17,7 @@ const panel2 = {
 const panel1 = {
   id: 1,
   title: '1',
+  width: 400,
   items: [{
     name: '2a',
     panel: 2,
@@ -44,7 +45,7 @@ const panels = [
   panel2,
 ];
 
-const tick = (ms = 0) => new Promise(resolve => {
+export const tick = (ms = 0) => new Promise(resolve => {
   setTimeout(resolve, ms);
 });
 

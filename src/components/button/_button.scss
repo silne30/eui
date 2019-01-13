@@ -1,5 +1,8 @@
 @import '../loading/mixins';
 
+// This file has lots of modifiers and is somewhat nesty by nature
+//sass-lint:disable nesting-depth
+
 // Our base button
 .euiButton {
   @include euiButton;
@@ -10,6 +13,7 @@
 
   .euiButton__content {
     @include euiButtonContent;
+
     padding: 0 ($euiSize - $euiSizeXS);
   }
 
@@ -20,6 +24,7 @@
 
   &.euiButton--small {
     height: $euiButtonHeightSmall;
+    line-height: $euiButtonHeightSmall; // prevents descenders from getting cut off
   }
 
   &.euiButton--iconRight {
@@ -34,7 +39,8 @@
   }
 
   &:enabled {
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       background-color: transparentize($euiColorPrimary, .9);
     }
   }
@@ -53,14 +59,17 @@
       background-color: $euiButtonColorDisabled;
       border-color: $euiButtonColorDisabled;
 
-      &:hover, &:focus {
+      &:hover,
+      &:focus {
         background-color: $euiButtonColorDisabled;
         border-color: $euiButtonColorDisabled;
       }
     }
 
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       @include euiSlightShadow;
+
       text-decoration: none;
     }
   }
@@ -73,15 +82,19 @@ $buttonTypes: (
   warning: $euiColorWarning,
   danger: $euiColorDanger,
   ghost: $euiColorGhost, // Ghost is special, and does not care about theming.
+  text: $euiColorDarkShade, // Reserved for special use cases
 );
 
-// Create button modifiders based upon the map.
+// Create button modifiers based upon the map.
 @each $name, $color in $buttonTypes {
   .euiButton--#{$name} {
 
     @if ($name == 'ghost') {
       // Ghost is unique and ALWAYS sits against a dark background.
       color: $color;
+    } @else if ($name == 'text') {
+      // The default color is lighter than the normal text color, make the it the text color
+      color: $euiTextColor;
     } @else {
       // Other colors need to check their contrast against the page background color.
       color: makeHighContrastColor($color, $euiColorEmptyShade);
@@ -93,12 +106,14 @@ $buttonTypes: (
       background-color: $color;
       border-color: $color;
 
-      $fillTextColor: chooseLightOrDarkText($color, #FFF, #000);
+      // The function makes that hexes safe for theming
+      $fillTextColor: chooseLightOrDarkText($color, #FFF, #000); // sass-lint:disable-line no-color-literals
 
       color: $fillTextColor;
 
       &:enabled {
-        &:hover, &:focus {
+        &:hover,
+        &:focus {
           background-color: darken($color, 5%);
           border-color: darken($color, 5%);
         }
@@ -120,7 +135,8 @@ $buttonTypes: (
 
       @include euiSlightShadow($shadowColor);
 
-      &:hover, &:focus {
+      &:hover,
+      &:focus {
         @include euiSlightShadowHover($shadowColor);
         background-color: transparentize($color, .9);
 

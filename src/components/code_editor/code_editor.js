@@ -5,6 +5,14 @@ import AceEditor from 'react-ace';
 
 import { htmlIdGenerator, keyCodes } from '../../services';
 
+function setOrRemoveAttribute(element, attributeName, value) {
+  if (value === null || value === undefined) {
+    element.removeAttribute(attributeName);
+  } else {
+    element.setAttribute(attributeName, value);
+  }
+}
+
 export class EuiCodeEditor extends Component {
 
   state = {
@@ -17,8 +25,12 @@ export class EuiCodeEditor extends Component {
   aceEditorRef = (aceEditor) => {
     if (aceEditor) {
       this.aceEditor = aceEditor;
-      aceEditor.editor.textInput.getElement().tabIndex = -1;
-      aceEditor.editor.textInput.getElement().addEventListener('keydown', this.onKeydownAce);
+      const textbox = aceEditor.editor.textInput.getElement();
+      textbox.tabIndex = -1;
+      textbox.addEventListener('keydown', this.onKeydownAce);
+      setOrRemoveAttribute(textbox, 'aria-label', this.props['aria-label']);
+      setOrRemoveAttribute(textbox, 'aria-labelledby', this.props['aria-labelledby']);
+      setOrRemoveAttribute(textbox, 'aria-describedby', this.props['aria-describedby']);
     }
   };
 
@@ -70,6 +82,26 @@ export class EuiCodeEditor extends Component {
       isHintActive: true,
       isEditing: false,
     });
+  }
+
+  isCustomMode() {
+    return typeof this.props.mode === 'object';
+  }
+
+  setCustomMode() {
+    this.aceEditor.editor.getSession().setMode(this.props.mode);
+  }
+
+  componentDidMount() {
+    if (this.isCustomMode()) {
+      this.setCustomMode();
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if ((this.props.mode !== prevProps.mode) && this.isCustomMode()) {
+      this.setCustomMode();
+    }
   }
 
   render() {
@@ -136,10 +168,15 @@ export class EuiCodeEditor extends Component {
       </div>
     );
 
+    if (this.isCustomMode()) {
+      delete rest.mode; // Otherwise, the AceEditor component will complain about wanting a string value for the mode prop.
+    }
+
     return (
       <div
         className={classes}
         style={{ width, height }}
+        data-test-subj="codeEditorContainer"
       >
         {prompt}
 
@@ -150,6 +187,9 @@ export class EuiCodeEditor extends Component {
           onFocus={this.onFocusAce}
           onBlur={this.onBlurAce}
           setOptions={options}
+          editorProps={{
+            $blockScrolling: Infinity
+          }}
           cursorStart={filteredCursorStart}
           {...rest}
         />
@@ -165,6 +205,14 @@ EuiCodeEditor.propTypes = {
   isReadOnly: PropTypes.bool,
   setOptions: PropTypes.object,
   cursorStart: PropTypes.number,
+
+  /**
+   * Use string for a built-in mode or object for a custom mode
+   */
+  mode: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.object
+  ]),
 };
 
 EuiCodeEditor.defaultProps = {

@@ -1,15 +1,12 @@
-import React, {
-  Component,
-} from 'react';
+import React, { Component } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import FocusTrap from 'focus-trap-react';
 
-import { keyCodes } from '../../services';
+import { keyCodes, EuiWindowEvent } from '../../services';
 
-import {
-  EuiOverlayMask,
-} from '../overlay_mask';
+import { EuiOverlayMask } from '../overlay_mask';
+import { EuiButtonIcon } from '../button';
 
 const sizeToClassNameMap = {
   s: 'euiFlyout--small',
@@ -23,7 +20,6 @@ export class EuiFlyout extends Component {
   onKeyDown = event => {
     if (event.keyCode === keyCodes.ESCAPE) {
       event.preventDefault();
-      event.stopPropagation();
       this.props.onClose();
     }
   };
@@ -32,26 +28,53 @@ export class EuiFlyout extends Component {
     const {
       className,
       children,
+      hideCloseButton,
       onClose,
       ownFocus,
       size,
+      closeButtonAriaLabel,
+      maxWidth,
+      style,
       ...rest
     } = this.props;
 
-    const classes = classnames(
-      'euiFlyout',
-      sizeToClassNameMap[size],
-      className
-    );
+    let newStyle;
+    let widthClassName;
+    if (maxWidth === true) {
+      widthClassName = 'euiFlyout--maxWidth-default';
+    } else if (maxWidth !== false) {
+      const value = typeof maxWidth === 'number' ? `${maxWidth}px` : maxWidth;
+      newStyle = { ...style, maxWidth: value };
+    }
+
+    const classes = classnames('euiFlyout', sizeToClassNameMap[size], widthClassName, className);
+
+    let closeButton;
+    if (onClose && !hideCloseButton) {
+      closeButton = (
+        <EuiButtonIcon
+          className="euiFlyout__closeButton"
+          iconType="cross"
+          color="text"
+          aria-label={closeButtonAriaLabel}
+          onClick={onClose}
+          data-test-subj="euiFlyoutCloseButton"
+        />
+      );
+    }
 
     const flyoutContent = (
       <div
-        ref={node => { this.flyout = node; }}
+        role="dialog"
+        ref={node => {
+          this.flyout = node;
+        }}
         className={classes}
         tabIndex={0}
-        onKeyDown={this.onKeyDown}
+        style={newStyle || style}
         {...rest}
       >
+        {closeButton}
         {children}
       </div>
     );
@@ -60,14 +83,15 @@ export class EuiFlyout extends Component {
     // to click it to close it.
     let optionalOverlay;
     if (ownFocus) {
-      optionalOverlay = (
-        <EuiOverlayMask onClick={onClose} />
-      );
+      optionalOverlay = <EuiOverlayMask onClick={onClose} />;
     }
 
     return (
       <span>
+        <EuiWindowEvent event="keydown" handler={this.onKeyDown} />
         {optionalOverlay}
+        {/* Trap focus even when ownFocus={false}, otherwise closing the flyout won't return focus
+        to the originating button */}
         <FocusTrap
           focusTrapOptions={{
             fallbackFocus: () => this.flyout,
@@ -86,8 +110,36 @@ EuiFlyout.propTypes = {
   children: PropTypes.node,
   onClose: PropTypes.func.isRequired,
   size: PropTypes.oneOf(SIZES),
+  /**
+   * Hides the default close button. You must provide another close button somewhere within the flyout.
+   */
+  hideCloseButton: PropTypes.bool,
+  /**
+   * Locks the mouse / keyboard focus to within the flyout
+   */
+  ownFocus: PropTypes.bool,
+  /**
+   * Specify an aria-label for the close button of the flyout
+   */
+  closeButtonAriaLabel: PropTypes.string,
+  /**
+   * Sets the max-width of the page,
+   * set to `true` to use the default size,
+   * set to `false` to not restrict the width,
+   * set to a number for a custom width in px,
+   * set to a string for a custom width in custom measurement.
+   */
+  maxWidth: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.number,
+    PropTypes.string,
+  ]),
 };
 
 EuiFlyout.defaultProps = {
   size: 'm',
+  hideCloseButton: false,
+  ownFocus: false,
+  closeButtonAriaLabel: 'Closes this dialog',
+  maxWidth: false,
 };

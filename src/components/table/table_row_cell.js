@@ -58,12 +58,18 @@ export const EuiTableRowCell = ({
   if(textOnly === true) {
     modifiedChildren = <span className={childClasses}>{children}</span>;
   } else if(React.isValidElement(modifiedChildren)) {
-    modifiedChildren = React.Children.map(children, child => React.cloneElement(child, { className: childClasses }));
+    modifiedChildren = React.Children.map(
+      children,
+      child => React.cloneElement(
+        child,
+        { className: classNames(child.props.className, childClasses) }
+      )
+    );
   }
 
   return (
-    <td className={cellClasses} colSpan={colSpan} data-header={header}>
-      <div className={contentClasses} {...rest}>
+    <td className={cellClasses} colSpan={colSpan} data-header={header} {...rest}>
+      <div className={contentClasses}>
         {modifiedChildren}
       </div>
     </td>
@@ -76,6 +82,10 @@ EuiTableRowCell.propTypes = {
   truncateText: PropTypes.bool,
   children: PropTypes.node,
   className: PropTypes.string,
+  /**
+   * Setting textOnly to false will break words unnecessarily on FF and IE.
+   * To combat this problem on FF, wrap contents with the css utility `.eui-textBreakWord`.
+   */
   textOnly: PropTypes.bool,
   colSpan: PropTypes.number,
   /**
@@ -109,5 +119,5 @@ EuiTableRowCell.propTypes = {
 
 EuiTableRowCell.defaultProps = {
   align: LEFT_ALIGNMENT,
-  textOnly: true
+  textOnly: true,
 };

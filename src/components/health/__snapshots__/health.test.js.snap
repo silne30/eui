@@ -7,13 +7,14 @@ exports[`EuiHealth is rendered 1`] = `
   data-test-subj="test subject string"
 >
   <div
-    class="euiFlexGroup euiFlexGroup--gutterExtraSmall euiFlexGroup--alignItemsCenter"
+    class="euiFlexGroup euiFlexGroup--gutterExtraSmall euiFlexGroup--alignItemsCenter euiFlexGroup--directionRow"
   >
     <div
       class="euiFlexItem euiFlexItem--flexGrowZero"
     >
       <svg
         class="euiIcon euiIcon--medium"
+        focusable="false"
         height="16"
         viewBox="0 0 16 16"
         width="16"

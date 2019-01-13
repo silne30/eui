@@ -13,24 +13,18 @@
   }
 
   .euiStep__circle {
-    @include createStepsNumber();
-
     margin-right: $euiStepNumberMargin;
     vertical-align: top; /* 1 */
 
-    &.euiStep__circle--incomplete {
-      background-color: transparent;
-      border: solid 2px $euiColorPrimary;
-      color: $euiColorDarkShade;
-    }
-
-    &.euiStep__circle--complete {
+    &[class*='complete'],
+    &[class*='warning'],
+    &[class*='danger'] {
       animation: euiGrow $euiAnimSpeedFast $euiAnimSlightBounce;
     }
 
-    .euiStep__circleIcon {
-      position: relative;
-      top: -2px;
+    &[class*='incomplete'] {
+      border-color: $euiColorPrimary;
+      animation: none;
     }
   }
 
@@ -45,9 +39,9 @@
     margin: $euiSizeS 0;
 
     // Align the content's contents with the title
-    padding-left: ($euiStepNumberSize/2) - 1px + $euiStepNumberMargin;
+    padding-left: ($euiStepNumberSize / 2) - 1px + $euiStepNumberMargin;
 
     // Align content border to horizontal center of step number
-    margin-left: ($euiStepNumberSize/2) - 1px;
+    margin-left: ($euiStepNumberSize / 2) - 1px;
   }
 }

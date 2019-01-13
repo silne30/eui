@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 import moment from 'moment';
-import DatePicker from 'react-datepicker';
+import { ReactDatePicker as DatePicker } from '../../../packages';
 
 import {
   EuiFormControlLayout,
@@ -49,6 +49,7 @@ export class EuiDatePicker extends Component {
       selected,
       shadow,
       shouldCloseOnSelect,
+      showIcon,
       showTimeSelect,
       showTimeSelectOnly,
       timeFormat,
@@ -70,19 +71,19 @@ export class EuiDatePicker extends Component {
       {
         'euiFieldText--fullWidth': fullWidth,
         'euiFieldText-isLoading': isLoading,
-        'euiFieldText--withIcon': !inline,
+        'euiFieldText--withIcon': !inline && showIcon,
         'euiFieldText-isInvalid': isInvalid,
       },
       className
     );
 
     let optionalIcon;
-    if (inline || customInput) {
+    if (inline || customInput || !showIcon) {
       optionalIcon = null;
     } else if (showTimeSelectOnly) {
-      optionalIcon = "clock";
+      optionalIcon = 'clock';
     } else {
-      optionalIcon = "calendar";
+      optionalIcon = 'calendar';
     }
 
     // EuiDatePicker only supports a subset of props from react-datepicker. Using any of
@@ -163,6 +164,7 @@ export class EuiDatePicker extends Component {
                 timeFormat={timeFormat}
                 utcOffset={utcOffset}
                 yearDropdownItemNumber={7}
+                accessibleMode={true}
                 {...rest}
               />
             </EuiValidatableControl>
@@ -269,6 +271,10 @@ EuiDatePicker.propTypes = {
    */
   shouldCloseOnSelect: PropTypes.bool,
   /**
+   * Show the icon in input
+   */
+  showIcon: PropTypes.bool,
+  /**
    * Show the time selection alongside the calendar
    */
   showTimeSelect: PropTypes.bool,
@@ -283,10 +289,11 @@ EuiDatePicker.propTypes = {
 };
 
 EuiDatePicker.defaultProps = {
-  dateFormat:"MM/DD/YYYY hh:mm A",
+  dateFormat: 'MM/DD/YYYY hh:mm A',
   fullWidth: false,
   isLoading: false,
   shadow: true,
   shouldCloseOnSelect: true,
-  timeFormat:"hh:mm A",
+  showIcon: true,
+  timeFormat: 'hh:mm A',
 };

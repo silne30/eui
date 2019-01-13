@@ -12,26 +12,35 @@ export {
 } from './accessibility';
 
 export {
+  EuiBadge,
+  EuiBetaBadge,
+  EuiNotificationBadge,
+} from './badge';
+
+export {
   EuiBottomBar,
 } from './bottom_bar';
+
+export {
+  EuiBreadcrumbs,
+} from './breadcrumbs';
 
 export {
   EuiButton,
   EuiButtonEmpty,
   EuiButtonIcon,
+  EuiButtonToggle,
+  EuiButtonGroup,
 } from './button';
-
-export {
-  EuiBadge,
-} from './badge';
-
-export {
-  EuiCard,
-} from './card';
 
 export {
   EuiCallOut,
 } from './call_out';
+
+export {
+  EuiCard,
+  EuiCardGraphic,
+} from './card';
 
 export {
   EuiCode,
@@ -58,7 +67,13 @@ export {
 } from './context_menu';
 
 export {
+  EuiCopy,
+} from './copy';
+
+export {
   EuiDatePicker,
+  EuiDatePickerRange,
+  EuiSuperDatePicker,
 } from './date_picker';
 
 export {
@@ -72,12 +87,15 @@ export {
 } from './description_list';
 
 export {
+  EuiEmptyPrompt,
+} from './empty_prompt';
+
+export {
   EuiErrorBoundary,
 } from './error_boundary';
 
 export {
   EuiExpression,
-  EuiExpressionButton,
 } from './expression';
 
 export {
@@ -85,6 +103,11 @@ export {
   EuiFilterGroup,
   EuiFilterSelectItem
 } from './filter_group';
+
+export {
+  EuiFacetButton,
+  EuiFacetGroup,
+} from './facet';
 
 export {
   EuiFlexGroup,
@@ -102,6 +125,7 @@ export {
 export {
   EuiCheckbox,
   EuiCheckboxGroup,
+  EuiDescribedFormGroup,
   EuiFieldNumber,
   EuiFieldPassword,
   EuiFieldSearch,
@@ -117,6 +141,8 @@ export {
   EuiRadioGroup,
   EuiRange,
   EuiSelect,
+  EuiSuperSelect,
+  EuiSuperSelectControl,
   EuiSwitch,
   EuiTextArea,
   EuiValidatableControl,
@@ -125,11 +151,10 @@ export {
 export {
   EuiHeader,
   EuiHeaderAlert,
-  EuiHeaderBreadcrumb,
-  EuiHeaderBreadcrumbCollapsed,
   EuiHeaderBreadcrumbs,
+  EuiHeaderLink,
+  EuiHeaderLinks,
   EuiHeaderLogo,
-  EuiHeaderNotification,
   EuiHeaderSection,
   EuiHeaderSectionItem,
   EuiHeaderSectionItemButton,
@@ -173,6 +198,11 @@ export {
 } from './link';
 
 export {
+  EuiListGroup,
+  EuiListGroupItem,
+} from './list_group';
+
+export {
   EUI_MODAL_CANCEL_BUTTON,
   EUI_MODAL_CONFIRM_BUTTON,
   EuiConfirmModal,
@@ -184,12 +214,16 @@ export {
 } from './modal';
 
 export {
-  EuiOverlayMask,
-} from './overlay_mask';
+  EuiMutationObserver,
+} from './mutation_observer';
 
 export {
   EuiOutsideClickDetector,
 } from './outside_click_detector';
+
+export {
+  EuiOverlayMask,
+} from './overlay_mask';
 
 export {
   EuiPage,
@@ -215,6 +249,7 @@ export {
 export {
   EuiPopover,
   EuiPopoverTitle,
+  EuiWrappingPopover,
 } from './popover';
 
 export {
@@ -226,12 +261,22 @@ export {
 } from './progress';
 
 export {
-  EuiSearchBar
+  EuiSearchBar,
+  Query,
+  Ast
 } from './search_bar';
+
+export {
+  EuiSideNav,
+} from './side_nav';
 
 export {
   EuiSpacer,
 } from './spacer';
+
+export {
+  EuiStat,
+} from './stat';
 
 export {
   EuiStep,
@@ -243,6 +288,8 @@ export {
 export {
   EuiTable,
   EuiTableBody,
+  EuiTableFooter,
+  EuiTableFooterCell,
   EuiTableHeader,
   EuiTableHeaderButton,
   EuiTableHeaderCell,
@@ -257,6 +304,10 @@ export {
 } from './table';
 
 export {
+  EuiToken
+} from './token';
+
+export {
   EuiBasicTable,
   EuiInMemoryTable
 } from './basic_table';
@@ -264,11 +315,18 @@ export {
 export {
   EuiTab,
   EuiTabs,
+  EuiTabbedContent,
 } from './tabs';
 
 export {
-  EuiSideNav,
-} from './side_nav';
+  EuiText,
+  EuiTextColor,
+  EuiTextAlign,
+} from './text';
+
+export {
+  EuiTitle,
+} from './title';
 
 export {
   EuiGlobalToastList,
@@ -277,16 +335,15 @@ export {
 } from './toast';
 
 export {
+  EuiToggle,
+} from './toggle';
+
+export {
   EuiIconTip,
   EuiToolTip,
 } from './tool_tip';
 
 export {
-  EuiTitle,
-} from './title';
-
-export {
-  EuiText,
-  EuiTextColor,
-  EuiTextAlign,
-} from './text';
+  EuiHideFor,
+  EuiShowFor,
+} from './responsive';

@@ -1,17 +1,219 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`EuiBasicTable basic - empty - custom message 1`] = `
+exports[`EuiBasicTable cellProps renders cells with custom props from a callback 1`] = `
 <div
-  className="euiBasicTable testClass1 testClass2"
+  className="euiBasicTable"
 >
   <div>
     <EuiTableHeaderMobile />
     <EuiTable
       responsive={true}
     >
+      <EuiScreenReaderOnly>
+        <caption
+          aria-live="polite"
+          aria-relevant="text"
+          role="status"
+        >
+          Below is a table of 
+          3
+           items.
+        </caption>
+      </EuiScreenReaderOnly>
       <EuiTableHeader>
         <EuiTableHeaderCell
           align="left"
+          data-test-subj="tableHeaderCell_name_0"
+          key="_data_h_name_0"
+          scope="col"
+        >
+          Name
+        </EuiTableHeaderCell>
+      </EuiTableHeader>
+      <EuiTableBody>
+        <React.Fragment
+          key="row_0"
+        >
+          <EuiTableRow
+            isSelected={false}
+          >
+            <EuiTableRowCell
+              align="left"
+              className="customRowClass"
+              data-test-subj="cell-1-name"
+              header="Name"
+              key="_data_column_name_0_0"
+              onClick={[Function]}
+              textOnly={true}
+            >
+              name1
+            </EuiTableRowCell>
+          </EuiTableRow>
+        </React.Fragment>
+        <React.Fragment
+          key="row_1"
+        >
+          <EuiTableRow
+            isSelected={false}
+          >
+            <EuiTableRowCell
+              align="left"
+              className="customRowClass"
+              data-test-subj="cell-2-name"
+              header="Name"
+              key="_data_column_name_1_0"
+              onClick={[Function]}
+              textOnly={true}
+            >
+              name2
+            </EuiTableRowCell>
+          </EuiTableRow>
+        </React.Fragment>
+        <React.Fragment
+          key="row_2"
+        >
+          <EuiTableRow
+            isSelected={false}
+          >
+            <EuiTableRowCell
+              align="left"
+              className="customRowClass"
+              data-test-subj="cell-3-name"
+              header="Name"
+              key="_data_column_name_2_0"
+              onClick={[Function]}
+              textOnly={true}
+            >
+              name3
+            </EuiTableRowCell>
+          </EuiTableRow>
+        </React.Fragment>
+      </EuiTableBody>
+    </EuiTable>
+  </div>
+</div>
+`;
+
+exports[`EuiBasicTable cellProps renders rows with custom props from an object 1`] = `
+<div
+  className="euiBasicTable"
+>
+  <div>
+    <EuiTableHeaderMobile />
+    <EuiTable
+      responsive={true}
+    >
+      <EuiScreenReaderOnly>
+        <caption
+          aria-live="polite"
+          aria-relevant="text"
+          role="status"
+        >
+          Below is a table of 
+          3
+           items.
+        </caption>
+      </EuiScreenReaderOnly>
+      <EuiTableHeader>
+        <EuiTableHeaderCell
+          align="left"
+          data-test-subj="tableHeaderCell_name_0"
+          key="_data_h_name_0"
+          scope="col"
+        >
+          Name
+        </EuiTableHeaderCell>
+      </EuiTableHeader>
+      <EuiTableBody>
+        <React.Fragment
+          key="row_0"
+        >
+          <EuiTableRow
+            isSelected={false}
+          >
+            <EuiTableRowCell
+              align="left"
+              className="customClass"
+              data-test-subj="cell"
+              header="Name"
+              key="_data_column_name_0_0"
+              onClick={[Function]}
+              textOnly={true}
+            >
+              name1
+            </EuiTableRowCell>
+          </EuiTableRow>
+        </React.Fragment>
+        <React.Fragment
+          key="row_1"
+        >
+          <EuiTableRow
+            isSelected={false}
+          >
+            <EuiTableRowCell
+              align="left"
+              className="customClass"
+              data-test-subj="cell"
+              header="Name"
+              key="_data_column_name_1_0"
+              onClick={[Function]}
+              textOnly={true}
+            >
+              name2
+            </EuiTableRowCell>
+          </EuiTableRow>
+        </React.Fragment>
+        <React.Fragment
+          key="row_2"
+        >
+          <EuiTableRow
+            isSelected={false}
+          >
+            <EuiTableRowCell
+              align="left"
+              className="customClass"
+              data-test-subj="cell"
+              header="Name"
+              key="_data_column_name_2_0"
+              onClick={[Function]}
+              textOnly={true}
+            >
+              name3
+            </EuiTableRowCell>
+          </EuiTableRow>
+        </React.Fragment>
+      </EuiTableBody>
+    </EuiTable>
+  </div>
+</div>
+`;
+
+exports[`EuiBasicTable empty is rendered 1`] = `
+<div
+  aria-label="aria-label"
+  className="euiBasicTable testClass1 testClass2"
+  data-test-subj="test subject string"
+>
+  <div>
+    <EuiTableHeaderMobile />
+    <EuiTable
+      responsive={true}
+    >
+      <EuiScreenReaderOnly>
+        <caption
+          aria-live="polite"
+          aria-relevant="text"
+          role="status"
+        >
+          Below is a table of 
+          0
+           items.
+        </caption>
+      </EuiScreenReaderOnly>
+      <EuiTableHeader>
+        <EuiTableHeaderCell
+          align="left"
+          data-test-subj="tableHeaderCell_name_0"
           key="_data_h_name_0"
           scope="col"
         >
@@ -26,7 +228,7 @@ exports[`EuiBasicTable basic - empty - custom message 1`] = `
             isMobileFullWidth={true}
             textOnly={true}
           >
-            where my items at?
+            No items found
           </EuiTableRowCell>
         </EuiTableRow>
       </EuiTableBody>
@@ -35,18 +237,30 @@ exports[`EuiBasicTable basic - empty - custom message 1`] = `
 </div>
 `;
 
-exports[`EuiBasicTable basic - empty - custom message as node 1`] = `
+exports[`EuiBasicTable empty renders a node as a custom message 1`] = `
 <div
-  className="euiBasicTable testClass1 testClass2"
+  className="euiBasicTable"
 >
   <div>
     <EuiTableHeaderMobile />
     <EuiTable
       responsive={true}
     >
+      <EuiScreenReaderOnly>
+        <caption
+          aria-live="polite"
+          aria-relevant="text"
+          role="status"
+        >
+          Below is a table of 
+          0
+           items.
+        </caption>
+      </EuiScreenReaderOnly>
       <EuiTableHeader>
         <EuiTableHeaderCell
           align="left"
+          data-test-subj="tableHeaderCell_name_0"
           key="_data_h_name_0"
           scope="col"
         >
@@ -78,18 +292,30 @@ exports[`EuiBasicTable basic - empty - custom message as node 1`] = `
 </div>
 `;
 
-exports[`EuiBasicTable basic - empty 1`] = `
+exports[`EuiBasicTable empty renders a string as a custom message 1`] = `
 <div
-  className="euiBasicTable testClass1 testClass2"
+  className="euiBasicTable"
 >
   <div>
     <EuiTableHeaderMobile />
     <EuiTable
       responsive={true}
     >
+      <EuiScreenReaderOnly>
+        <caption
+          aria-live="polite"
+          aria-relevant="text"
+          role="status"
+        >
+          Below is a table of 
+          0
+           items.
+        </caption>
+      </EuiScreenReaderOnly>
       <EuiTableHeader>
         <EuiTableHeaderCell
           align="left"
+          data-test-subj="tableHeaderCell_name_0"
           key="_data_h_name_0"
           scope="col"
         >
@@ -104,7 +330,7 @@ exports[`EuiBasicTable basic - empty 1`] = `
             isMobileFullWidth={true}
             textOnly={true}
           >
-            No items found
+            where my items at?
           </EuiTableRowCell>
         </EuiTableRow>
       </EuiTableBody>
@@ -113,41 +339,53 @@ exports[`EuiBasicTable basic - empty 1`] = `
 </div>
 `;
 
-exports[`EuiBasicTable basic - with items 1`] = `
+exports[`EuiBasicTable footers do not render without a column footer definition 1`] = `
 <div
-  className="euiBasicTable testClass1 testClass2"
+  className="euiBasicTable"
 >
   <div>
     <EuiTableHeaderMobile />
     <EuiTable
       responsive={true}
     >
+      <EuiScreenReaderOnly>
+        <caption
+          aria-live="polite"
+          aria-relevant="text"
+          role="status"
+        >
+          Below is a table of 
+          3
+           items.
+        </caption>
+      </EuiScreenReaderOnly>
       <EuiTableHeader>
         <EuiTableHeaderCell
           align="left"
+          data-test-subj="tableHeaderCell_name_0"
           key="_data_h_name_0"
           scope="col"
         >
           Name
         </EuiTableHeaderCell>
+        <EuiTableHeaderCell
+          align="left"
+          data-test-subj="tableHeaderCell_id_1"
+          key="_data_h_id_1"
+          scope="col"
+        >
+          ID
+        </EuiTableHeaderCell>
+        <EuiTableHeaderCell
+          align="left"
+          data-test-subj="tableHeaderCell_age_2"
+          key="_data_h_age_2"
+          scope="col"
+        >
+          Age
+        </EuiTableHeaderCell>
       </EuiTableHeader>
       <EuiTableBody>
-        <React.Fragment
-          key="row_0"
-        >
-          <EuiTableRow
-            isSelected={false}
-          >
-            <EuiTableRowCell
-              align="left"
-              header="Name"
-              key="_data_column_name_0_0"
-              textOnly={true}
-            >
-              name1
-            </EuiTableRowCell>
-          </EuiTableRow>
-        </React.Fragment>
         <React.Fragment
           key="row_1"
         >
@@ -160,7 +398,23 @@ exports[`EuiBasicTable basic - with items 1`] = `
               key="_data_column_name_1_0"
               textOnly={true}
             >
-              name2
+              name1
+            </EuiTableRowCell>
+            <EuiTableRowCell
+              align="left"
+              header="ID"
+              key="_data_column_id_1_1"
+              textOnly={true}
+            >
+              1
+            </EuiTableRowCell>
+            <EuiTableRowCell
+              align="left"
+              header="Age"
+              key="_data_column_age_1_2"
+              textOnly={true}
+            >
+              20
             </EuiTableRowCell>
           </EuiTableRow>
         </React.Fragment>
@@ -176,13 +430,335 @@ exports[`EuiBasicTable basic - with items 1`] = `
               key="_data_column_name_2_0"
               textOnly={true}
             >
+              name2
+            </EuiTableRowCell>
+            <EuiTableRowCell
+              align="left"
+              header="ID"
+              key="_data_column_id_2_1"
+              textOnly={true}
+            >
+              2
+            </EuiTableRowCell>
+            <EuiTableRowCell
+              align="left"
+              header="Age"
+              key="_data_column_age_2_2"
+              textOnly={true}
+            >
+              21
+            </EuiTableRowCell>
+          </EuiTableRow>
+        </React.Fragment>
+        <React.Fragment
+          key="row_3"
+        >
+          <EuiTableRow
+            isSelected={false}
+          >
+            <EuiTableRowCell
+              align="left"
+              header="Name"
+              key="_data_column_name_3_0"
+              textOnly={true}
+            >
               name3
+            </EuiTableRowCell>
+            <EuiTableRowCell
+              align="left"
+              header="ID"
+              key="_data_column_id_3_1"
+              textOnly={true}
+            >
+              3
+            </EuiTableRowCell>
+            <EuiTableRowCell
+              align="left"
+              header="Age"
+              key="_data_column_age_3_2"
+              textOnly={true}
+            >
+              22
             </EuiTableRowCell>
           </EuiTableRow>
         </React.Fragment>
       </EuiTableBody>
     </EuiTable>
   </div>
+</div>
+`;
+
+exports[`EuiBasicTable footers render with pagination, selection, sorting, and footer 1`] = `
+<div
+  className="euiBasicTable"
+>
+  <div>
+    <EuiTableHeaderMobile>
+      <EuiTableSortMobile
+        items={
+          Array [
+            Object {
+              "isSortAscending": true,
+              "isSorted": true,
+              "key": "_data_s_name_0",
+              "name": "Name",
+              "onSort": [Function],
+            },
+          ]
+        }
+      />
+    </EuiTableHeaderMobile>
+    <EuiTable
+      responsive={true}
+    >
+      <EuiScreenReaderOnly>
+        <caption
+          aria-live="polite"
+          aria-relevant="text"
+          role="status"
+        >
+          Below is a table of 
+          3
+           items.
+        </caption>
+      </EuiScreenReaderOnly>
+      <EuiTableHeader>
+        <EuiTableHeaderCellCheckbox
+          key="_selection_column_h"
+          scope="col"
+          width="24px"
+        >
+          <EuiCheckbox
+            aria-label="Select all rows"
+            checked={false}
+            compressed={false}
+            data-test-subj="checkboxSelectAll"
+            disabled={false}
+            id="_selection_column-checkbox"
+            indeterminate={false}
+            onChange={[Function]}
+            type="inList"
+          />
+        </EuiTableHeaderCellCheckbox>
+        <EuiTableHeaderCell
+          align="left"
+          data-test-subj="tableHeaderCell_name_0"
+          isSortAscending={true}
+          isSorted={true}
+          key="_data_h_name_0"
+          onSort={[Function]}
+          scope="col"
+        >
+          Name
+        </EuiTableHeaderCell>
+        <EuiTableHeaderCell
+          align="left"
+          data-test-subj="tableHeaderCell_id_1"
+          key="_data_h_id_1"
+          scope="col"
+        >
+          ID
+        </EuiTableHeaderCell>
+        <EuiTableHeaderCell
+          align="left"
+          data-test-subj="tableHeaderCell_age_2"
+          key="_data_h_age_2"
+          scope="col"
+        >
+          Age
+        </EuiTableHeaderCell>
+      </EuiTableHeader>
+      <EuiTableBody>
+        <React.Fragment
+          key="row_1"
+        >
+          <EuiTableRow
+            isSelectable={true}
+            isSelected={false}
+          >
+            <EuiTableRowCellCheckbox
+              key="_selection_column_1"
+            >
+              <EuiCheckbox
+                aria-label="Select this row"
+                checked={false}
+                compressed={false}
+                data-test-subj="checkboxSelectRow-1"
+                disabled={false}
+                id="_selection_column_1-checkbox"
+                indeterminate={false}
+                onChange={[Function]}
+                type="inList"
+              />
+            </EuiTableRowCellCheckbox>
+            <EuiTableRowCell
+              align="left"
+              header="Name"
+              key="_data_column_name_1_0"
+              textOnly={true}
+            >
+              name1
+            </EuiTableRowCell>
+            <EuiTableRowCell
+              align="left"
+              header="ID"
+              key="_data_column_id_1_1"
+              textOnly={true}
+            >
+              1
+            </EuiTableRowCell>
+            <EuiTableRowCell
+              align="left"
+              header="Age"
+              key="_data_column_age_1_2"
+              textOnly={true}
+            >
+              20
+            </EuiTableRowCell>
+          </EuiTableRow>
+        </React.Fragment>
+        <React.Fragment
+          key="row_2"
+        >
+          <EuiTableRow
+            isSelectable={true}
+            isSelected={false}
+          >
+            <EuiTableRowCellCheckbox
+              key="_selection_column_2"
+            >
+              <EuiCheckbox
+                aria-label="Select this row"
+                checked={false}
+                compressed={false}
+                data-test-subj="checkboxSelectRow-2"
+                disabled={false}
+                id="_selection_column_2-checkbox"
+                indeterminate={false}
+                onChange={[Function]}
+                type="inList"
+              />
+            </EuiTableRowCellCheckbox>
+            <EuiTableRowCell
+              align="left"
+              header="Name"
+              key="_data_column_name_2_0"
+              textOnly={true}
+            >
+              name2
+            </EuiTableRowCell>
+            <EuiTableRowCell
+              align="left"
+              header="ID"
+              key="_data_column_id_2_1"
+              textOnly={true}
+            >
+              2
+            </EuiTableRowCell>
+            <EuiTableRowCell
+              align="left"
+              header="Age"
+              key="_data_column_age_2_2"
+              textOnly={true}
+            >
+              21
+            </EuiTableRowCell>
+          </EuiTableRow>
+        </React.Fragment>
+        <React.Fragment
+          key="row_3"
+        >
+          <EuiTableRow
+            isSelectable={true}
+            isSelected={false}
+          >
+            <EuiTableRowCellCheckbox
+              key="_selection_column_3"
+            >
+              <EuiCheckbox
+                aria-label="Select this row"
+                checked={false}
+                compressed={false}
+                data-test-subj="checkboxSelectRow-3"
+                disabled={false}
+                id="_selection_column_3-checkbox"
+                indeterminate={false}
+                onChange={[Function]}
+                type="inList"
+              />
+            </EuiTableRowCellCheckbox>
+            <EuiTableRowCell
+              align="left"
+              header="Name"
+              key="_data_column_name_3_0"
+              textOnly={true}
+            >
+              name3
+            </EuiTableRowCell>
+            <EuiTableRowCell
+              align="left"
+              header="ID"
+              key="_data_column_id_3_1"
+              textOnly={true}
+            >
+              3
+            </EuiTableRowCell>
+            <EuiTableRowCell
+              align="left"
+              header="Age"
+              key="_data_column_age_3_2"
+              textOnly={true}
+            >
+              22
+            </EuiTableRowCell>
+          </EuiTableRow>
+        </React.Fragment>
+      </EuiTableBody>
+      <EuiTableFooter>
+        <EuiTableFooterCell
+          align="left"
+          key="_selection_column_f"
+        />
+        <EuiTableFooterCell
+          align="left"
+          key="footer_name"
+        >
+          <strong>
+            Name
+          </strong>
+        </EuiTableFooterCell>
+        <EuiTableFooterCell
+          align="left"
+          key="footer_id"
+        >
+          ID
+        </EuiTableFooterCell>
+        <EuiTableFooterCell
+          align="left"
+          key="footer_age"
+        >
+          <strong>
+            sum:
+            63
+            <br />
+            total items:
+            5
+          </strong>
+        </EuiTableFooterCell>
+      </EuiTableFooter>
+    </EuiTable>
+  </div>
+  <PaginationBar
+    onPageChange={[Function]}
+    onPageSizeChange={[Function]}
+    pagination={
+      Object {
+        "pageIndex": 0,
+        "pageSize": 3,
+        "totalItemCount": 5,
+      }
+    }
+  />
 </div>
 `;
 
@@ -195,9 +771,21 @@ exports[`EuiBasicTable itemIdToExpandedRowMap renders an expanded row 1`] = `
     <EuiTable
       responsive={true}
     >
+      <EuiScreenReaderOnly>
+        <caption
+          aria-live="polite"
+          aria-relevant="text"
+          role="status"
+        >
+          Below is a table of 
+          3
+           items.
+        </caption>
+      </EuiScreenReaderOnly>
       <EuiTableHeader>
         <EuiTableHeaderCell
           align="left"
+          data-test-subj="tableHeaderCell_name_0"
           key="_data_h_name_0"
           scope="col"
         >
@@ -206,25 +794,10 @@ exports[`EuiBasicTable itemIdToExpandedRowMap renders an expanded row 1`] = `
       </EuiTableHeader>
       <EuiTableBody>
         <React.Fragment
-          key="row_0"
-        >
-          <EuiTableRow
-            isSelected={false}
-          >
-            <EuiTableRowCell
-              align="left"
-              header="Name"
-              key="_data_column_name_0_0"
-              textOnly={true}
-            >
-              name1
-            </EuiTableRowCell>
-          </EuiTableRow>
-        </React.Fragment>
-        <React.Fragment
           key="row_1"
         >
           <EuiTableRow
+            aria-owns="row_1_expansion"
             isSelected={false}
           >
             <EuiTableRowCell
@@ -233,10 +806,11 @@ exports[`EuiBasicTable itemIdToExpandedRowMap renders an expanded row 1`] = `
               key="_data_column_name_1_0"
               textOnly={true}
             >
-              name2
+              name1
             </EuiTableRowCell>
           </EuiTableRow>
           <EuiTableRow
+            id="row_1_expansion"
             isExpandedRow={true}
           >
             <EuiTableRowCell
@@ -262,6 +836,22 @@ exports[`EuiBasicTable itemIdToExpandedRowMap renders an expanded row 1`] = `
               key="_data_column_name_2_0"
               textOnly={true}
             >
+              name2
+            </EuiTableRowCell>
+          </EuiTableRow>
+        </React.Fragment>
+        <React.Fragment
+          key="row_3"
+        >
+          <EuiTableRow
+            isSelected={false}
+          >
+            <EuiTableRowCell
+              align="left"
+              header="Name"
+              key="_data_column_name_3_0"
+              textOnly={true}
+            >
               name3
             </EuiTableRowCell>
           </EuiTableRow>
@@ -272,18 +862,30 @@ exports[`EuiBasicTable itemIdToExpandedRowMap renders an expanded row 1`] = `
 </div>
 `;
 
-exports[`EuiBasicTable with pagination - 2nd page 1`] = `
+exports[`EuiBasicTable rowProps renders rows with custom props from a callback 1`] = `
 <div
-  className="euiBasicTable testClass1 testClass2"
+  className="euiBasicTable"
 >
   <div>
     <EuiTableHeaderMobile />
     <EuiTable
       responsive={true}
     >
+      <EuiScreenReaderOnly>
+        <caption
+          aria-live="polite"
+          aria-relevant="text"
+          role="status"
+        >
+          Below is a table of 
+          3
+           items.
+        </caption>
+      </EuiScreenReaderOnly>
       <EuiTableHeader>
         <EuiTableHeaderCell
           align="left"
+          data-test-subj="tableHeaderCell_name_0"
           key="_data_h_name_0"
           scope="col"
         >
@@ -294,21 +896,205 @@ exports[`EuiBasicTable with pagination - 2nd page 1`] = `
         <React.Fragment
           key="row_0"
         >
-          <EuiTableRow
-            isSelected={false}
-          >
-            <EuiTableRowCell
-              align="left"
-              header="Name"
-              key="_data_column_name_0_0"
-              textOnly={true}
+          <EuiKeyboardAccessible>
+            <EuiTableRow
+              className="customRowClass"
+              data-test-subj="row-1"
+              isSelected={false}
+              onClick={[Function]}
             >
-              name1
-            </EuiTableRowCell>
-          </EuiTableRow>
+              <EuiTableRowCell
+                align="left"
+                header="Name"
+                key="_data_column_name_0_0"
+                textOnly={true}
+              >
+                name1
+              </EuiTableRowCell>
+            </EuiTableRow>
+          </EuiKeyboardAccessible>
         </React.Fragment>
         <React.Fragment
           key="row_1"
+        >
+          <EuiKeyboardAccessible>
+            <EuiTableRow
+              className="customRowClass"
+              data-test-subj="row-2"
+              isSelected={false}
+              onClick={[Function]}
+            >
+              <EuiTableRowCell
+                align="left"
+                header="Name"
+                key="_data_column_name_1_0"
+                textOnly={true}
+              >
+                name2
+              </EuiTableRowCell>
+            </EuiTableRow>
+          </EuiKeyboardAccessible>
+        </React.Fragment>
+        <React.Fragment
+          key="row_2"
+        >
+          <EuiKeyboardAccessible>
+            <EuiTableRow
+              className="customRowClass"
+              data-test-subj="row-3"
+              isSelected={false}
+              onClick={[Function]}
+            >
+              <EuiTableRowCell
+                align="left"
+                header="Name"
+                key="_data_column_name_2_0"
+                textOnly={true}
+              >
+                name3
+              </EuiTableRowCell>
+            </EuiTableRow>
+          </EuiKeyboardAccessible>
+        </React.Fragment>
+      </EuiTableBody>
+    </EuiTable>
+  </div>
+</div>
+`;
+
+exports[`EuiBasicTable rowProps renders rows with custom props from an object 1`] = `
+<div
+  className="euiBasicTable"
+>
+  <div>
+    <EuiTableHeaderMobile />
+    <EuiTable
+      responsive={true}
+    >
+      <EuiScreenReaderOnly>
+        <caption
+          aria-live="polite"
+          aria-relevant="text"
+          role="status"
+        >
+          Below is a table of 
+          3
+           items.
+        </caption>
+      </EuiScreenReaderOnly>
+      <EuiTableHeader>
+        <EuiTableHeaderCell
+          align="left"
+          data-test-subj="tableHeaderCell_name_0"
+          key="_data_h_name_0"
+          scope="col"
+        >
+          Name
+        </EuiTableHeaderCell>
+      </EuiTableHeader>
+      <EuiTableBody>
+        <React.Fragment
+          key="row_0"
+        >
+          <EuiKeyboardAccessible>
+            <EuiTableRow
+              className="customClass"
+              data-test-subj="row"
+              isSelected={false}
+              onClick={[Function]}
+            >
+              <EuiTableRowCell
+                align="left"
+                header="Name"
+                key="_data_column_name_0_0"
+                textOnly={true}
+              >
+                name1
+              </EuiTableRowCell>
+            </EuiTableRow>
+          </EuiKeyboardAccessible>
+        </React.Fragment>
+        <React.Fragment
+          key="row_1"
+        >
+          <EuiKeyboardAccessible>
+            <EuiTableRow
+              className="customClass"
+              data-test-subj="row"
+              isSelected={false}
+              onClick={[Function]}
+            >
+              <EuiTableRowCell
+                align="left"
+                header="Name"
+                key="_data_column_name_1_0"
+                textOnly={true}
+              >
+                name2
+              </EuiTableRowCell>
+            </EuiTableRow>
+          </EuiKeyboardAccessible>
+        </React.Fragment>
+        <React.Fragment
+          key="row_2"
+        >
+          <EuiKeyboardAccessible>
+            <EuiTableRow
+              className="customClass"
+              data-test-subj="row"
+              isSelected={false}
+              onClick={[Function]}
+            >
+              <EuiTableRowCell
+                align="left"
+                header="Name"
+                key="_data_column_name_2_0"
+                textOnly={true}
+              >
+                name3
+              </EuiTableRowCell>
+            </EuiTableRow>
+          </EuiKeyboardAccessible>
+        </React.Fragment>
+      </EuiTableBody>
+    </EuiTable>
+  </div>
+</div>
+`;
+
+exports[`EuiBasicTable with pagination - 2nd page 1`] = `
+<div
+  className="euiBasicTable"
+>
+  <div>
+    <EuiTableHeaderMobile />
+    <EuiTable
+      responsive={true}
+    >
+      <EuiScreenReaderOnly>
+        <caption
+          aria-live="polite"
+          aria-relevant="text"
+          role="status"
+        >
+          Below is a table of 
+          2
+           items.
+        </caption>
+      </EuiScreenReaderOnly>
+      <EuiTableHeader>
+        <EuiTableHeaderCell
+          align="left"
+          data-test-subj="tableHeaderCell_name_0"
+          key="_data_h_name_0"
+          scope="col"
+        >
+          Name
+        </EuiTableHeaderCell>
+      </EuiTableHeader>
+      <EuiTableBody>
+        <React.Fragment
+          key="row_3"
         >
           <EuiTableRow
             isSelected={false}
@@ -316,7 +1102,23 @@ exports[`EuiBasicTable with pagination - 2nd page 1`] = `
             <EuiTableRowCell
               align="left"
               header="Name"
-              key="_data_column_name_1_0"
+              key="_data_column_name_3_0"
+              textOnly={true}
+            >
+              name1
+            </EuiTableRowCell>
+          </EuiTableRow>
+        </React.Fragment>
+        <React.Fragment
+          key="row_4"
+        >
+          <EuiTableRow
+            isSelected={false}
+          >
+            <EuiTableRowCell
+              align="left"
+              header="Name"
+              key="_data_column_name_4_0"
               textOnly={true}
             >
               name2
@@ -342,16 +1144,28 @@ exports[`EuiBasicTable with pagination - 2nd page 1`] = `
 
 exports[`EuiBasicTable with pagination 1`] = `
 <div
-  className="euiBasicTable testClass1 testClass2"
+  className="euiBasicTable"
 >
   <div>
     <EuiTableHeaderMobile />
     <EuiTable
       responsive={true}
     >
+      <EuiScreenReaderOnly>
+        <caption
+          aria-live="polite"
+          aria-relevant="text"
+          role="status"
+        >
+          Below is a table of 
+          3
+           items.
+        </caption>
+      </EuiScreenReaderOnly>
       <EuiTableHeader>
         <EuiTableHeaderCell
           align="left"
+          data-test-subj="tableHeaderCell_name_0"
           key="_data_h_name_0"
           scope="col"
         >
@@ -426,16 +1240,28 @@ exports[`EuiBasicTable with pagination 1`] = `
 
 exports[`EuiBasicTable with pagination and error 1`] = `
 <div
-  className="euiBasicTable testClass1 testClass2"
+  className="euiBasicTable"
 >
   <div>
     <EuiTableHeaderMobile />
     <EuiTable
       responsive={true}
     >
+      <EuiScreenReaderOnly>
+        <caption
+          aria-live="polite"
+          aria-relevant="text"
+          role="status"
+        >
+          Below is a table of 
+          3
+           items.
+        </caption>
+      </EuiScreenReaderOnly>
       <EuiTableHeader>
         <EuiTableHeaderCell
           align="left"
+          data-test-subj="tableHeaderCell_name_0"
           key="_data_h_name_0"
           scope="col"
         >
@@ -467,13 +1293,24 @@ exports[`EuiBasicTable with pagination and error 1`] = `
 
 exports[`EuiBasicTable with pagination and selection 1`] = `
 <div
-  className="euiBasicTable testClass1 testClass2"
+  className="euiBasicTable"
 >
   <div>
     <EuiTableHeaderMobile />
     <EuiTable
       responsive={true}
     >
+      <EuiScreenReaderOnly>
+        <caption
+          aria-live="polite"
+          aria-relevant="text"
+          role="status"
+        >
+          Below is a table of 
+          3
+           items.
+        </caption>
+      </EuiScreenReaderOnly>
       <EuiTableHeader>
         <EuiTableHeaderCellCheckbox
           key="_selection_column_h"
@@ -481,16 +1318,20 @@ exports[`EuiBasicTable with pagination and selection 1`] = `
           width="24px"
         >
           <EuiCheckbox
+            aria-label="Select all rows"
             checked={false}
+            compressed={false}
             data-test-subj="checkboxSelectAll"
             disabled={false}
             id="_selection_column-checkbox"
+            indeterminate={false}
             onChange={[Function]}
             type="inList"
           />
         </EuiTableHeaderCellCheckbox>
         <EuiTableHeaderCell
           align="left"
+          data-test-subj="tableHeaderCell_name_0"
           key="_data_h_name_0"
           scope="col"
         >
@@ -502,16 +1343,20 @@ exports[`EuiBasicTable with pagination and selection 1`] = `
           key="row_1"
         >
           <EuiTableRow
+            isSelectable={true}
             isSelected={false}
           >
             <EuiTableRowCellCheckbox
               key="_selection_column_1"
             >
               <EuiCheckbox
+                aria-label="Select this row"
                 checked={false}
+                compressed={false}
                 data-test-subj="checkboxSelectRow-1"
                 disabled={false}
                 id="_selection_column_1-checkbox"
+                indeterminate={false}
                 onChange={[Function]}
                 type="inList"
               />
@@ -530,16 +1375,20 @@ exports[`EuiBasicTable with pagination and selection 1`] = `
           key="row_2"
         >
           <EuiTableRow
+            isSelectable={true}
             isSelected={false}
           >
             <EuiTableRowCellCheckbox
               key="_selection_column_2"
             >
               <EuiCheckbox
+                aria-label="Select this row"
                 checked={false}
+                compressed={false}
                 data-test-subj="checkboxSelectRow-2"
                 disabled={false}
                 id="_selection_column_2-checkbox"
+                indeterminate={false}
                 onChange={[Function]}
                 type="inList"
               />
@@ -558,16 +1407,20 @@ exports[`EuiBasicTable with pagination and selection 1`] = `
           key="row_3"
         >
           <EuiTableRow
+            isSelectable={true}
             isSelected={false}
           >
             <EuiTableRowCellCheckbox
               key="_selection_column_3"
             >
               <EuiCheckbox
+                aria-label="Select this row"
                 checked={false}
+                compressed={false}
                 data-test-subj="checkboxSelectRow-3"
                 disabled={false}
                 id="_selection_column_3-checkbox"
+                indeterminate={false}
                 onChange={[Function]}
                 type="inList"
               />
@@ -599,9 +1452,106 @@ exports[`EuiBasicTable with pagination and selection 1`] = `
 </div>
 `;
 
+exports[`EuiBasicTable with pagination, hiding the per page options 1`] = `
+<div
+  className="euiBasicTable"
+>
+  <div>
+    <EuiTableHeaderMobile />
+    <EuiTable
+      responsive={true}
+    >
+      <EuiScreenReaderOnly>
+        <caption
+          aria-live="polite"
+          aria-relevant="text"
+          role="status"
+        >
+          Below is a table of 
+          3
+           items.
+        </caption>
+      </EuiScreenReaderOnly>
+      <EuiTableHeader>
+        <EuiTableHeaderCell
+          align="left"
+          data-test-subj="tableHeaderCell_name_0"
+          key="_data_h_name_0"
+          scope="col"
+        >
+          Name
+        </EuiTableHeaderCell>
+      </EuiTableHeader>
+      <EuiTableBody>
+        <React.Fragment
+          key="row_0"
+        >
+          <EuiTableRow
+            isSelected={false}
+          >
+            <EuiTableRowCell
+              align="left"
+              header="Name"
+              key="_data_column_name_0_0"
+              textOnly={true}
+            >
+              name1
+            </EuiTableRowCell>
+          </EuiTableRow>
+        </React.Fragment>
+        <React.Fragment
+          key="row_1"
+        >
+          <EuiTableRow
+            isSelected={false}
+          >
+            <EuiTableRowCell
+              align="left"
+              header="Name"
+              key="_data_column_name_1_0"
+              textOnly={true}
+            >
+              name2
+            </EuiTableRowCell>
+          </EuiTableRow>
+        </React.Fragment>
+        <React.Fragment
+          key="row_2"
+        >
+          <EuiTableRow
+            isSelected={false}
+          >
+            <EuiTableRowCell
+              align="left"
+              header="Name"
+              key="_data_column_name_2_0"
+              textOnly={true}
+            >
+              name3
+            </EuiTableRowCell>
+          </EuiTableRow>
+        </React.Fragment>
+      </EuiTableBody>
+    </EuiTable>
+  </div>
+  <PaginationBar
+    onPageChange={[Function]}
+    onPageSizeChange={[Function]}
+    pagination={
+      Object {
+        "hidePerPageOptions": true,
+        "pageIndex": 0,
+        "pageSize": 3,
+        "totalItemCount": 5,
+      }
+    }
+  />
+</div>
+`;
+
 exports[`EuiBasicTable with pagination, selection and sorting 1`] = `
 <div
-  className="euiBasicTable testClass1 testClass2"
+  className="euiBasicTable"
 >
   <div>
     <EuiTableHeaderMobile>
@@ -622,6 +1572,17 @@ exports[`EuiBasicTable with pagination, selection and sorting 1`] = `
     <EuiTable
       responsive={true}
     >
+      <EuiScreenReaderOnly>
+        <caption
+          aria-live="polite"
+          aria-relevant="text"
+          role="status"
+        >
+          Below is a table of 
+          3
+           items.
+        </caption>
+      </EuiScreenReaderOnly>
       <EuiTableHeader>
         <EuiTableHeaderCellCheckbox
           key="_selection_column_h"
@@ -629,16 +1590,20 @@ exports[`EuiBasicTable with pagination, selection and sorting 1`] = `
           width="24px"
         >
           <EuiCheckbox
+            aria-label="Select all rows"
             checked={false}
+            compressed={false}
             data-test-subj="checkboxSelectAll"
             disabled={false}
             id="_selection_column-checkbox"
+            indeterminate={false}
             onChange={[Function]}
             type="inList"
           />
         </EuiTableHeaderCellCheckbox>
         <EuiTableHeaderCell
           align="left"
+          data-test-subj="tableHeaderCell_name_0"
           isSortAscending={true}
           isSorted={true}
           key="_data_h_name_0"
@@ -653,16 +1618,20 @@ exports[`EuiBasicTable with pagination, selection and sorting 1`] = `
           key="row_1"
         >
           <EuiTableRow
+            isSelectable={true}
             isSelected={false}
           >
             <EuiTableRowCellCheckbox
               key="_selection_column_1"
             >
               <EuiCheckbox
+                aria-label="Select this row"
                 checked={false}
+                compressed={false}
                 data-test-subj="checkboxSelectRow-1"
                 disabled={false}
                 id="_selection_column_1-checkbox"
+                indeterminate={false}
                 onChange={[Function]}
                 type="inList"
               />
@@ -681,16 +1650,20 @@ exports[`EuiBasicTable with pagination, selection and sorting 1`] = `
           key="row_2"
         >
           <EuiTableRow
+            isSelectable={true}
             isSelected={false}
           >
             <EuiTableRowCellCheckbox
               key="_selection_column_2"
             >
               <EuiCheckbox
+                aria-label="Select this row"
                 checked={false}
+                compressed={false}
                 data-test-subj="checkboxSelectRow-2"
                 disabled={false}
                 id="_selection_column_2-checkbox"
+                indeterminate={false}
                 onChange={[Function]}
                 type="inList"
               />
@@ -709,16 +1682,20 @@ exports[`EuiBasicTable with pagination, selection and sorting 1`] = `
           key="row_3"
         >
           <EuiTableRow
+            isSelectable={true}
             isSelected={false}
           >
             <EuiTableRowCellCheckbox
               key="_selection_column_3"
             >
               <EuiCheckbox
+                aria-label="Select this row"
                 checked={false}
+                compressed={false}
                 data-test-subj="checkboxSelectRow-3"
                 disabled={false}
                 id="_selection_column_3-checkbox"
+                indeterminate={false}
                 onChange={[Function]}
                 type="inList"
               />
@@ -752,7 +1729,7 @@ exports[`EuiBasicTable with pagination, selection and sorting 1`] = `
 
 exports[`EuiBasicTable with pagination, selection, sorting and a single record action 1`] = `
 <div
-  className="euiBasicTable testClass1 testClass2"
+  className="euiBasicTable"
 >
   <div>
     <EuiTableHeaderMobile>
@@ -773,6 +1750,17 @@ exports[`EuiBasicTable with pagination, selection, sorting and a single record a
     <EuiTable
       responsive={true}
     >
+      <EuiScreenReaderOnly>
+        <caption
+          aria-live="polite"
+          aria-relevant="text"
+          role="status"
+        >
+          Below is a table of 
+          3
+           items.
+        </caption>
+      </EuiScreenReaderOnly>
       <EuiTableHeader>
         <EuiTableHeaderCellCheckbox
           key="_selection_column_h"
@@ -780,16 +1768,20 @@ exports[`EuiBasicTable with pagination, selection, sorting and a single record a
           width="24px"
         >
           <EuiCheckbox
+            aria-label="Select all rows"
             checked={false}
+            compressed={false}
             data-test-subj="checkboxSelectAll"
             disabled={false}
             id="_selection_column-checkbox"
+            indeterminate={false}
             onChange={[Function]}
             type="inList"
           />
         </EuiTableHeaderCellCheckbox>
         <EuiTableHeaderCell
           align="left"
+          data-test-subj="tableHeaderCell_name_0"
           isSortAscending={true}
           isSorted={true}
           key="_data_h_name_0"
@@ -811,16 +1803,21 @@ exports[`EuiBasicTable with pagination, selection, sorting and a single record a
           key="row_1"
         >
           <EuiTableRow
+            hasActions={true}
+            isSelectable={true}
             isSelected={false}
           >
             <EuiTableRowCellCheckbox
               key="_selection_column_1"
             >
               <EuiCheckbox
+                aria-label="Select this row"
                 checked={false}
+                compressed={false}
                 data-test-subj="checkboxSelectRow-1"
                 disabled={false}
                 id="_selection_column_1-checkbox"
+                indeterminate={false}
                 onChange={[Function]}
                 type="inList"
               />
@@ -867,16 +1864,21 @@ exports[`EuiBasicTable with pagination, selection, sorting and a single record a
           key="row_2"
         >
           <EuiTableRow
+            hasActions={true}
+            isSelectable={true}
             isSelected={false}
           >
             <EuiTableRowCellCheckbox
               key="_selection_column_2"
             >
               <EuiCheckbox
+                aria-label="Select this row"
                 checked={false}
+                compressed={false}
                 data-test-subj="checkboxSelectRow-2"
                 disabled={false}
                 id="_selection_column_2-checkbox"
+                indeterminate={false}
                 onChange={[Function]}
                 type="inList"
               />
@@ -923,16 +1925,21 @@ exports[`EuiBasicTable with pagination, selection, sorting and a single record a
           key="row_3"
         >
           <EuiTableRow
+            hasActions={true}
+            isSelectable={true}
             isSelected={false}
           >
             <EuiTableRowCellCheckbox
               key="_selection_column_3"
             >
               <EuiCheckbox
+                aria-label="Select this row"
                 checked={false}
+                compressed={false}
                 data-test-subj="checkboxSelectRow-3"
                 disabled={false}
                 id="_selection_column_3-checkbox"
+                indeterminate={false}
                 onChange={[Function]}
                 type="inList"
               />
@@ -994,7 +2001,7 @@ exports[`EuiBasicTable with pagination, selection, sorting and a single record a
 
 exports[`EuiBasicTable with pagination, selection, sorting and column dataType 1`] = `
 <div
-  className="euiBasicTable testClass1 testClass2"
+  className="euiBasicTable"
 >
   <div>
     <EuiTableHeaderMobile>
@@ -1015,6 +2022,17 @@ exports[`EuiBasicTable with pagination, selection, sorting and column dataType 1
     <EuiTable
       responsive={true}
     >
+      <EuiScreenReaderOnly>
+        <caption
+          aria-live="polite"
+          aria-relevant="text"
+          role="status"
+        >
+          Below is a table of 
+          3
+           items.
+        </caption>
+      </EuiScreenReaderOnly>
       <EuiTableHeader>
         <EuiTableHeaderCellCheckbox
           key="_selection_column_h"
@@ -1022,16 +2040,20 @@ exports[`EuiBasicTable with pagination, selection, sorting and column dataType 1
           width="24px"
         >
           <EuiCheckbox
+            aria-label="Select all rows"
             checked={false}
+            compressed={false}
             data-test-subj="checkboxSelectAll"
             disabled={false}
             id="_selection_column-checkbox"
+            indeterminate={false}
             onChange={[Function]}
             type="inList"
           />
         </EuiTableHeaderCellCheckbox>
         <EuiTableHeaderCell
           align="right"
+          data-test-subj="tableHeaderCell_count_0"
           isSortAscending={true}
           isSorted={true}
           key="_data_h_count_0"
@@ -1046,16 +2068,20 @@ exports[`EuiBasicTable with pagination, selection, sorting and column dataType 1
           key="row_1"
         >
           <EuiTableRow
+            isSelectable={true}
             isSelected={false}
           >
             <EuiTableRowCellCheckbox
               key="_selection_column_1"
             >
               <EuiCheckbox
+                aria-label="Select this row"
                 checked={false}
+                compressed={false}
                 data-test-subj="checkboxSelectRow-1"
                 disabled={false}
                 id="_selection_column_1-checkbox"
+                indeterminate={false}
                 onChange={[Function]}
                 type="inList"
               />
@@ -1074,16 +2100,20 @@ exports[`EuiBasicTable with pagination, selection, sorting and column dataType 1
           key="row_2"
         >
           <EuiTableRow
+            isSelectable={true}
             isSelected={false}
           >
             <EuiTableRowCellCheckbox
               key="_selection_column_2"
             >
               <EuiCheckbox
+                aria-label="Select this row"
                 checked={false}
+                compressed={false}
                 data-test-subj="checkboxSelectRow-2"
                 disabled={false}
                 id="_selection_column_2-checkbox"
+                indeterminate={false}
                 onChange={[Function]}
                 type="inList"
               />
@@ -1102,16 +2132,20 @@ exports[`EuiBasicTable with pagination, selection, sorting and column dataType 1
           key="row_3"
         >
           <EuiTableRow
+            isSelectable={true}
             isSelected={false}
           >
             <EuiTableRowCellCheckbox
               key="_selection_column_3"
             >
               <EuiCheckbox
+                aria-label="Select this row"
                 checked={false}
+                compressed={false}
                 data-test-subj="checkboxSelectRow-3"
                 disabled={false}
                 id="_selection_column_3-checkbox"
+                indeterminate={false}
                 onChange={[Function]}
                 type="inList"
               />
@@ -1145,7 +2179,7 @@ exports[`EuiBasicTable with pagination, selection, sorting and column dataType 1
 
 exports[`EuiBasicTable with pagination, selection, sorting and column renderer 1`] = `
 <div
-  className="euiBasicTable testClass1 testClass2"
+  className="euiBasicTable"
 >
   <div>
     <EuiTableHeaderMobile>
@@ -1166,6 +2200,17 @@ exports[`EuiBasicTable with pagination, selection, sorting and column renderer 1
     <EuiTable
       responsive={true}
     >
+      <EuiScreenReaderOnly>
+        <caption
+          aria-live="polite"
+          aria-relevant="text"
+          role="status"
+        >
+          Below is a table of 
+          3
+           items.
+        </caption>
+      </EuiScreenReaderOnly>
       <EuiTableHeader>
         <EuiTableHeaderCellCheckbox
           key="_selection_column_h"
@@ -1173,16 +2218,20 @@ exports[`EuiBasicTable with pagination, selection, sorting and column renderer 1
           width="24px"
         >
           <EuiCheckbox
+            aria-label="Select all rows"
             checked={false}
+            compressed={false}
             data-test-subj="checkboxSelectAll"
             disabled={false}
             id="_selection_column-checkbox"
+            indeterminate={false}
             onChange={[Function]}
             type="inList"
           />
         </EuiTableHeaderCellCheckbox>
         <EuiTableHeaderCell
           align="left"
+          data-test-subj="tableHeaderCell_name_0"
           isSortAscending={true}
           isSorted={true}
           key="_data_h_name_0"
@@ -1197,16 +2246,20 @@ exports[`EuiBasicTable with pagination, selection, sorting and column renderer 1
           key="row_1"
         >
           <EuiTableRow
+            isSelectable={true}
             isSelected={false}
           >
             <EuiTableRowCellCheckbox
               key="_selection_column_1"
             >
               <EuiCheckbox
+                aria-label="Select this row"
                 checked={false}
+                compressed={false}
                 data-test-subj="checkboxSelectRow-1"
                 disabled={false}
                 id="_selection_column_1-checkbox"
+                indeterminate={false}
                 onChange={[Function]}
                 type="inList"
               />
@@ -1225,16 +2278,20 @@ exports[`EuiBasicTable with pagination, selection, sorting and column renderer 1
           key="row_2"
         >
           <EuiTableRow
+            isSelectable={true}
             isSelected={false}
           >
             <EuiTableRowCellCheckbox
               key="_selection_column_2"
             >
               <EuiCheckbox
+                aria-label="Select this row"
                 checked={false}
+                compressed={false}
                 data-test-subj="checkboxSelectRow-2"
                 disabled={false}
                 id="_selection_column_2-checkbox"
+                indeterminate={false}
                 onChange={[Function]}
                 type="inList"
               />
@@ -1253,16 +2310,20 @@ exports[`EuiBasicTable with pagination, selection, sorting and column renderer 1
           key="row_3"
         >
           <EuiTableRow
+            isSelectable={true}
             isSelected={false}
           >
             <EuiTableRowCellCheckbox
               key="_selection_column_3"
             >
               <EuiCheckbox
+                aria-label="Select this row"
                 checked={false}
+                compressed={false}
                 data-test-subj="checkboxSelectRow-3"
                 disabled={false}
                 id="_selection_column_3-checkbox"
+                indeterminate={false}
                 onChange={[Function]}
                 type="inList"
               />
@@ -1296,7 +2357,7 @@ exports[`EuiBasicTable with pagination, selection, sorting and column renderer 1
 
 exports[`EuiBasicTable with pagination, selection, sorting and multiple record actions 1`] = `
 <div
-  className="euiBasicTable testClass1 testClass2"
+  className="euiBasicTable"
 >
   <div>
     <EuiTableHeaderMobile>
@@ -1317,6 +2378,17 @@ exports[`EuiBasicTable with pagination, selection, sorting and multiple record a
     <EuiTable
       responsive={true}
     >
+      <EuiScreenReaderOnly>
+        <caption
+          aria-live="polite"
+          aria-relevant="text"
+          role="status"
+        >
+          Below is a table of 
+          3
+           items.
+        </caption>
+      </EuiScreenReaderOnly>
       <EuiTableHeader>
         <EuiTableHeaderCellCheckbox
           key="_selection_column_h"
@@ -1324,16 +2396,20 @@ exports[`EuiBasicTable with pagination, selection, sorting and multiple record a
           width="24px"
         >
           <EuiCheckbox
+            aria-label="Select all rows"
             checked={false}
+            compressed={false}
             data-test-subj="checkboxSelectAll"
             disabled={false}
             id="_selection_column-checkbox"
+            indeterminate={false}
             onChange={[Function]}
             type="inList"
           />
         </EuiTableHeaderCellCheckbox>
         <EuiTableHeaderCell
           align="left"
+          data-test-subj="tableHeaderCell_name_0"
           isSortAscending={true}
           isSorted={true}
           key="_data_h_name_0"
@@ -1355,16 +2431,21 @@ exports[`EuiBasicTable with pagination, selection, sorting and multiple record a
           key="row_1"
         >
           <EuiTableRow
+            hasActions={true}
+            isSelectable={true}
             isSelected={false}
           >
             <EuiTableRowCellCheckbox
               key="_selection_column_1"
             >
               <EuiCheckbox
+                aria-label="Select this row"
                 checked={false}
+                compressed={false}
                 data-test-subj="checkboxSelectRow-1"
                 disabled={false}
                 id="_selection_column_1-checkbox"
+                indeterminate={false}
                 onChange={[Function]}
                 type="inList"
               />
@@ -1389,8 +2470,16 @@ exports[`EuiBasicTable with pagination, selection, sorting and multiple record a
                 actions={
                   Array [
                     Object {
-                      "name": "Actions",
-                      "render": [Function],
+                      "description": "edit",
+                      "name": "Edit",
+                      "onClick": [Function],
+                      "type": "button",
+                    },
+                    Object {
+                      "description": "delete",
+                      "name": "Delete",
+                      "onClick": [Function],
+                      "type": "button",
                     },
                   ]
                 }
@@ -1409,16 +2498,21 @@ exports[`EuiBasicTable with pagination, selection, sorting and multiple record a
           key="row_2"
         >
           <EuiTableRow
+            hasActions={true}
+            isSelectable={true}
             isSelected={false}
           >
             <EuiTableRowCellCheckbox
               key="_selection_column_2"
             >
               <EuiCheckbox
+                aria-label="Select this row"
                 checked={false}
+                compressed={false}
                 data-test-subj="checkboxSelectRow-2"
                 disabled={false}
                 id="_selection_column_2-checkbox"
+                indeterminate={false}
                 onChange={[Function]}
                 type="inList"
               />
@@ -1443,8 +2537,16 @@ exports[`EuiBasicTable with pagination, selection, sorting and multiple record a
                 actions={
                   Array [
                     Object {
-                      "name": "Actions",
-                      "render": [Function],
+                      "description": "edit",
+                      "name": "Edit",
+                      "onClick": [Function],
+                      "type": "button",
+                    },
+                    Object {
+                      "description": "delete",
+                      "name": "Delete",
+                      "onClick": [Function],
+                      "type": "button",
                     },
                   ]
                 }
@@ -1463,16 +2565,21 @@ exports[`EuiBasicTable with pagination, selection, sorting and multiple record a
           key="row_3"
         >
           <EuiTableRow
+            hasActions={true}
+            isSelectable={true}
             isSelected={false}
           >
             <EuiTableRowCellCheckbox
               key="_selection_column_3"
             >
               <EuiCheckbox
+                aria-label="Select this row"
                 checked={false}
+                compressed={false}
                 data-test-subj="checkboxSelectRow-3"
                 disabled={false}
                 id="_selection_column_3-checkbox"
+                indeterminate={false}
                 onChange={[Function]}
                 type="inList"
               />
@@ -1497,8 +2604,16 @@ exports[`EuiBasicTable with pagination, selection, sorting and multiple record a
                 actions={
                   Array [
                     Object {
-                      "name": "Actions",
-                      "render": [Function],
+                      "description": "edit",
+                      "name": "Edit",
+                      "onClick": [Function],
+                      "type": "button",
+                    },
+                    Object {
+                      "description": "delete",
+                      "name": "Delete",
+                      "onClick": [Function],
+                      "type": "button",
                     },
                   ]
                 }
@@ -1532,7 +2647,7 @@ exports[`EuiBasicTable with pagination, selection, sorting and multiple record a
 
 exports[`EuiBasicTable with pagination, selection, sorting, column renderer and column dataType 1`] = `
 <div
-  className="euiBasicTable testClass1 testClass2"
+  className="euiBasicTable"
 >
   <div>
     <EuiTableHeaderMobile>
@@ -1553,6 +2668,17 @@ exports[`EuiBasicTable with pagination, selection, sorting, column renderer and 
     <EuiTable
       responsive={true}
     >
+      <EuiScreenReaderOnly>
+        <caption
+          aria-live="polite"
+          aria-relevant="text"
+          role="status"
+        >
+          Below is a table of 
+          3
+           items.
+        </caption>
+      </EuiScreenReaderOnly>
       <EuiTableHeader>
         <EuiTableHeaderCellCheckbox
           key="_selection_column_h"
@@ -1560,16 +2686,20 @@ exports[`EuiBasicTable with pagination, selection, sorting, column renderer and 
           width="24px"
         >
           <EuiCheckbox
+            aria-label="Select all rows"
             checked={false}
+            compressed={false}
             data-test-subj="checkboxSelectAll"
             disabled={false}
             id="_selection_column-checkbox"
+            indeterminate={false}
             onChange={[Function]}
             type="inList"
           />
         </EuiTableHeaderCellCheckbox>
         <EuiTableHeaderCell
           align="right"
+          data-test-subj="tableHeaderCell_count_0"
           isSortAscending={true}
           isSorted={true}
           key="_data_h_count_0"
@@ -1584,16 +2714,20 @@ exports[`EuiBasicTable with pagination, selection, sorting, column renderer and 
           key="row_1"
         >
           <EuiTableRow
+            isSelectable={true}
             isSelected={false}
           >
             <EuiTableRowCellCheckbox
               key="_selection_column_1"
             >
               <EuiCheckbox
+                aria-label="Select this row"
                 checked={false}
+                compressed={false}
                 data-test-subj="checkboxSelectRow-1"
                 disabled={false}
                 id="_selection_column_1-checkbox"
+                indeterminate={false}
                 onChange={[Function]}
                 type="inList"
               />
@@ -1612,16 +2746,20 @@ exports[`EuiBasicTable with pagination, selection, sorting, column renderer and 
           key="row_2"
         >
           <EuiTableRow
+            isSelectable={true}
             isSelected={false}
           >
             <EuiTableRowCellCheckbox
               key="_selection_column_2"
             >
               <EuiCheckbox
+                aria-label="Select this row"
                 checked={false}
+                compressed={false}
                 data-test-subj="checkboxSelectRow-2"
                 disabled={false}
                 id="_selection_column_2-checkbox"
+                indeterminate={false}
                 onChange={[Function]}
                 type="inList"
               />
@@ -1640,16 +2778,20 @@ exports[`EuiBasicTable with pagination, selection, sorting, column renderer and 
           key="row_3"
         >
           <EuiTableRow
+            isSelectable={true}
             isSelected={false}
           >
             <EuiTableRowCellCheckbox
               key="_selection_column_3"
             >
               <EuiCheckbox
+                aria-label="Select this row"
                 checked={false}
+                compressed={false}
                 data-test-subj="checkboxSelectRow-3"
                 disabled={false}
                 id="_selection_column_3-checkbox"
+                indeterminate={false}
                 onChange={[Function]}
                 type="inList"
               />
@@ -1683,16 +2825,28 @@ exports[`EuiBasicTable with pagination, selection, sorting, column renderer and 
 
 exports[`EuiBasicTable with sortable columns and sorting disabled 1`] = `
 <div
-  className="euiBasicTable testClass1 testClass2"
+  className="euiBasicTable"
 >
   <div>
     <EuiTableHeaderMobile />
     <EuiTable
       responsive={true}
     >
+      <EuiScreenReaderOnly>
+        <caption
+          aria-live="polite"
+          aria-relevant="text"
+          role="status"
+        >
+          Below is a table of 
+          3
+           items.
+        </caption>
+      </EuiScreenReaderOnly>
       <EuiTableHeader>
         <EuiTableHeaderCell
           align="left"
+          data-test-subj="tableHeaderCell_name_0"
           key="_data_h_name_0"
           scope="col"
         >
@@ -1756,7 +2910,7 @@ exports[`EuiBasicTable with sortable columns and sorting disabled 1`] = `
 
 exports[`EuiBasicTable with sorting 1`] = `
 <div
-  className="euiBasicTable testClass1 testClass2"
+  className="euiBasicTable"
 >
   <div>
     <EuiTableHeaderMobile>
@@ -1777,9 +2931,21 @@ exports[`EuiBasicTable with sorting 1`] = `
     <EuiTable
       responsive={true}
     >
+      <EuiScreenReaderOnly>
+        <caption
+          aria-live="polite"
+          aria-relevant="text"
+          role="status"
+        >
+          Below is a table of 
+          3
+           items.
+        </caption>
+      </EuiScreenReaderOnly>
       <EuiTableHeader>
         <EuiTableHeaderCell
           align="left"
+          data-test-subj="tableHeaderCell_name_0"
           isSortAscending={true}
           isSorted={true}
           key="_data_h_name_0"

@@ -1,5 +1,9 @@
 import React from 'react';
 
+import {
+  Link,
+} from 'react-router';
+
 import { renderToHtml } from '../../services';
 
 import {
@@ -9,6 +13,8 @@ import {
 import {
   EuiBadge,
   EuiCode,
+  EuiBetaBadge,
+  EuiNotificationBadge,
 } from '../../../../src/components';
 
 import Badge from './badge';
@@ -22,6 +28,14 @@ const badgeWithIconHtml = renderToHtml(BadgeWithIcon);
 import BadgeButton from './badge_button';
 const badgeButtonSource = require('!!raw-loader!./badge_button');
 const badgeButtonHtml = renderToHtml(BadgeButton);
+
+import BetaBadge from './beta_badge';
+const betaBadgeSource = require('!!raw-loader!./beta_badge');
+const betaBadgeHtml = renderToHtml(BetaBadge);
+
+import NotificationBadge from './notification_badge';
+const notificationBadgeSource = require('!!raw-loader!./notification_badge');
+const notificationBadgeHtml = renderToHtml(NotificationBadge);
 
 export const BadgeExample = {
   title: 'Badge',
@@ -76,5 +90,54 @@ export const BadgeExample = {
       </p>
     ),
     demo: <BadgeButton />,
+  }, {
+    title: 'Beta badge type',
+    source: [{
+      type: GuideSectionTypes.JS,
+      code: betaBadgeSource,
+    }, {
+      type: GuideSectionTypes.HTML,
+      code: betaBadgeHtml,
+    }],
+    text: (
+      <div>
+        <p>
+          The <EuiCode>EuiBetaBadge</EuiCode> was created specifically to call out
+          modules that are not in GA. Generally the labels used are &quot;Beta&quot; or &quot;Lab&quot;.
+          They require an extra <EuiCode>tooltipContent</EuiCode> to describe the purpose of the badge.
+          You can pass an optional <EuiCode>title</EuiCode> prop to populate the tooltip title or html title
+          attribute but by default it will use the <EuiCode>label</EuiCode>.
+        </p>
+        <p>
+          If you pass in an <EuiCode>iconType</EuiCode>, only the icon will be used in the badge itself and
+          the label will be applied as the title. Only use an icon when attaching the beta badge to small
+          components like the EuiKeyPadMenuItem.
+        </p>
+        <p>
+          They can also be used in conjunction with <Link to="/display/card">EuiCards</Link>
+          &nbsp;and <Link to="/navigation/key-pad-menu">EuiKeyPadMenuItems</Link>.
+        </p>
+      </div>
+    ),
+    props: { EuiBetaBadge },
+    demo: <BetaBadge />,
+  }, {
+    title: 'Notification badge type',
+    source: [{
+      type: GuideSectionTypes.JS,
+      code: notificationBadgeSource,
+    }, {
+      type: GuideSectionTypes.HTML,
+      code: notificationBadgeHtml,
+    }],
+    text: (
+      <p>
+        Used to showcase the number of notifications, alerts or hidden selections.
+        Typically used in <Link to="/layout/header">EuiHeader</Link> or
+        (eventually) <Link to="/forms/filter-group">EuiFilterButtons</Link>.
+      </p>
+    ),
+    props: { EuiNotificationBadge },
+    demo: <NotificationBadge />,
   }],
 };

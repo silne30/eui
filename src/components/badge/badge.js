@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import { EuiPropTypes } from '../../utils';
 
 import { isColorDark, hexToRgb } from '../../services/color';
 import { EuiKeyboardAccessible } from '../accessibility';
@@ -37,6 +38,8 @@ export const EuiBadge = ({
   className,
   onClick,
   iconOnClick,
+  onClickAriaLabel,
+  iconOnClickAriaLabel,
   closeButtonProps,
   ...rest
 }) => {
@@ -71,7 +74,14 @@ export const EuiBadge = ({
     if (iconOnClick) {
       optionalIcon = (
         <EuiKeyboardAccessible>
-          <EuiIcon onClick={iconOnClick} type={iconType} size="s" className="euiBadge__icon" {...closeButtonProps} />
+          <EuiIcon
+            onClick={iconOnClick}
+            type={iconType}
+            size="s"
+            className="euiBadge__icon"
+            aria-label={iconOnClickAriaLabel}
+            {...closeButtonProps}
+          />
         </EuiKeyboardAccessible>
       );
 
@@ -88,6 +98,7 @@ export const EuiBadge = ({
         className={classes}
         style={optionalCustomStyles}
         onClick={onClick}
+        aria-label={onClickAriaLabel}
         {...rest}
       >
         <span className="euiBadge__content">
@@ -116,6 +127,8 @@ export const EuiBadge = ({
   }
 };
 
+
+
 function checkValidColor(props, propName, componentName) {
   const validHex = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(props.color);
   if (props.color && !validHex && !COLORS.includes(props.color)) {
@@ -142,12 +155,30 @@ EuiBadge.propTypes = {
   /**
    * Will apply an onclick to icon within the badge
    */
-  iconOnClick: PropTypes.func,
+  iconOnClick: EuiPropTypes.withRequiredProp(
+    PropTypes.func,
+    'iconOnClickAriaLabel',
+    'Please provide an aria label to complement your iconOnClick'
+  ),
+
+  /**
+   * Aria label applied to the iconOnClick button
+   */
+  iconOnClickAriaLabel: PropTypes.string,
 
   /**
    * Will apply an onclick to the badge itself
    */
-  onClick: PropTypes.func,
+  onClick: EuiPropTypes.withRequiredProp(
+    PropTypes.func,
+    'onClickAriaLabel',
+    'Please provide an aria label to complement your onClick'
+  ),
+
+  /**
+   * Aria label applied to the onClick button
+   */
+  onClickAriaLabel: PropTypes.string,
 
   /**
    * Accepts either our palette colors (primary, secondary ..etc) or a hex value `#FFFFFF`, `#000`.

@@ -19,6 +19,7 @@ const colorToClassNameMap = {
   warning: 'euiButton--warning',
   danger: 'euiButton--danger',
   ghost: 'euiButton--ghost',
+  text: 'euiButton--text',
 };
 
 export const COLORS = Object.keys(colorToClassNameMap);
@@ -52,6 +53,8 @@ export const EuiButton = ({
   rel,
   type,
   buttonRef,
+  contentProps,
+  textProps,
   ...rest
 }) => {
 
@@ -90,7 +93,9 @@ export const EuiButton = ({
     );
   }
 
-  if (href) {
+  // <a> elements don't respect the `disabled` attribute. So if we're disabled, we'll just pretend
+  // this is a button and piggyback off its disabled styles.
+  if (href && !isDisabled) {
     const secureRel = getSecureRelForTarget(target, rel);
 
     return (
@@ -102,9 +107,9 @@ export const EuiButton = ({
         ref={buttonRef}
         {...rest}
       >
-        <span className="euiButton__content">
+        <span className="euiButton__content" {...contentProps}>
           {buttonIcon}
-          <span className="euiButton__text">{children}</span>
+          <span className="euiButton__text" {...textProps}>{children}</span>
         </span>
       </a>
     );
@@ -117,9 +122,9 @@ export const EuiButton = ({
         ref={buttonRef}
         {...rest}
       >
-        <span className="euiButton__content">
+        <span className="euiButton__content" {...contentProps}>
           {buttonIcon}
-          <span className="euiButton__text">{children}</span>
+          <span className="euiButton__text" {...textProps}>{children}</span>
         </span>
       </button>
     );
@@ -162,6 +167,16 @@ EuiButton.propTypes = {
    */
   type: PropTypes.string,
   buttonRef: PropTypes.func,
+
+  /**
+   * Passes props to `euiButton__content` span
+   */
+  contentProps: PropTypes.object,
+
+  /**
+   * Passes props to `euiButton__text` span
+   */
+  textProps: PropTypes.object,
 };
 
 EuiButton.defaultProps = {

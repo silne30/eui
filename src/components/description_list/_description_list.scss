@@ -1,9 +1,11 @@
 .euiDescriptionList {
+  // sass-lint:disable-block nesting-depth
 
   &.euiDescriptionList--row {
 
     .euiDescriptionList__title {
-      @include euiTitle("xs");
+      @include euiTitle('xs');
+      line-height: $euiLineHeight;
       margin-top: $euiSize;
 
       // Make sure the first <dt> doesn't get a margine.
@@ -25,15 +27,40 @@
       text-align: right;
     }
 
+    // Reversed makes the description larger than the title
+    &.euiDescriptionList--reverse {
+      .euiDescriptionList__title {
+        @include euiText;
+        @include euiFontSizeS;
+      }
+
+      .euiDescriptionList__description {
+        @include euiTitle('xs');
+      }
+    }
+
     // Compressed gets smaller fonts.
     &.euiDescriptionList--compressed {
 
       .euiDescriptionList__title {
-        @include euiTitle("xxs");
+        @include euiTitle('xxs');
+        line-height: $euiLineHeight;
       }
 
       .euiDescriptionList__description {
         @include euiFontSizeS;
+      }
+
+      &.euiDescriptionList--reverse {
+        .euiDescriptionList__title {
+          @include euiText;
+          @include euiFontSizeS;
+        }
+
+        .euiDescriptionList__description {
+          @include euiTitle('xxs');
+          line-height: $euiLineHeight;
+        }
       }
     }
   }
@@ -49,19 +76,21 @@
     }
 
     // First two items don't have margin
-    > *:first-child, >:nth-child(2) {
+    > *:first-child,
+    > :nth-child(2) {
       margin-top: 0;
     }
 
     .euiDescriptionList__title {
-      @include euiTitle("xs");
-      flex-basis: 50%;
+      @include euiTitle('xs');
+      line-height: $euiLineHeight;
+      width: 50%; // Flex-basis doesn't work in IE with padding
       padding-right: $euiSizeS;
     }
 
     .euiDescriptionList__description {
       @include euiFontSize;
-      flex-basis: 50%;
+      width: 50%; // Flex-basis doesn't work in IE with padding
       padding-left: $euiSizeS;
     }
 
@@ -73,14 +102,39 @@
       }
     }
 
+    &.euiDescriptionList--reverse {
+      .euiDescriptionList__title {
+        @include euiText;
+        @include euiFontSize;
+      }
+
+      .euiDescriptionList__description {
+        @include euiTitle('xs');
+        line-height: $euiLineHeight;
+      }
+    }
+
     &.euiDescriptionList--compressed {
 
       .euiDescriptionList__title {
-        @include euiTitle("xxs");
+        @include euiTitle('xxs');
+        line-height: $euiLineHeight;
       }
 
       .euiDescriptionList__description {
         @include euiFontSizeS;
+      }
+
+      &.euiDescriptionList--reverse {
+        .euiDescriptionList__title {
+          @include euiText;
+          @include euiFontSizeS;
+        }
+
+        .euiDescriptionList__description {
+          @include euiTitle('xxs');
+          line-height: $euiLineHeight;
+        }
       }
     }
   }

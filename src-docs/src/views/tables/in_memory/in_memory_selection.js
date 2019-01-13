@@ -1,6 +1,5 @@
 import React, {
   Component,
-  Fragment
 } from 'react';
 import { formatDate } from '../../../../../src/services/format';
 import { createDataStore } from '../data_store';
@@ -8,8 +7,8 @@ import {
   EuiLink,
   EuiHealth,
   EuiButton,
-  EuiSpacer,
-  EuiInMemoryTable
+  EuiInMemoryTable,
+  EuiEmptyPrompt,
 } from '../../../../../src/components';
 import { Random } from '../../../../../src/services/random';
 
@@ -48,23 +47,26 @@ export class Table extends Component {
       loading: false,
       users: [],
       message: (
-        <Fragment>
-          <span>Looks like you don&rsquo;t have any users. Let&rsquo;s create some!</span>
-          <EuiSpacer size="s" />
-          <EuiButton
-            size="s"
-            key="loadUsers"
-            onClick={this.loadUsers.bind(this)}
-          >
-            Load Users
-          </EuiButton>
-        </Fragment>
+        <EuiEmptyPrompt
+          title={<h3>No users</h3>}
+          titleSize="xs"
+          body="Looks like you don&rsquo;t have any users. Let&rsquo;s create some!"
+          actions={(
+            <EuiButton
+              size="s"
+              key="loadUsers"
+              onClick={this.loadUsers}
+            >
+              Load Users
+            </EuiButton>
+          )}
+        />
       ),
       selection: []
     };
   }
 
-  loadUsers() {
+  loadUsers = () => {
     this.setState({
       message: 'Loading users...',
       loading: true,
@@ -79,7 +81,7 @@ export class Table extends Component {
         users: store.users
       });
     }, random.number({ min: 0, max: 3000 }));
-  }
+  };
 
   loadUsersWithError() {
     this.setState({
@@ -130,14 +132,15 @@ export class Table extends Component {
       >
         Load Users
       </EuiButton>
-    ), (
-      <EuiButton
-        key="loadUsersError"
-        onClick={this.loadUsersWithError.bind(this)}
-        isDisabled={this.state.loading}
-      >
-        Load Users (Error)
-      </EuiButton>
+    ),
+      (
+        <EuiButton
+          key="loadUsersError"
+          onClick={this.loadUsersWithError.bind(this)}
+          isDisabled={this.state.loading}
+        >
+      Load Users (Error)
+        </EuiButton>
       )];
   }
 
@@ -215,7 +218,6 @@ export class Table extends Component {
     };
 
     const selection = {
-      itemId: 'id',
       selectable: (user) => user.online,
       selectableMessage: (selectable) => !selectable ? 'User is currently offline' : undefined,
       onSelectionChange: (selection) => this.setState({ selection })
@@ -225,6 +227,7 @@ export class Table extends Component {
       <div>
         <EuiInMemoryTable
           items={this.state.users}
+          itemId="id"
           error={this.state.error}
           loading={this.state.loading}
           message={this.state.message}

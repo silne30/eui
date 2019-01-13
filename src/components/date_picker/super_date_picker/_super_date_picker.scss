@@ -1,0 +1,50 @@
+// sass-lint:disable no-important
+.euiSuperDatePicker {
+  // Allow it to always grow to fit the container since the default form max width is too small
+  max-width: 100% !important;
+
+  > .euiFormControlLayout__childrenWrapper {
+    flex: 1 1 100%;
+    overflow: hidden;
+
+    > .euiDatePickerRange {
+      max-width: none;
+      width: auto;
+    }
+  }
+}
+
+.euiSuperDatePicker__prettyFormat {
+  @include euiSuperDatePickerText;
+  display: flex;
+  justify-content: space-between;
+  text-align: left;
+
+  &:hover,
+  &:focus {
+    text-decoration: none;
+
+    .euiSuperDatePicker__prettyFormatLink {
+      text-decoration: underline;
+    }
+  }
+}
+
+.euiSuperDatePicker__prettyFormatLink {
+  color: $euiLinkColor;
+}
+
+.euiSuperDatePicker__updateButton {
+  // Just wide enough for all 3 states
+  min-width: $euiButtonMinWidth + ($euiSizeXS * 1.5);
+}
+
+@include euiBreakpoint('xs', 's') {
+  .euiSuperDatePicker__updateButton {
+    min-width: 0;
+
+    .euiSuperDatePicker__updateButtonText {
+      display: none;
+    }
+  }
+}

@@ -10,6 +10,8 @@ import {
   EuiCode,
   EuiLink,
   EuiDatePicker,
+  EuiDatePickerRange,
+  EuiSuperDatePicker,
 } from '../../../../src/components';
 
 import DatePicker from './date_picker';
@@ -55,6 +57,10 @@ const customInputHtml = renderToHtml(CustomInput);
 import Utc from './utc';
 const utcSource = require('!!raw-loader!./utc');
 const utcHtml = renderToHtml(Utc);
+
+import SuperDatePicker from './super_date_picker';
+const superDatePickerSource = require('!!raw-loader!./super_date_picker');
+const superDatePickerHtml = renderToHtml(SuperDatePicker);
 
 export const DatePickerExample = {
   title: 'DatePicker',
@@ -144,10 +150,14 @@ export const DatePickerExample = {
     text: (
       <p>
         By passing <EuiCode>startDate</EuiCode> and <EuiCode>endDate</EuiCode> props
-        you can provide styling the range in between two dates.
+        you can provide styling the range in between two dates. To further style the
+        group as a single control, use <EuiCode>EuiDatePickerRange</EuiCode> and pass
+        the date picker controls into
+        the <EuiCode>startDateControl</EuiCode> and <EuiCode>endDateControl</EuiCode> props.
       </p>
     ),
     demo: <Range />,
+    props: { EuiDatePickerRange },
   }, {
     title: 'Only allow specific dates and times',
     source: [{
@@ -171,7 +181,7 @@ export const DatePickerExample = {
     ),
     demo: <MinMax />,
   }, {
-    title: 'Open to a sepecifc date',
+    title: 'Open to a specific date',
     source: [{
       type: GuideSectionTypes.JS,
       code: openToDateSource,
@@ -233,27 +243,68 @@ export const DatePickerExample = {
       </p>
     ),
     demo: <Inline />,
+  }, {
+    title: 'Custom classes',
+    source: [{
+      type: GuideSectionTypes.JS,
+      code: classesSource,
     }, {
-      title: 'Custom classes',
-      source: [{
-        type: GuideSectionTypes.JS,
-        code: classesSource,
-      }, {
-        type: GuideSectionTypes.HTML,
-        code: classesHtml,
-      }],
-      text: (
-        <div>
-          <p>
+      type: GuideSectionTypes.HTML,
+      code: classesHtml,
+    }],
+    text: (
+      <div>
+        <p>
             Custom classes can be passed to various bits of the calendar and input.
-          </p>
-          <ul>
-            <li><EuiCode>className</EuiCode> will pass onto the input.</li>
-            <li><EuiCode>calendarClassName</EuiCode> will pass onto the calendar itself.</li>
-            <li><EuiCode>dayClassName</EuiCode> will pass onto specificed days.</li>
-          </ul>
-        </div>
-      ),
-      demo: <Classes />,
+        </p>
+        <ul>
+          <li><EuiCode>className</EuiCode> will pass onto the input.</li>
+          <li><EuiCode>calendarClassName</EuiCode> will pass onto the calendar itself.</li>
+          <li><EuiCode>dayClassName</EuiCode> will pass onto specificed days.</li>
+        </ul>
+      </div>
+    ),
+    demo: <Classes />,
+  }, {
+    title: 'Super date picker',
+    source: [{
+      type: GuideSectionTypes.JS,
+      code: superDatePickerSource,
+    }, {
+      type: GuideSectionTypes.HTML,
+      code: superDatePickerHtml,
+    }],
+    text: (
+      <div>
+        <p>
+          <EuiCode>start</EuiCode> and <EuiCode>end</EuiCode> date times are passed as strings
+          in either datemath format (e.g.: now, now-15m, now-15m/m)
+          or as absolute date in the format <EuiCode>YYYY-MM-DDTHH:mm:ss.sssZ</EuiCode>
+        </p>
+        <p>
+          <EuiCode>onTimeChange</EuiCode> will be immediately invoked when{' '}
+          <EuiCode>start</EuiCode> and <EuiCode>end</EuiCode> change from interactions with{' '}
+          <strong> Quick select</strong>, <strong>Commonly used</strong>, or <strong>Recently used date ranges</strong>{' '}
+          since these interactions set both <EuiCode>start</EuiCode> and <EuiCode>end</EuiCode> in a single event.
+        </p>
+        <p>
+          <EuiCode>onTimeChange</EuiCode> will <strong>not</strong> be invoked when
+          <EuiCode>start</EuiCode> and <EuiCode>end</EuiCode> change from interactions with{' '}
+          <strong>Absolute</strong>, <strong>Relative</strong>, and <strong>Now</strong> tabs.{' '}
+          <EuiCode>onTimeChange</EuiCode> will be invoked when the user clicks the <strong>Update</strong> button.
+          This gives users the ability to set both <EuiCode>start</EuiCode> and <EuiCode>end</EuiCode>{' '}
+          before triggering <EuiCode>onTimeChange</EuiCode>.
+          Set <EuiCode>showUpdateButton</EuiCode> to <EuiCode>false</EuiCode>{' '}
+          to immediately invoke <EuiCode>onTimeChange</EuiCode>{' '}
+          for all <EuiCode>start</EuiCode> and <EuiCode>end</EuiCode> changes.
+        </p>
+        <p>
+          Set <EuiCode>isAutoRefreshOnly</EuiCode> to <EuiCode>true </EuiCode> to limit the component to only display auto refresh content.
+          This is useful in cases where there is no time data but auto-refresh configuration is still desired.
+        </p>
+      </div>
+    ),
+    demo: <SuperDatePicker />,
+    props: { EuiSuperDatePicker },
   }],
 };

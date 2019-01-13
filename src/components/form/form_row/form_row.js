@@ -30,7 +30,6 @@ export class EuiFormRow extends Component {
     const onChildFocus = get(this.props, 'children.props.onFocus');
     if (onChildFocus) {
       onChildFocus(...args);
-
     }
 
     this.setState({
@@ -60,6 +59,8 @@ export class EuiFormRow extends Component {
       hasEmptyLabelSpace,
       fullWidth,
       className,
+      describedByIds,
+      compressed,
       ...rest
     } = this.props;
 
@@ -70,6 +71,7 @@ export class EuiFormRow extends Component {
       {
         'euiFormRow--hasEmptyLabelSpace': hasEmptyLabelSpace,
         'euiFormRow--fullWidth': fullWidth,
+        'euiFormRow--compressed': compressed,
       },
       className
     );
@@ -102,6 +104,7 @@ export class EuiFormRow extends Component {
         <EuiFormLabel
           isFocused={this.state.isFocused}
           isInvalid={isInvalid}
+          aria-invalid={isInvalid}
           htmlFor={id}
         >
           {label}
@@ -109,15 +112,17 @@ export class EuiFormRow extends Component {
       );
     }
 
-    const describingIds = [];
+    const optionalProps = {};
+    const describingIds = [...describedByIds];
+
     if (optionalHelpText) {
       describingIds.push(optionalHelpText.props.id);
     }
+
     if (optionalErrors) {
       optionalErrors.forEach(error => describingIds.push(error.props.id));
     }
 
-    const optionalProps = {};
     if (describingIds.length > 0) {
       optionalProps[`aria-describedby`] = describingIds.join(` `);
     }
@@ -126,6 +131,7 @@ export class EuiFormRow extends Component {
       id,
       onFocus: this.onFocus,
       onBlur: this.onBlur,
+      compressed: compressed,
       ...optionalProps
     });
 
@@ -154,9 +160,19 @@ EuiFormRow.propTypes = {
   helpText: PropTypes.node,
   hasEmptyLabelSpace: PropTypes.bool,
   fullWidth: PropTypes.bool,
+  /**
+   * IDs of additional elements that should be part of children's `aria-describedby`
+   */
+  describedByIds: PropTypes.array,
+  /**
+   * Tightens up the spacing and sends down the
+   * compressed prop to the input
+   */
+  compressed: PropTypes.bool,
 };
 
 EuiFormRow.defaultProps = {
   hasEmptyLabelSpace: false,
   fullWidth: false,
+  describedByIds: [],
 };

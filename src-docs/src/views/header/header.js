@@ -1,11 +1,7 @@
-import React, {
-  Component,
-} from 'react';
+import React, { Component } from 'react';
 
 import {
   EuiHeader,
-  EuiHeaderBreadcrumb,
-  EuiHeaderBreadcrumbCollapsed,
   EuiHeaderBreadcrumbs,
   EuiHeaderSection,
   EuiHeaderSectionItem,
@@ -16,65 +12,65 @@ import {
 
 import HeaderAppMenu from './header_app_menu';
 import HeaderUserMenu from './header_user_menu';
+import HeaderSpacesMenu from './header_spaces_menu';
 
 export default class extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      isAppMenuOpen: false,
-    };
-  }
-
-  onAppMenuButtonClick() {
-    this.setState({
-      isAppMenuOpen: !this.state.isAppMenuOpen,
-    });
-  }
-
-  closeAppMenu() {
-    this.setState({
-      isAppMenuOpen: false,
-    });
   }
 
   renderLogo() {
-    return (
-      <EuiHeaderLogo href="#" />
-    );
+    return <EuiHeaderLogo iconType="logoKibana" href="#" aria-label="Go to home page" />;
   }
 
   renderBreadcrumbs() {
-    return (
-      <EuiHeaderBreadcrumbs>
-        <EuiHeaderBreadcrumb href="#">
-          Management
-        </EuiHeaderBreadcrumb>
+    const breadcrumbs = [
+      {
+        text: 'Management',
+        href: '#',
+        onClick: e => {
+          e.preventDefault();
+          console.log('You clicked management');
+        },
+        'data-test-subj': 'breadcrumbsAnimals',
+        className: 'customClass',
+      },
+      {
+        text: 'Truncation test is here for a really long item',
+        href: '#',
+        onClick: e => {
+          e.preventDefault();
+          console.log('You clicked truncation test');
+        },
+      },
+      {
+        text: 'hidden',
+        href: '#',
+        onClick: e => {
+          e.preventDefault();
+          console.log('You clicked hidden');
+        },
+      },
+      {
+        text: 'Users',
+        href: '#',
+        onClick: e => {
+          e.preventDefault();
+          console.log('You clicked users');
+        },
+      },
+      {
+        text: 'Create',
+      },
+    ];
 
-        <EuiHeaderBreadcrumb href="#">
-          Truncation test is here
-        </EuiHeaderBreadcrumb>
-
-        <EuiHeaderBreadcrumbCollapsed />
-
-        <EuiHeaderBreadcrumb href="#">
-          Users
-        </EuiHeaderBreadcrumb>
-
-        <EuiHeaderBreadcrumb href="#" isActive>
-          Create
-        </EuiHeaderBreadcrumb>
-      </EuiHeaderBreadcrumbs>
-    );
+    return <EuiHeaderBreadcrumbs breadcrumbs={breadcrumbs} />;
   }
 
   renderSearch() {
     return (
-      <EuiHeaderSectionItemButton>
-        <EuiIcon
-          type="search"
-          size="m"
-        />
+      <EuiHeaderSectionItemButton aria-label="Search">
+        <EuiIcon type="search" size="m" />
       </EuiHeaderSectionItemButton>
     );
   }
@@ -82,18 +78,17 @@ export default class extends Component {
   render() {
     return (
       <EuiHeader>
-        <EuiHeaderSection>
+        <EuiHeaderSection grow={false}>
+          <EuiHeaderSectionItem border="right">{this.renderLogo()}</EuiHeaderSectionItem>
           <EuiHeaderSectionItem border="right">
-            {this.renderLogo()}
+            <HeaderSpacesMenu />
           </EuiHeaderSectionItem>
-
-          {this.renderBreadcrumbs()}
         </EuiHeaderSection>
 
+        {this.renderBreadcrumbs()}
+
         <EuiHeaderSection side="right">
-          <EuiHeaderSectionItem>
-            {this.renderSearch()}
-          </EuiHeaderSectionItem>
+          <EuiHeaderSectionItem>{this.renderSearch()}</EuiHeaderSectionItem>
 
           <EuiHeaderSectionItem>
             <HeaderUserMenu />

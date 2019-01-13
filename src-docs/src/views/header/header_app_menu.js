@@ -33,7 +33,13 @@ export default class extends Component {
 
   render() {
     const button = (
-      <EuiHeaderSectionItemButton onClick={this.onMenuButtonClick}>
+      <EuiHeaderSectionItemButton
+        aria-controls="keyPadMenu"
+        aria-expanded={this.state.isOpen}
+        aria-haspopup="true"
+        aria-label="Apps menu"
+        onClick={this.onMenuButtonClick}
+      >
         <EuiIcon type="apps" size="m" />
       </EuiHeaderSectionItemButton>
     );
@@ -46,9 +52,8 @@ export default class extends Component {
         isOpen={this.state.isOpen}
         anchorPosition="downRight"
         closePopover={this.closeMenu}
-        panelClassName="euiHeaderPopover"
       >
-        <EuiKeyPadMenu>
+        <EuiKeyPadMenu id="keyPadMenu" style={{ width: 288 }}>
           <EuiKeyPadMenuItem
             label="Discover"
             href="#"

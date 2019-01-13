@@ -1,6 +1,7 @@
 /**
  * 1. We don't want any of the animations that come inherited from the mixin.
  *    These should act like normal links instead.
+ * 2. Change the easing, quickness to not bounce so lighter backgrounds don't flash
  */
 .euiButtonEmpty {
   @include euiButton;
@@ -8,13 +9,20 @@
   border-color: transparent;
   background-color: transparent;
   box-shadow: none;
-  transform: none !important; // 1
-  animation: none !important; // 1
+  // sass-lint:disable-block no-important
+  transform: none !important; /* 1 */
+  animation: none !important; /* 1 */
+  transition-timing-function: ease-in; /* 2 */
+  transition-duration: $euiAnimSpeedFast; /* 2 */
 
   .euiButtonEmpty__content {
     @include euiButtonContent;
-
     padding: 0 $euiSizeS;
+  }
+
+  .euiButtonEmpty__text {
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 
   &.euiButtonEmpty--small {
@@ -49,7 +57,8 @@
       background-color: transparent;
     }
 
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       text-decoration: none;
     }
   }
@@ -74,7 +83,11 @@ $buttonTypes: (
     }
 
     &:focus {
-      background-color: transparentize($color, .9);
+      @if ($name == 'text') {
+        background-color: $euiColorLightestShade;
+      } @else {
+        background-color: transparentize($color, .9);
+      }
     }
 
     &:hover {

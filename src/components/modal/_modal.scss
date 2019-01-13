@@ -1,39 +1,53 @@
-$euiModalBorderColor: tintOrShade($euiShadowColorLarge, 50%, 0%) !default; // match shadow
+/**
+ * 1. Fix IE overflow issue (min-height) by adding a separate wrapper for the
+ *    flex display. https://github.com/philipwalton/flexbugs#flexbug-3
+ * 2. IE has trouble with min-widths on flex elements. Use the pixel value
+ *    from our forms since that's usually the smallest we want them.
+ */
 
 .euiModal {
-  @include euiBottomShadowLarge;
+  border: $euiBorderThin;
+  // This mixin overwrites some of the border above
+  @include euiBottomShadowLarge($adjustBorders: true); // sass-lint:disable-line mixins-before-declarations
+  display: flex; /* 1 */
 
-  display: flex;
-  flex-direction: column;
-  max-height: 75vh; // We overflow the modal body based off this
   position: relative;
   background-color: $euiColorEmptyShade;
-  border: 1px solid $euiModalBorderColor;
-  border-top-color: tintOrShade($euiModalBorderColor, 50%, 0%);
   border-radius: $euiBorderRadius;
   z-index: $euiZModal;
-  min-width: 50%;
+  min-width: $euiFormMaxWidth;
   animation: euiModal $euiAnimSpeedSlow $euiAnimSlightBounce;
+
+  .euiModal__flex { /* 1 */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-height: 75vh; // We overflow the modal body based off this
+  }
+}
+
+.euiModal--maxWidth-default {
+  max-width: map-get($euiBreakpoints, 'm');
 }
 
 .euiModal--confirmation {
-  width: 450px;
-  min-width: auto;
+  min-width: $euiFormMaxWidth;
 }
 
 .euiModalHeader {
+  @include euiOverflowShadowBottom;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: $euiSizeL $euiSizeXXL $euiSizeM $euiSizeL;
   flex-grow: 0;
   flex-shrink: 0;
-  @include euiOverflowShadowBottom;
 }
 
-  .euiModalHeader__title {
-    @include euiTitle("m");
-  }
+.euiModalHeader__title {
+  @include euiTitle('m');
+}
 
 .euiModalBody {
   @include euiScrollBar;
@@ -44,12 +58,13 @@ $euiModalBorderColor: tintOrShade($euiShadowColorLarge, 50%, 0%) !default; // ma
 }
 
 .euiModalFooter {
+  @include euiOverflowShadowTop;
+
   display: flex;
   justify-content: flex-end;
-  padding: $euiSizeL $euiSizeL;
+  padding: $euiSizeL;
   flex-grow: 0;
   flex-shrink: 0; // ensure the height of the footer is based off it's contents and doesn't squish
-  @include euiOverflowShadowTop;
 
   > * + * {
     margin-left: $euiSize;
@@ -77,6 +92,7 @@ $euiModalBorderColor: tintOrShade($euiShadowColorLarge, 50%, 0%) !default; // ma
     opacity: 0;
     transform: translateY($euiSizeXL);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
@@ -84,11 +100,12 @@ $euiModalBorderColor: tintOrShade($euiShadowColorLarge, 50%, 0%) !default; // ma
 }
 
 // On mobile we fix modals as a takeover.
-@include screenXSmall {
+@include euiBreakpoint('xs', 's') {
   .euiModal {
+    // sass-lint:disable-block no-important
     position: fixed;
-    width: calc(100vw + 2px);
-    max-height: 100vh;
+    width: calc(100vw + 2px) !important;
+    max-width: none !important;
     left: 0;
     right: 0;
     bottom: 0;
@@ -96,6 +113,10 @@ $euiModalBorderColor: tintOrShade($euiShadowColorLarge, 50%, 0%) !default; // ma
     border-radius: 0;
     box-shadow: none;
     border: none;
+
+    .euiModal__flex { /* 1 */
+      max-height: 100vh;
+    }
   }
 
   .euiModalHeader {

@@ -12,9 +12,17 @@ import {
 } from '../../../../src/components';
 
 import { SearchBar } from './search_bar';
+import { ControlledSearchBar } from './controlled_search_bar';
+import { SearchBarFilters } from './search_bar_filters';
 
 const searchBarSource = require('!!raw-loader!./search_bar');
 const searchBarHtml = renderToHtml(SearchBar);
+
+const controlledSearchBarSource = require('!!raw-loader!./controlled_search_bar');
+const controlledSearchBarHtml = renderToHtml(ControlledSearchBar);
+
+const searchBarFiltersSource = require('!!raw-loader!./search_bar_filters');
+const searchBarFiltersHtml = renderToHtml(SearchBarFilters);
 
 export const SearchBarExample = {
   title: 'Search Bar',
@@ -89,6 +97,49 @@ export const SearchBarExample = {
       ),
       props: propsInfo,
       demo: <SearchBar/>
+    },
+    {
+      title: 'Controlled Search Bar',
+      source: [
+        {
+          type: GuideSectionTypes.JS,
+          code: controlledSearchBarSource,
+        }, {
+          type: GuideSectionTypes.HTML,
+          code: controlledSearchBarHtml,
+        }
+      ],
+      text: (
+        <div>
+          <p>
+            A <EuiCode>EuiSearchBar</EuiCode> can have its query controlled by a parent component by
+            passing the <EuiCode>query</EuiCode> prop. Changes to the query will be passed back up through
+            the <EuiCode>onChange</EuiCode> callback where the new Query must be stored in state and
+            passed back into the search bar.
+          </p>
+        </div>
+      ),
+      demo: <ControlledSearchBar/>
+    },
+    {
+      title: 'Search Bar Filters',
+      source: [
+        {
+          type: GuideSectionTypes.JS,
+          code: searchBarFiltersSource,
+        }, {
+          type: GuideSectionTypes.HTML,
+          code: searchBarFiltersHtml,
+        }
+      ],
+      text: (
+        <div>
+          <p>
+            A <EuiCode>EuiSearchBar</EuiCode> can have custom filter drop downs that control how a user can search.
+          </p>
+        </div>
+      ),
+      demo: <SearchBarFilters/>
     }
   ],
 };

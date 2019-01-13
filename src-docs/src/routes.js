@@ -25,6 +25,9 @@ import ColorGuidelines
 import ModalGuidelines
   from './views/guidelines/modals';
 
+import SassGuidelines
+  from './views/guidelines/sass';
+
 import TextScales
   from './views/text_scaling/text_scaling_sandbox';
 
@@ -36,8 +39,15 @@ import WritingGuidelines
 
 // Services
 
+import { ColorPaletteExample }
+  from './views/color_palette/color_palette_example';
+
 import { IsColorDarkExample }
   from './views/is_color_dark/is_color_dark_example';
+
+
+import { UtilityClassesExample }
+  from './views/utility_classes/utility_classes_example';
 
 // Component examples
 
@@ -55,6 +65,9 @@ import { BadgeExample }
 
 import { BottomBarExample }
   from './views/bottom_bar/bottom_bar_example';
+
+import { BreadcrumbsExample }
+  from './views/breadcrumbs/breadcrumbs_example';
 
 import { ButtonExample }
   from './views/button/button_example';
@@ -80,6 +93,9 @@ import { ComboBoxExample }
 import { ContextMenuExample }
   from './views/context_menu/context_menu_example';
 
+import { CopyExample }
+  from './views/copy/copy_example';
+
 import { DatePickerExample }
   from './views/date_picker/date_picker_example';
 
@@ -89,11 +105,17 @@ import { DelayHideExample }
 import { DescriptionListExample }
   from './views/description_list/description_list_example';
 
+import { EmptyPromptExample }
+  from './views/empty_prompt/empty_prompt_example';
+
 import { ErrorBoundaryExample }
   from './views/error_boundary/error_boundary_example';
 
 import { ExpressionExample }
   from './views/expression/expression_example';
+
+import { FacetExample }
+  from './views/facet/facet_example';
 
 import { FilterGroupExample }
   from './views/filter_group/filter_group_example';
@@ -137,11 +159,17 @@ import { KeyPadMenuExample }
 import { LinkExample }
   from './views/link/link_example';
 
+import { ListGroupExample }
+  from './views/list_group/list_group_example';
+
 import { LoadingExample }
   from './views/loading/loading_example';
 
 import { ModalExample }
   from './views/modal/modal_example';
+
+import { MutationObserverExample }
+  from './views/mutation_observer/mutation_observer_example';
 
 import { OutsideClickDetectorExample }
   from './views/outside_click_detector/outside_click_detector_example';
@@ -164,6 +192,9 @@ import { PortalExample }
 import { ProgressExample }
   from './views/progress/progress_example';
 
+import { ResponsiveExample }
+  from './views/responsive/responsive_example';
+
 import { SearchBarExample }
   from './views/search_bar/search_bar_example';
 
@@ -172,6 +203,9 @@ import { SideNavExample }
 
 import { SpacerExample }
   from './views/spacer/spacer_example';
+
+import { StatExample }
+  from './views/stat/stat_example';
 
 import { StepsExample }
   from './views/steps/steps_example';
@@ -194,8 +228,35 @@ import { ToastExample }
 import { ToolTipExample }
   from './views/tool_tip/tool_tip_example';
 
+import { ToggleExample }
+  from './views/toggle/toggle_example';
+
+import { WindowEventExample }
+  from './views/window_event/window_event_example';
+
+import { XYChartExample }
+  from './views/series_chart/series_chart_example';
+
+import { XYChartAxisExample }
+  from './views/series_chart_axis/series_axis_example';
+
+import { XYChartBarExample }
+  from './views/series_chart_bar/bar_example';
+
+import { XYChartHistogramExample }
+  from './views/series_chart_histogram/histogram_example';
+
+import { XYChartAreaExample }
+  from './views/series_chart_area/area_example';
+
+import { XYChartLineExample }
+  from './views/series_chart_line/line_example';
+
 import { Changelog }
   from './views/package/changelog';
+
+import { SuperSelectExample }
+  from './views/super_select/super_select_example';
 
 /**
  * Lowercases input and replaces spaces with hyphens:
@@ -252,6 +313,9 @@ const navigation = [{
     name: 'Modals',
     component: ModalGuidelines,
   }, {
+    name: 'Sass',
+    component: SassGuidelines,
+  }, {
     name: 'Text scales',
     component: TextScales,
   }, {
@@ -279,8 +343,10 @@ const navigation = [{
 }, {
   name: 'Navigation',
   items: [
+    BreadcrumbsExample,
     ButtonExample,
     ContextMenuExample,
+    FacetExample,
     KeyPadMenuExample,
     LinkExample,
     PaginationExample,
@@ -297,11 +363,14 @@ const navigation = [{
     CardExample,
     CodeExample,
     DescriptionListExample,
+    EmptyPromptExample,
     HealthExample,
     IconExample,
     ImageExample,
+    ListGroupExample,
     LoadingExample,
     ProgressExample,
+    StatExample,
     TableExample,
     TextExample,
     TitleExample,
@@ -314,6 +383,7 @@ const navigation = [{
     FormLayoutsExample,
     FormControlsExample,
     FormValidationExample,
+    SuperSelectExample,
     ComboBoxExample,
     ColorPickerExample,
     CodeEditorExample,
@@ -322,16 +392,35 @@ const navigation = [{
     FilterGroupExample,
     SearchBarExample,
   ].map(example => createExample(example)),
-}, {
+},
+{
+  name: 'Series charts (beta)',
+  items: [
+    XYChartExample,
+    XYChartAxisExample,
+    XYChartLineExample,
+    XYChartAreaExample,
+    XYChartBarExample,
+    XYChartHistogramExample,
+  ].map(example => createExample(example)),
+},
+{
   name: 'Utilities',
   items: [
     AccessibilityExample,
+    ColorPaletteExample,
+    CopyExample,
+    UtilityClassesExample,
     DelayHideExample,
     ErrorBoundaryExample,
     HighlightExample,
     IsColorDarkExample,
+    MutationObserverExample,
     OutsideClickDetectorExample,
     PortalExample,
+    ResponsiveExample,
+    ToggleExample,
+    WindowEventExample,
   ].map(example => createExample(example)),
 }, {
   name: 'Package',

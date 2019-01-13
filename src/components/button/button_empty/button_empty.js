@@ -2,6 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
+import {
+  EuiLoadingSpinner
+} from '../../loading';
+
 import { getSecureRelForTarget } from '../../../services';
 
 import {
@@ -50,13 +54,19 @@ export const EuiButtonEmpty = ({
   size,
   flush,
   isDisabled,
+  isLoading,
   href,
   target,
   rel,
   type,
   buttonRef,
+  contentProps,
+  textProps,
   ...rest
 }) => {
+
+  // If in the loading state, force disabled to true
+  isDisabled = isLoading ? true : isDisabled;
 
   const classes = classNames(
     'euiButtonEmpty',
@@ -70,7 +80,14 @@ export const EuiButtonEmpty = ({
   // Add an icon to the button if one exists.
   let buttonIcon;
 
-  if (iconType) {
+  if (isLoading) {
+    buttonIcon = (
+      <EuiLoadingSpinner
+        className="euiButton__spinner"
+        size="m"
+      />
+    );
+  } else if (iconType) {
     buttonIcon = (
       <EuiIcon
         className="euiButtonEmpty__icon"
@@ -81,7 +98,9 @@ export const EuiButtonEmpty = ({
     );
   }
 
-  if (href) {
+  // <a> elements don't respect the `disabled` attribute. So if we're disabled, we'll just pretend
+  // this is a button and piggyback off its disabled styles.
+  if (href && !isDisabled) {
     const secureRel = getSecureRelForTarget(target, rel);
 
     return (
@@ -93,9 +112,9 @@ export const EuiButtonEmpty = ({
         ref={buttonRef}
         {...rest}
       >
-        <span className="euiButtonEmpty__content">
+        <span className="euiButtonEmpty__content" {...contentProps}>
           {buttonIcon}
-          <span>{children}</span>
+          <span className="euiButtonEmpty__text" {...textProps}>{children}</span>
         </span>
       </a>
     );
@@ -108,9 +127,9 @@ export const EuiButtonEmpty = ({
         ref={buttonRef}
         {...rest}
       >
-        <span className="euiButtonEmpty__content">
+        <span className="euiButtonEmpty__content" {...contentProps}>
           {buttonIcon}
-          <span>{children}</span>
+          <span className="euiButtonEmpty__text"{...textProps}>{children}</span>
         </span>
       </button>
     );
@@ -130,8 +149,24 @@ EuiButtonEmpty.propTypes = {
   target: PropTypes.string,
   rel: PropTypes.string,
   onClick: PropTypes.func,
+
+  /**
+   * Adds/swaps for loading spinner & disables
+   */
+  isLoading: PropTypes.bool,
+
   type: PropTypes.string,
   buttonRef: PropTypes.func,
+
+  /**
+   * Passes props to `euiButton__content` span
+   */
+  contentProps: PropTypes.object,
+
+  /**
+   * Passes props to `euiButton__text` span
+   */
+  textProps: PropTypes.object,
 };
 
 EuiButtonEmpty.defaultProps = {

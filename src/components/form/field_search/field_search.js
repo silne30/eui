@@ -27,13 +27,18 @@ const propTypes = {
    * when `true` the search will be executed (that is, the `onSearch` will be called) as the
    * user types.
    */
-  incremental: PropTypes.bool
+  incremental: PropTypes.bool,
+  /**
+   * when `true` creates a shorter height input
+   */
+  compressed: PropTypes.bool,
 };
 
 const defaultProps = {
   fullWidth: false,
   isLoading: false,
-  incremental: false
+  incremental: false,
+  compressed: false,
 };
 
 export class EuiFieldSearch extends Component {
@@ -62,6 +67,13 @@ export class EuiFieldSearch extends Component {
     this.cleanups.forEach(cleanup => cleanup());
   }
 
+  setRef = inputElement => {
+    this.inputElement = inputElement;
+    if (this.props.inputRef) {
+      this.props.inputRef(inputElement);
+    }
+  };
+
   onKeyUp = (incremental, onSearch, event) => {
     if (this.props.onKeyUp) {
       this.props.onKeyUp(event);
@@ -84,8 +96,9 @@ export class EuiFieldSearch extends Component {
       isInvalid,
       fullWidth,
       isLoading,
-      inputRef,
+      inputRef, // eslint-disable-line no-unused-vars
       incremental,
+      compressed,
       onSearch,
       ...rest } = this.props;
 
@@ -93,24 +106,18 @@ export class EuiFieldSearch extends Component {
       'euiFieldSearch',
       {
         'euiFieldSearch--fullWidth': fullWidth,
+        'euiFieldSearch--compressed': compressed,
         'euiFieldSearch-isLoading': isLoading,
       },
       className
     );
 
-    const ref = (inputElement) => {
-      this.inputElement = inputElement;
-      if (inputRef) {
-        inputRef(inputElement);
-      }
-    };
-
     return (
-
       <EuiFormControlLayout
         icon="search"
         fullWidth={fullWidth}
         isLoading={isLoading}
+        compressed={compressed}
       >
         <EuiValidatableControl isInvalid={isInvalid}>
           <input
@@ -121,7 +128,7 @@ export class EuiFieldSearch extends Component {
             className={classes}
             value={value}
             onKeyUp={this.onKeyUp.bind(this, incremental, onSearch)}
-            ref={ref}
+            ref={this.setRef}
             {...rest}
           />
         </EuiValidatableControl>

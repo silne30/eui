@@ -27,6 +27,14 @@ import DescriptionListInline from './description_list_inline';
 const descriptionListInlineSource = require('!!raw-loader!./description_list_inline');
 const descriptionListInlineHtml = renderToHtml(DescriptionListInline);
 
+import DescriptionListReverse from './description_list_reverse';
+const descriptionListReverseSource = require('!!raw-loader!./description_list_reverse');
+const descriptionListReverseHtml = renderToHtml(DescriptionListReverse);
+
+import DescriptionListClasses from './description_list_classes';
+const descriptionListClassesSource = require('!!raw-loader!./description_list_classes');
+const descriptionListClassesHtml = renderToHtml(DescriptionListClasses);
+
 export const DescriptionListExample = {
   title: 'Description List',
   sections: [{
@@ -48,6 +56,28 @@ export const DescriptionListExample = {
     ),
     props: { EuiDescriptionList },
     demo: <DescriptionList />,
+  }, {
+    title: 'Reverse style',
+    source: [{
+      type: GuideSectionTypes.JS,
+      code: descriptionListReverseSource,
+    }, {
+      type: GuideSectionTypes.HTML,
+      code: descriptionListReverseHtml,
+    }],
+    text: (
+      <div>
+        <p>
+          Setting the <EuiCode>textStyle</EuiCode> prop to <EuiCode>reverse</EuiCode> will reverse
+          the text styles of the <EuiCode>title</EuiCode> and <EuiCode>description</EuiCode> elements
+          so that the description is more prominent. This works best for key/value type content.
+        </p>
+        <p>
+          Adding this property to the <EuiCode>inline</EuiCode> type will not change anything.
+        </p>
+      </div>
+    ),
+    demo: <DescriptionListReverse />,
   }, {
     title: 'As columns',
     source: [{
@@ -98,5 +128,23 @@ export const DescriptionListExample = {
       </p>
     ),
     demo: <DescriptionListStyling />,
+  }, {
+    title: 'Passing className',
+    source: [{
+      type: GuideSectionTypes.JS,
+      code: descriptionListClassesSource,
+    }, {
+      type: GuideSectionTypes.HTML,
+      code: descriptionListClassesHtml,
+    }],
+    text: (
+      <p>
+        When using the <EuiCode>listItems</EuiCode> prop to pass an object of items and you
+        need to also add <EuiCode>className</EuiCode>s (or other available props) to the individual
+        pieces, you can use the <EuiCode>titleProps</EuiCode> and <EuiCode>descriptionProps</EuiCode> to
+        do so.
+      </p>
+    ),
+    demo: <DescriptionListClasses />,
   }],
 };

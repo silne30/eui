@@ -11,7 +11,6 @@ import {
   EuiFlexItem,
   EuiSwitch,
   EuiSpacer,
-  EuiText,
 } from '../../../../../src/components';
 
 /*
@@ -93,13 +92,15 @@ export class Table extends Component {
     }
 
     return (
-      <EuiButton
-        color="danger"
-        iconType="trash"
-        onClick={this.onClickDelete}
-      >
-        Delete {selectedItems.length} Users
-      </EuiButton>
+      <EuiFlexItem grow={false}>
+        <EuiButton
+          color="danger"
+          iconType="trash"
+          onClick={this.onClickDelete}
+        >
+          Delete {selectedItems.length} Users
+        </EuiButton>
+      </EuiFlexItem>
     );
   }
 
@@ -145,31 +146,47 @@ export class Table extends Component {
         ? [{
           render: (item) => {
             return (
-              <EuiText color="secondary" onClick={() => this.cloneUser(item)}>
+              <EuiLink color="secondary" onClick={() => this.cloneUser(item)}>
                 Clone
-              </EuiText>
+              </EuiLink>
             );
           }
         }, {
           render: (item) => {
             return (
-              <EuiText color="danger" onClick={() => this.deleteUser(item)}>
+              <EuiLink color="danger" onClick={() => this.deleteUser(item)}>
                 Delete
-              </EuiText>
+              </EuiLink>
             );
           }
         }]
         : [{
           name: 'Clone',
-          description: 'Clone this person',
+          description: 'Clone this user',
           icon: 'copy',
           onClick: this.cloneUser
         }, {
           name: 'Delete',
-          description: 'Delete this person',
+          description: 'Delete this user',
           icon: 'trash',
           color: 'danger',
-          onClick: this.deleteUser
+          type: 'icon',
+          onClick: this.deleteUser,
+          isPrimary: true,
+        }, {
+          name: 'Edit',
+          isPrimary: true,
+          description: 'Edit this user',
+          icon: 'pencil',
+          type: 'icon',
+          onClick: () => {},
+        }, {
+          name: 'Share',
+          isPrimary: true,
+          description: 'Share this user',
+          icon: 'share',
+          type: 'icon',
+          onClick: () => {},
         }];
     } else {
       actions = customAction
@@ -186,12 +203,13 @@ export class Table extends Component {
           }
         }]
         : [{
-          name: 'Delete',
-          description: 'Delete this person',
-          icon: 'trash',
-          color: 'danger',
+          name: 'Elastic.co',
+          description: 'Go to elastic.co',
+          icon: 'editorLink',
+          color: 'primary',
           type: 'icon',
-          onClick: this.deleteUser
+          href: 'https://elastic.co',
+          target: '_blank',
         }];
     }
 
@@ -262,7 +280,6 @@ export class Table extends Component {
     };
 
     const selection = {
-      itemId: 'id',
       selectable: (user) => user.online,
       selectableMessage: (selectable) => !selectable ? 'User is currently offline' : undefined,
       onSelectionChange: this.onSelectionChange
@@ -271,7 +288,6 @@ export class Table extends Component {
     return (
       <Fragment>
         <EuiFlexGroup alignItems="center">
-          {deleteButton}
           <EuiFlexItem grow={false}>
             <EuiSwitch
               label="Multiple Actions"
@@ -286,18 +302,20 @@ export class Table extends Component {
               onChange={this.toggleCustomAction}
             />
           </EuiFlexItem>
+          <EuiFlexItem />
+          {deleteButton}
         </EuiFlexGroup>
 
         <EuiSpacer size="l" />
 
         <EuiBasicTable
           items={pageOfItems}
+          itemId="id"
           columns={columns}
           pagination={pagination}
           sorting={sorting}
           selection={selection}
-          isSelectable={true}
-          hasActions={true}
+          hasActions={customAction ? false : true}
           onChange={this.onTableChange}
         />
       </Fragment>

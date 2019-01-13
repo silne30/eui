@@ -2,8 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
   EuiBasicTable,
-  ColumnType,
   SelectionType,
+  ItemIdType,
+  FieldDataColumnTypeShape,
+  ComputedColumnType,
+  ActionsColumnType,
 } from './basic_table';
 import {
   defaults as paginationBarDefaults
@@ -16,6 +19,16 @@ import {
   SearchBoxConfigPropTypes, EuiSearchBar
 } from '../search_bar';
 import { EuiSpacer } from '../spacer/spacer';
+
+// same as ColumnType from EuiBasicTable, but need to modify the `sortable` type
+const ColumnType = PropTypes.oneOfType([
+  PropTypes.shape({
+    ...FieldDataColumnTypeShape,
+    sortable: PropTypes.oneOfType([PropTypes.bool, PropTypes.func])
+  }),
+  ComputedColumnType,
+  ActionsColumnType
+]);
 
 const InMemoryTablePropTypes = {
   columns: PropTypes.arrayOf(ColumnType).isRequired,
@@ -37,6 +50,11 @@ const InMemoryTablePropTypes = {
     }),
     filters: SearchFiltersFiltersType,
     onChange: PropTypes.func,
+    executeQueryOptions: PropTypes.shape({
+      defaultFields: PropTypes.arrayOf(PropTypes.string),
+      isClauseMatcher: PropTypes.func,
+      explain: PropTypes.bool,
+    })
   })]),
   pagination: PropTypes.oneOfType([
     PropTypes.bool,
@@ -54,7 +72,11 @@ const InMemoryTablePropTypes = {
       sort: PropertySortType
     })
   ]),
-  selection: SelectionType
+  selection: SelectionType,
+  itemId: ItemIdType,
+  rowProps: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
+  cellProps: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
+  onTableChange: PropTypes.func,
 };
 
 const getInitialQuery = (search) => {
@@ -77,10 +99,11 @@ const getInitialPagination = (pagination) => {
   const {
     initialPageSize,
     pageSizeOptions = paginationBarDefaults.pageSizeOptions,
+    hidePerPageOptions
   } = pagination;
 
 
-  if (initialPageSize && (!pageSizeOptions || !pageSizeOptions.includes(initialPageSize))) {
+  if (!hidePerPageOptions && initialPageSize && (!pageSizeOptions || !pageSizeOptions.includes(initialPageSize))) {
     throw new Error(`EuiInMemoryTable received initialPageSize ${initialPageSize}, which wasn't provided within pageSizeOptions.`);
   }
 
@@ -90,6 +113,7 @@ const getInitialPagination = (pagination) => {
     pageIndex: 0,
     pageSize: initialPageSize || defaultPageSize,
     pageSizeOptions,
+    hidePerPageOptions
   };
 };
 
@@ -119,26 +143,49 @@ export class EuiInMemoryTable extends Component {
     pagination: false,
     sorting: false,
     responsive: true,
+    executeQueryOptions: {}
   };
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.items !== prevState.prevProps.items) {
+      // We have new items because an external search has completed, so reset pagination state.
+      return {
+        prevProps: {
+          items: nextProps.items,
+        },
+        pageIndex: 0,
+      };
+    } else {
+      return null;
+    }
+  }
 
   constructor(props) {
     super(props);
 
     const { search, pagination, sorting } = props;
-    const { pageIndex, pageSize, pageSizeOptions } = getInitialPagination(pagination);
+    const { pageIndex, pageSize, pageSizeOptions, hidePerPageOptions } = getInitialPagination(pagination);
     const { sortField, sortDirection } = getInitialSorting(sorting);
 
     this.state = {
+      prevProps: {
+        items: props.items,
+      },
       query: getInitialQuery(search),
       pageIndex,
       pageSize,
       pageSizeOptions,
       sortField,
       sortDirection,
+      hidePerPageOptions
     };
   }
 
   onTableChange = ({ page = {}, sort = {} }) => {
+    if (this.props.onTableChange) {
+      this.props.onTableChange({ page, sort });
+    }
+
     const {
       index: pageIndex,
       size: pageSize
@@ -157,9 +204,9 @@ export class EuiInMemoryTable extends Component {
     });
   };
 
-  onQueryChange = (query) => {
+  onQueryChange = ({ query, queryText, error }) => {
     if (this.props.search.onChange) {
-      const shouldQueryInMemory = this.props.search.onChange(query);
+      const shouldQueryInMemory = this.props.search.onChange({ query, queryText, error });
       if (!shouldQueryInMemory) {
         return;
       }
@@ -204,8 +251,27 @@ export class EuiInMemoryTable extends Component {
     }, { strict: true, fields: {} });
   }
 
+  getItemSorter() {
+    const {
+      sortField,
+      sortDirection
+    } = this.state;
+
+    const { columns } = this.props;
+
+    const sortColumn = columns.find(({ field }) => field === sortField);
+    const { sortable } = sortColumn;
+
+    if (typeof sortable === 'function') {
+      return Comparators.value(sortable, Comparators.default(sortDirection));
+    }
+
+    return Comparators.property(sortField, Comparators.default(sortDirection));
+  }
+
   getItems() {
-    const { items } = this.props;
+    const { executeQueryOptions } = this.props;
+    const { prevProps: { items } } = this.state;
 
     if (!items.length) {
       return {
@@ -217,15 +283,18 @@ export class EuiInMemoryTable extends Component {
     const {
       query,
       sortField,
-      sortDirection,
       pageIndex,
       pageSize,
     } = this.state;
 
-    const matchingItems = query ? EuiSearchBar.Query.execute(query, items) : items;
+    const matchingItems = query ? EuiSearchBar.Query.execute(query, items, executeQueryOptions) : items;
 
     const sortedItems =
-      sortField ? matchingItems.sort(Comparators.property(sortField, Comparators.default(sortDirection))) : matchingItems;
+      sortField
+        ? matchingItems
+          .slice(0) // avoid mutating the source array
+          .sort(this.getItemSorter()) // sort, causes mutation
+        : matchingItems;
 
     const visibleItems = pageSize ? (() => {
       const startIndex = pageIndex * pageSize;
@@ -236,15 +305,6 @@ export class EuiInMemoryTable extends Component {
       items: visibleItems,
       totalItemCount: matchingItems.length,
     };
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.items !== this.props.items) {
-      // We have new items because an external search has completed, so reset pagination state.
-      this.setState({
-        pageIndex: 0,
-      });
-    }
   }
 
   render() {
@@ -259,6 +319,15 @@ export class EuiInMemoryTable extends Component {
       compressed,
       pagination: hasPagination,
       sorting: hasSorting,
+      itemIdToExpandedRowMap,
+      itemId,
+      rowProps,
+      cellProps,
+      items: _unuseditems, // eslint-disable-line no-unused-vars
+      search, // eslint-disable-line no-unused-vars
+      onTableChange, // eslint-disable-line no-unused-vars
+      executeQueryOptions, // eslint-disable-line no-unused-vars
+      ...rest
     } = this.props;
 
     const {
@@ -267,6 +336,7 @@ export class EuiInMemoryTable extends Component {
       pageSizeOptions,
       sortField,
       sortDirection,
+      hidePerPageOptions
     } = this.state;
 
     const { items, totalItemCount } = this.getItems();
@@ -276,6 +346,7 @@ export class EuiInMemoryTable extends Component {
       pageSize,
       pageSizeOptions,
       totalItemCount,
+      hidePerPageOptions
     };
 
     // Data loaded from a server can have a default sort order which is meaningful to the
@@ -291,10 +362,20 @@ export class EuiInMemoryTable extends Component {
 
     const searchBar = this.renderSearchBar();
 
+    // EuiInMemoryTable's column type supports sortable as a function, but
+    // EuiBasicTable requires those functions to be cast to a boolean
+    const mappedColumns = columns.map(column => ({
+      ...column,
+      sortable: !!column.sortable
+    }));
+
     const table = (
       <EuiBasicTable
         items={items}
-        columns={columns}
+        itemId={itemId}
+        rowProps={rowProps}
+        cellProps={cellProps}
+        columns={mappedColumns}
         pagination={pagination}
         sorting={sorting}
         selection={selection}
@@ -305,6 +386,8 @@ export class EuiInMemoryTable extends Component {
         loading={loading}
         noItemsMessage={message}
         compressed={compressed}
+        itemIdToExpandedRowMap={itemIdToExpandedRowMap}
+        {...rest}
       />
     );
 
@@ -315,7 +398,7 @@ export class EuiInMemoryTable extends Component {
     return (
       <div>
         {searchBar}
-        <EuiSpacer size="l"/>
+        <EuiSpacer size="l" />
         {table}
       </div>
     );

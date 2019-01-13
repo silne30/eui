@@ -10,21 +10,25 @@ export const EuiRadioGroup = ({
   name,
   className,
   disabled,
+  compressed,
   ...rest
 }) => (
   <div className={className} {...rest}>
     {options.map((option, index) => {
+      const {
+        disabled: isOptionDisabled,
+        ...optionRest
+      } = option;
       return (
         <EuiRadio
           className="euiRadioGroup__item"
           key={index}
-          id={option.id}
           name={name}
           checked={option.id === idSelected}
-          label={option.label}
-          value={option.value}
-          disabled={disabled}
+          disabled={disabled || isOptionDisabled}
           onChange={onChange.bind(null, option.id, option.value)}
+          compressed={compressed}
+          {...optionRest}
         />
       );
     })}
@@ -32,15 +36,23 @@ export const EuiRadioGroup = ({
 );
 
 EuiRadioGroup.propTypes = {
+  disabled: PropTypes.bool,
+  name: PropTypes.string,
   options: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
       label: PropTypes.node,
       value: PropTypes.string,
+      disabled: PropTypes.bool,
     }),
   ).isRequired,
   idSelected: PropTypes.string,
   onChange: PropTypes.func.isRequired,
+  /**
+   * Tightens up the spacing between radio rows and sends down the
+   * compressed prop to the radio itself
+   */
+  compressed: PropTypes.bool,
 };
 
 EuiRadioGroup.defaultProps = {

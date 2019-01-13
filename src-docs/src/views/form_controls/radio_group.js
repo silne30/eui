@@ -6,6 +6,7 @@ import React, {
 import {
   EuiRadioGroup,
   EuiSpacer,
+  EuiTitle,
 } from '../../../../src/components';
 
 import makeId from '../../../../src/components/form/form_row/make_id';
@@ -25,6 +26,7 @@ export default class extends Component {
     }, {
       id: `${idPrefix}2`,
       label: 'Option three',
+      disabled: true,
     }];
 
     this.state = {
@@ -49,11 +51,28 @@ export default class extends Component {
 
         <EuiSpacer size="m" />
 
+        <EuiTitle size="xxs"><h3>Disabled</h3></EuiTitle>
+
+        <EuiSpacer size="s" />
+
         <EuiRadioGroup
           options={this.radios}
           idSelected={this.state.radioIdSelected}
           onChange={this.onChange}
           disabled
+        />
+
+        <EuiSpacer size="m" />
+
+        <EuiTitle size="xxs"><h3>Compressed</h3></EuiTitle>
+
+        <EuiSpacer size="s" />
+
+        <EuiRadioGroup
+          options={this.radios}
+          idSelected={this.state.radioIdSelected}
+          onChange={this.onChange}
+          compressed
         />
       </Fragment>
     );

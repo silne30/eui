@@ -42,14 +42,28 @@ exports[`align renders right when specified 1`] = `
 </td>
 `;
 
-exports[`renders EuiTableRowCell 1`] = `
+exports[`children's className merges new classnames into existing ones 1`] = `
 <td
   class="euiTableRowCell"
 >
   <div
-    aria-label="aria-label"
+    class="euiTableCellContent euiTableCellContent--showOnHover euiTableCellContent--overflowingContent"
+  >
+    <div
+      class="testClass euiTableCellContent__hoverItem"
+    />
+  </div>
+</td>
+`;
+
+exports[`renders EuiTableRowCell 1`] = `
+<td
+  aria-label="aria-label"
+  class="euiTableRowCell"
+  data-test-subj="test subject string"
+>
+  <div
     class="euiTableCellContent testClass1 testClass2"
-    data-test-subj="test subject string"
   >
     <span
       class="euiTableCellContent__text"

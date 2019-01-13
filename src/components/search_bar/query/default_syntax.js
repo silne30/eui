@@ -88,7 +88,7 @@ identifier
 
 identifierChar
   = alnum
-  / [-]
+  / [-_]
   / escapedChar
   
 fieldRangeValue
@@ -107,13 +107,13 @@ containsOrValues
   )* space? ")" { return [ head, ...tail ]; }
   
 rangeValue
-  = number
+  = numberWord
   / date
 
 containsValue
-  = number
+  = numberWord
   / date
-  / boolean
+  / booleanWord
   / word
   / phrase
 
@@ -127,14 +127,29 @@ word
 
 wordChar
   = alnum
-  / [-]
+  / [-_*:]
   / escapedChar
+  / extendedGlyph
+  
+// This isn't _strictly_ correct:
+// for our purposes, a non-ascii word character is considered to
+// be anything above \`Latin-1 Punctuation & Symbols\`, which ends at U+00BF
+// This allows any non-ascii character, including the full set of unicode characters
+// even those in the supplementary planes (U+010000 → U+10FFFF) as those will be seen individually
+// in their surrogate pairs which are of the format /[\uD800-\uDBFF][\uDC00-\uDFFF]/
+extendedGlyph
+  = [\u00C0-\uFFFF]
 
 escapedChar
   = "\\\\" reservedChar
 
 reservedChar
   = [\-:\\\\]
+
+// only match booleans followed by whitespace or end of input
+booleanWord
+  = bool:boolean &space { return bool; }
+  / bool:boolean !. { return bool; }
 
 boolean
   = [tT][rR][uU][eE] { return Exp.boolean(text(), location()); }
@@ -146,6 +161,11 @@ boolean
 
 number
  = [\\-]?[0-9]+("."[0-9]+)* { return Exp.number(text(), location()); }
+
+// only match numbers followed by whitespace or end of input 
+numberWord
+ = num:number &space { return num; }
+ / num:number !. { return num; }
 
 date
  = "'" expression:((!"'" .)+ { return text(); }) "'" {
@@ -160,11 +180,15 @@ space "whitespace"
 `;
 
 const unescapeValue = (value) => {
-  return value.replace(/\\([:\-\\])/, '$1');
+  return value.replace(/\\([:\-\\])/g, '$1');
 };
 
 const escapeValue = (value) => {
-  return value.replace(/([:\-\\])/, '\\$1');
+  return value.replace(/([:\-\\])/g, '\\$1');
+};
+
+const escapeFieldValue = (value) => {
+  return value.replace(/(\\)/g, '\\$1');
 };
 
 const Exp = {
@@ -201,14 +225,20 @@ const resolveFieldValue = (field, valueExpression, ctx) => {
   if (isArray(valueExpression)) {
     return valueExpression.map(exp => resolveFieldValue(field, exp, ctx));
   }
-  const { type, expression, location } = valueExpression;
+  const { location } = valueExpression;
+  let { type, expression } = valueExpression;
   if (schema && !schema.fields[field] && schema.strict) {
     error(`Unknown field \`${field}\``, location);
   }
   const schemaField = schema && schema.fields[field];
   if (schemaField && schemaField.type !== type && schema.strict) {
-    const valueDesc = schemaField.valueDescription || `a ${schemaField.type} value`;
-    error(`Expected ${valueDesc} for field \`${field}\`, but found \`${expression}\``, location);
+    if (schemaField.type === 'string') {
+      expression = valueExpression.expression = expression.toString();
+      type = valueExpression.type = 'string';
+    } else {
+      const valueDesc = schemaField.valueDescription || `a ${schemaField.type} value`;
+      error(`Expected ${valueDesc} for field \`${field}\`, but found \`${expression}\``, location);
+    }
   }
   switch(type) {
 
@@ -252,10 +282,12 @@ const printValue = (value, options) => {
   if (!isString(value)) {
     return value.toString();
   }
+
+  const escapeFn = options.escapeValue || escapeValue;
   if (value.match(/\s/)) {
-    return `"${escapeValue(value)}"`;
+    return `"${escapeFn(value)}"`;
   }
-  return escapeValue(value);
+  return escapeFn(value);
 };
 
 const resolveOperator = (operator) => {
@@ -299,10 +331,14 @@ export const defaultSyntax = Object.freeze({
       switch (clause.type) {
         case AST.Field.TYPE:
           const op = resolveOperator(clause.operator);
+          const printFieldValueOptions = {
+            ...options,
+            escapeValue: escapeFieldValue,
+          };
           if (isArray(clause.value)) {
-            return `${text} ${prefix}${escapeValue(clause.field)}${op}(${clause.value.map(val => printValue(val, options)).join(' or ')})`;
+            return `${text} ${prefix}${escapeValue(clause.field)}${op}(${clause.value.map(val => printValue(val, printFieldValueOptions)).join(' or ')})`; // eslint-disable-line max-len
           }
-          return `${text} ${prefix}${escapeValue(clause.field)}${op}${printValue(clause.value, options)}`;
+          return `${text} ${prefix}${escapeValue(clause.field)}${op}${printValue(clause.value, printFieldValueOptions)}`;
         case AST.Is.TYPE:
           return `${text} ${prefix}is:${escapeValue(clause.flag)}`;
         case AST.Term.TYPE:

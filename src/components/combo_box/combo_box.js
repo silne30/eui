@@ -3,15 +3,13 @@
  * from the tab order with tabindex="-1" so that we can control the keyboard navigation interface.
  */
 
-import { throttle } from 'lodash';
 import React, {
   Component,
 } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import tabbable from 'tabbable';
 
-import { comboBoxKeyCodes, calculatePopoverPosition } from '../../services';
+import { comboBoxKeyCodes, findPopoverPosition, htmlIdGenerator } from '../../services';
 import { BACKSPACE, TAB, ESCAPE } from '../../services/key_codes';
 import { EuiPortal } from '../portal';
 import { EuiComboBoxInput } from './combo_box_input';
@@ -26,44 +24,65 @@ import {
 export class EuiComboBox extends Component {
   static propTypes = {
     id: PropTypes.string,
+    isDisabled: PropTypes.bool,
     className: PropTypes.string,
     placeholder: PropTypes.string,
     isLoading: PropTypes.bool,
     async: PropTypes.bool,
-    singleSelection: PropTypes.bool,
+    singleSelection: PropTypes.oneOfType([
+      PropTypes.bool,
+      PropTypes.shape({
+        asPlainText: PropTypes.bool,
+      }),
+    ]),
     noSuggestions: PropTypes.bool,
     options: PropTypes.array,
     selectedOptions: PropTypes.array,
+    onBlur: PropTypes.func,
     onChange: PropTypes.func,
+    onFocus: PropTypes.func,
     onSearchChange: PropTypes.func,
     onCreateOption: PropTypes.func,
     renderOption: PropTypes.func,
     isInvalid: PropTypes.bool,
     rowHeight: PropTypes.number,
+    isClearable: PropTypes.bool,
+    fullWidth: PropTypes.bool,
+    compressed: PropTypes.bool,
   }
 
   static defaultProps = {
     options: [],
     selectedOptions: [],
+    isClearable: true,
+    singleSelection: false,
+    fullWidth: false,
+    compressed: false,
   }
 
   constructor(props) {
     super(props);
 
     const initialSearchValue = '';
-    const { options, selectedOptions } = props;
-    const matchingOptions = this.getMatchingOptions(options, selectedOptions, initialSearchValue);
+    const { options, selectedOptions, singleSelection } = props;
 
     this.state = {
+      matchingOptions: getMatchingOptions(options, selectedOptions, initialSearchValue, props.async, singleSelection),
+      listElement: undefined,
       searchValue: initialSearchValue,
       isListOpen: false,
       listPosition: 'bottom',
       activeOptionIndex: undefined,
     };
 
-    // Cached derived state.
-    this.matchingOptions = matchingOptions;
-    this.listBounds = undefined;
+    // ensure that the currently selected single option is active if it is in the matchingOptions
+    if (singleSelection && selectedOptions.length === 1) {
+      if (this.state.matchingOptions.includes(selectedOptions[0])) {
+        this.state.activeOptionIndex = this.state.matchingOptions.indexOf(selectedOptions[0]);
+      }
+    }
+
+    this.rootId = htmlIdGenerator();
 
     // Refs.
     this.comboBox = undefined;
@@ -72,12 +91,6 @@ export class EuiComboBox extends Component {
     this.optionsList = undefined;
     this.options = [];
   }
-
-  getMatchingOptions = (options, selectedOptions, searchValue) => {
-    // Assume the consumer has already filtered the options against the search value.
-    const isPreFiltered = this.props.async;
-    return getMatchingOptions(options, selectedOptions, searchValue, isPreFiltered);
-  };
 
   openList = () => {
     this.setState({
@@ -92,108 +105,87 @@ export class EuiComboBox extends Component {
     });
   };
 
-  updateListPosition = (listBounds = this.listBounds) => {
+  updateListPosition = (
+    listElement = this.state.listElement
+  ) => {
+    if (!this._isMounted) {
+      return;
+    }
+
     if (!this.state.isListOpen) {
       return;
     }
 
-    if (!listBounds) {
+    if (!listElement) {
       return;
     }
 
     const comboBoxBounds = this.comboBox.getBoundingClientRect();
 
-    // Cache for future calls. Assign values directly instead of destructuring because listBounds is
-    // a DOMRect, not a JS object.
-    this.listBounds = {
-      bottom: listBounds.bottom,
-      height: listBounds.height,
-      left: comboBoxBounds.left,
-      right: comboBoxBounds.right,
-      top: listBounds.top,
-      width: comboBoxBounds.width,
-      x: listBounds.x,
-      y: listBounds.y,
-    };
+    const { position, top } = findPopoverPosition({
+      anchor: this.comboBox,
+      popover: listElement,
+      position: 'bottom',
+      allowCrossAxis: false
+    });
 
-    const { position, left, top } = calculatePopoverPosition(comboBoxBounds, this.listBounds, 'bottom', 0, ['bottom', 'top']);
-
-    this.optionsList.style.top = `${top + window.scrollY}px`;
-    this.optionsList.style.left = `${left}px`;
+    this.optionsList.style.top = `${top}px`;
+    // listElement doesn't have its width set until after updating the position
+    // which means the popover service won't know about the correct width
+    // however, we already know where to position the element
+    this.optionsList.style.left = `${comboBoxBounds.left + window.pageXOffset}px`;
     this.optionsList.style.width = `${comboBoxBounds.width}px`;
 
+    // Cache for future calls.
     this.setState({
+      listElement,
       width: comboBoxBounds.width,
       listPosition: position,
     });
   };
 
-  tabAway = amount => {
-    const tabbableItems = tabbable(document);
-    const comboBoxIndex = tabbableItems.indexOf(this.searchInput);
-
-    // Wrap to last tabbable if tabbing backwards.
-    if (amount < 0) {
-      if (comboBoxIndex === 0) {
-        tabbableItems[tabbableItems.length - 1].focus();
-        return;
-      }
-    }
-
-    // Wrap to first tabbable if tabbing forwards.
-    if (amount > 0) {
-      if (comboBoxIndex === tabbableItems.length - 1) {
-        tabbableItems[0].focus();
-        return;
-      }
-    }
-
-    tabbableItems[comboBoxIndex + amount].focus();
-  };
-
-  incrementActiveOptionIndex = throttle(amount => {
-    // If there are no options available, reset the focus.
-    if (!this.matchingOptions.length) {
-      this.clearActiveOption();
+  incrementActiveOptionIndex = amount => {
+    // If there are no options available, do nothing.
+    if (!this.state.matchingOptions.length) {
       return;
     }
 
-    let nextActiveOptionIndex;
+    this.setState(({ activeOptionIndex, matchingOptions }) => {
+      let nextActiveOptionIndex;
 
-    if (!this.hasActiveOption()) {
-      // If this is the beginning of the user's keyboard navigation of the menu, then we'll focus
-      // either the first or last item.
-      nextActiveOptionIndex = amount < 0 ? this.matchingOptions.length - 1 : 0;
-    } else {
-      nextActiveOptionIndex = this.state.activeOptionIndex + amount;
+      if (activeOptionIndex == null) {
+        // If this is the beginning of the user's keyboard navigation of the menu, then we'll focus
+        // either the first or last item.
+        nextActiveOptionIndex = amount < 0 ? matchingOptions.length - 1 : 0;
+      } else {
+        nextActiveOptionIndex = activeOptionIndex + amount;
 
-      if (nextActiveOptionIndex < 0) {
-        nextActiveOptionIndex = this.matchingOptions.length - 1;
-      } else if (nextActiveOptionIndex === this.matchingOptions.length) {
-        nextActiveOptionIndex = 0;
+        if (nextActiveOptionIndex < 0) {
+          nextActiveOptionIndex = matchingOptions.length - 1;
+        } else if (nextActiveOptionIndex === matchingOptions.length) {
+          nextActiveOptionIndex = 0;
+        }
       }
-    }
 
-    // Group titles are included in option list but are not selectable
-    // Skip group title options
-    const direction = amount > 0 ? 1 : -1;
-    while (this.matchingOptions[nextActiveOptionIndex].isGroupLabelOption) {
-      nextActiveOptionIndex = nextActiveOptionIndex + direction;
+      // Group titles are included in option list but are not selectable
+      // Skip group title options
+      const direction = amount > 0 ? 1 : -1;
+      while (matchingOptions[nextActiveOptionIndex].isGroupLabelOption) {
+        nextActiveOptionIndex = nextActiveOptionIndex + direction;
 
-      if (nextActiveOptionIndex < 0) {
-        nextActiveOptionIndex = this.matchingOptions.length - 1;
-      } else if (nextActiveOptionIndex === this.matchingOptions.length) {
-        nextActiveOptionIndex = 0;
+        if (nextActiveOptionIndex < 0) {
+          nextActiveOptionIndex = matchingOptions.length - 1;
+        } else if (nextActiveOptionIndex === matchingOptions.length) {
+          nextActiveOptionIndex = 0;
+        }
       }
-    }
 
-    this.setState({
-      activeOptionIndex: nextActiveOptionIndex,
+      return { activeOptionIndex: nextActiveOptionIndex };
     });
-  }, 200);
+  };
 
   hasActiveOption = () => {
-    return this.state.activeOptionIndex !== undefined;
+    return this.state.activeOptionIndex != null;
   };
 
   clearActiveOption = () => {
@@ -202,27 +194,11 @@ export class EuiComboBox extends Component {
     });
   };
 
-  focusActiveOption = () => {
-    // If an item is focused, focus it.
-    if (this.hasActiveOption() && this.options[this.state.activeOptionIndex]) {
-      this.options[this.state.activeOptionIndex].focus();
-    }
-  };
-
-  focusSearchInput = () => {
-    this.clearActiveOption();
-    this.searchInput.focus();
-  };
-
   clearSearchValue = () => {
     this.onSearchChange('');
   };
 
   removeLastOption = () => {
-    if (this.hasActiveOption()) {
-      return;
-    }
-
     if (!this.props.selectedOptions.length) {
       return;
     }
@@ -237,39 +213,53 @@ export class EuiComboBox extends Component {
   };
 
   addCustomOption = () => {
+    const {
+      options,
+      selectedOptions,
+      onCreateOption,
+    } = this.props;
+
+    const {
+      searchValue,
+      matchingOptions,
+    } = this.state;
+
     if (this.doesSearchMatchOnlyOption()) {
-      this.options[0].click();
+      this.onAddOption(matchingOptions[0]);
       return;
     }
 
-    if (!this.props.onCreateOption) {
+    if (!onCreateOption) {
+      return;
+    }
+
+    // Don't bother trying to create an option if the user hasn't typed anything.
+    if (!searchValue) {
       return;
     }
 
     // Don't create the value if it's already been selected.
-    if (getSelectedOptionForSearchValue(this.state.searchValue, this.props.selectedOptions)) {
+    if (getSelectedOptionForSearchValue(searchValue, selectedOptions)) {
       return;
     }
 
     // Add new custom pill if this is custom input, even if it partially matches an option..
-    if (!this.hasActiveOption() || this.doesSearchMatchOnlyOption()) {
-      const isOptionCreated = this.props.onCreateOption(this.state.searchValue, flattenOptionGroups(this.props.options));
+    const isOptionCreated = this.props.onCreateOption(searchValue, flattenOptionGroups(options));
 
-      // Expect the consumer to be explicit in rejecting a custom option.
-      if (isOptionCreated === false) {
-        return;
-      }
-
-      this.clearSearchValue();
+    // Expect the consumer to be explicit in rejecting a custom option.
+    if (isOptionCreated === false) {
+      return;
     }
+
+    this.clearSearchValue();
   };
 
   doesSearchMatchOnlyOption = () => {
     const { searchValue } = this.state;
-    if (this.matchingOptions.length !== 1) {
+    if (this.state.matchingOptions.length !== 1) {
       return false;
     }
-    return this.matchingOptions[0].label.toLowerCase() === searchValue.toLowerCase();
+    return this.state.matchingOptions[0].label.toLowerCase() === searchValue.toLowerCase();
   };
 
   areAllOptionsSelected = () => {
@@ -281,75 +271,93 @@ export class EuiComboBox extends Component {
     return flattenOptionGroups(options).length === selectedOptions.length;
   };
 
-  onFocus = () => {
-    document.addEventListener('click', this.onDocumentFocusChange);
-    document.addEventListener('focusin', this.onDocumentFocusChange);
+  onComboBoxFocus = () => {
+    if (this.props.onFocus) {
+      this.props.onFocus();
+    }
     this.openList();
   }
 
-  onBlur = () => {
-    document.removeEventListener('click', this.onDocumentFocusChange);
-    document.removeEventListener('focusin', this.onDocumentFocusChange);
-    this.closeList();
-  }
-
-  onDocumentFocusChange = event => {
-    // Close the list if the combo box has lost focus.
-    if (
-      this.comboBox === event.target
-      || this.comboBox.contains(event.target)
-      || this.optionsList === event.target
-      || this.optionsList && this.optionsList.contains(event.target)
-    ) {
-      return;
+  onContainerBlur = (e) => {
+    // close the options list, unless the use clicked on an option
+    const focusedInOptionsList = this.optionsList && this.optionsList.contains(e.relatedTarget);
+    const focusedInInput = this.comboBox && this.comboBox.contains(e.relatedTarget);
+    if (!focusedInOptionsList && !focusedInInput) {
+      this.closeList();
     }
 
-    // Wait for the DOM to update.
-    requestAnimationFrame(() => {
-      if (document.activeElement === this.searchInput) {
-        return;
-      }
+    // If the user tabs away or changes focus to another element, take whatever input they've
+    // typed and convert it into a pill, to prevent the combo box from looking like a text input.
+    if (!this.hasActiveOption() && !focusedInInput) {
+      this.addCustomOption();
+    }
+  }
 
-      this.onBlur();
-    });
-  };
+  onComboBoxBlur = () => {
+    if (this.props.onBlur) {
+      this.props.onBlur();
+    }
+  }
+
+  onComboBoxLoseFocus = e => {
+    if (!this.comboBox || !this.comboBox.contains(e.relatedTarget)) {
+      this.closeList();
+    }
+  }
 
   onKeyDown = (e) => {
     switch (e.keyCode) {
       case comboBoxKeyCodes.UP:
         e.preventDefault();
-        this.incrementActiveOptionIndex(-1);
+        e.stopPropagation();
+        if (this.state.isListOpen) {
+          this.incrementActiveOptionIndex(-1);
+        } else {
+          this.openList();
+        }
         break;
 
       case comboBoxKeyCodes.DOWN:
         e.preventDefault();
-        this.incrementActiveOptionIndex(1);
+        e.stopPropagation();
+        if (this.state.isListOpen) {
+          this.incrementActiveOptionIndex(1);
+        } else {
+          this.openList();
+        }
         break;
 
       case BACKSPACE:
+        e.stopPropagation();
         this.removeLastOption();
         break;
 
       case ESCAPE:
-        // Move focus from options list to input.
-        if (this.hasActiveOption()) {
-          this.focusSearchInput();
-        }
+        e.stopPropagation();
+        this.closeList();
         break;
 
       case comboBoxKeyCodes.ENTER:
-        this.addCustomOption();
+        e.stopPropagation();
+        if (this.hasActiveOption()) {
+          this.onAddOption(this.state.matchingOptions[this.state.activeOptionIndex]);
+        } else {
+          this.addCustomOption();
+        }
         break;
 
       case TAB:
-        e.preventDefault();
-        e.stopPropagation();
-        if (e.shiftKey) {
-          this.tabAway(-1);
-        } else {
-          this.tabAway(1);
+        // Disallow tabbing when the user is navigating the options.
+        if (this.hasActiveOption()) {
+          e.preventDefault();
+          e.stopPropagation();
         }
         break;
+
+      default:
+        if (this.props.onKeyDown) {
+          this.props.onKeyDown(e);
+        }
     }
   };
 
@@ -362,6 +370,10 @@ export class EuiComboBox extends Component {
   }
 
   onAddOption = (addedOption) => {
+    if (addedOption.disabled) {
+      return;
+    }
+
     const { onChange, selectedOptions, singleSelection } = this.props;
     onChange(singleSelection ? [addedOption] : selectedOptions.concat(addedOption));
 
@@ -369,40 +381,48 @@ export class EuiComboBox extends Component {
 
     if (singleSelection) {
       this.closeList();
+      this.searchInput.blur();
       return;
     }
 
-    this.focusSearchInput();
+    this.clearActiveOption();
+    this.searchInput.focus();
   };
 
   onRemoveOption = (removedOption) => {
     const { onChange, selectedOptions } = this.props;
     onChange(selectedOptions.filter(option => option !== removedOption));
-    this.focusSearchInput();
+
+    this.clearActiveOption();
   };
+
+  clearSelectedOptions = () => {
+    this.props.onChange([]);
+    // Clicking the clear button will also cause it to disappear. This would result in focus
+    // shifting unexpectedly to the body element so we set it to the input which is more reasonable,
+    this.searchInput.focus();
+  }
 
   onComboBoxClick = () => {
     // When the user clicks anywhere on the box, enter the interaction state.
     this.searchInput.focus();
-    // If the user does this from a state in which an option has focus, then we need to clear it.
-    this.clearActiveOption();
+
+    // If the user does this from a state in which an option has focus, then we need to reset it or clear it.
+    if (this.props.singleSelection && this.props.selectedOptions.length === 1) {
+      this.setState({
+        activeOptionIndex: this.state.matchingOptions.indexOf(this.props.selectedOptions[0]),
+      });
+    } else {
+      this.clearActiveOption();
+    }
   };
 
-  onComboBoxFocus = (e) => {
-    // If the user has tabbed to the combo box, open it.
-    if (e.target === this.searchInput) {
-      this.searchInput.focus();
-      return;
-    }
+  onOpenListClick = () => {
+    this.searchInput.focus();
+  };
 
-    // If a user clicks on an option without selecting it, then it will take focus
-    // and we need to update the index.
-    const optionIndex = this.options.indexOf(e.target);
-    if (optionIndex !== -1) {
-      this.setState({
-        activeOptionIndex: optionIndex,
-      });
-    }
+  onCloseListClick = () => {
+    this.closeList();
   };
 
   onSearchChange = (searchValue) => {
@@ -438,51 +458,95 @@ export class EuiComboBox extends Component {
     this.options[index] = node;
   };
 
+  toggleButtonRef = node => {
+    this.toggleButton = node;
+  };
+
   componentDidMount() {
+    this._isMounted = true;
+
     // TODO: This will need to be called once the actual stylesheet loads.
     setTimeout(() => {
-      this.autoSizeInput.copyInputStyles();
+      if (this.autoSizeInput) {
+        this.autoSizeInput.copyInputStyles();
+      }
     }, 100);
   }
 
-  componentWillUpdate(nextProps, nextState) {
-    const { options, selectedOptions } = nextProps;
-    const { searchValue } = nextState;
-
-    if (
-      options !== this.props.options
-      || selectedOptions !== this.props.selectedOptions
-      || searchValue !== this.props.searchValue
-    ) {
-      // Clear refs to options if the ones we can display changes.
-      this.options = [];
-    }
+  static getDerivedStateFromProps(nextProps, prevState) {
+    const { options, selectedOptions, singleSelection } = nextProps;
+    const { searchValue } = prevState;
 
     // Calculate and cache the options which match the searchValue, because we use this information
     // in multiple places and it would be expensive to calculate repeatedly.
-    const matchingOptions = this.getMatchingOptions(options, selectedOptions, nextState.searchValue);
-    this.matchingOptions = matchingOptions;
+    const matchingOptions = getMatchingOptions(options, selectedOptions, searchValue, nextProps.async, singleSelection);
+    // ensure that the currently selected single option is active if it is in the matchingOptions
+    if (singleSelection && selectedOptions.length === 1) {
+      let nextActiveOptionIndex;
+      if (matchingOptions.includes(selectedOptions[0])) {
+        nextActiveOptionIndex = matchingOptions.indexOf(selectedOptions[0]);
+      }
+      return { matchingOptions, activeOptionIndex: nextActiveOptionIndex };
+    }
 
-    if (!matchingOptions.length) {
-      // Prevent endless setState -> componentWillUpdate -> setState loop.
-      if (nextState.hasActiveOption) {
-        this.clearActiveOption();
+    return { matchingOptions };
+  }
+
+  updateMatchingOptionsIfDifferent(newMatchingOptions) {
+    const { matchingOptions, activeOptionIndex } = this.state;
+    const { singleSelection, selectedOptions } = this.props;
+
+    let areOptionsDifferent = false;
+
+    if (matchingOptions.length !== newMatchingOptions.length) {
+      areOptionsDifferent = true;
+    } else {
+      for (let i = 0; i < matchingOptions.length; i++) {
+        if (matchingOptions[i].label !== newMatchingOptions[i].label) {
+          areOptionsDifferent = true;
+          break;
+        }
+      }
+    }
+
+    if (areOptionsDifferent) {
+      this.options = [];
+      let nextActiveOptionIndex = activeOptionIndex;
+      // ensure that the currently selected single option is active if it is in the matchingOptions
+      if (singleSelection && selectedOptions.length === 1) {
+        if (newMatchingOptions.includes(selectedOptions[0])) {
+          nextActiveOptionIndex = newMatchingOptions.indexOf(selectedOptions[0]);
+        }
+      }
+      this.setState({ matchingOptions: newMatchingOptions, activeOptionIndex: nextActiveOptionIndex });
+
+      if (!newMatchingOptions.length) {
+        // Prevent endless setState -> componentWillUpdate -> setState loop.
+        if (this.hasActiveOption()) {
+          this.clearActiveOption();
+        }
       }
     }
   }
 
   componentDidUpdate() {
-    this.focusActiveOption();
+    const { options, selectedOptions, singleSelection } = this.props;
+    const { searchValue } = this.state;
+
+    // React 16.3 has a bug (fixed in 16.4) where getDerivedStateFromProps
+    // isn't called after a state change, and we track `searchValue` in state
+    // instead we need to react to a change in searchValue here
+    this.updateMatchingOptionsIfDifferent(getMatchingOptions(options, selectedOptions, searchValue, this.props.async, singleSelection));
   }
 
   componentWillUnmount() {
-    document.removeEventListener('click', this.onDocumentFocusChange);
-    document.removeEventListener('focusin', this.onDocumentFocusChange);
+    this._isMounted = false;
   }
 
   render() {
     const {
       id,
+      isDisabled,
       className,
       isLoading,
       options,
@@ -491,12 +555,16 @@ export class EuiComboBox extends Component {
       placeholder,
       noSuggestions,
       renderOption,
-      singleSelection, // eslint-disable-line no-unused-vars
+      singleSelection,
       onChange, // eslint-disable-line no-unused-vars
       onSearchChange, // eslint-disable-line no-unused-vars
       async, // eslint-disable-line no-unused-vars
       isInvalid,
       rowHeight,
+      isClearable,
+      fullWidth,
+      compressed,
+      'data-test-subj': dataTestSubj,
       ...rest
     } = this.props;
 
@@ -505,6 +573,9 @@ export class EuiComboBox extends Component {
     const classes = classNames('euiComboBox', className, {
       'euiComboBox-isOpen': isListOpen,
       'euiComboBox-isInvalid': isInvalid,
+      'euiComboBox-isDisabled': isDisabled,
+      'euiComboBox--fullWidth': fullWidth,
+      'euiComboBox--compressed': compressed,
     });
 
     const value = selectedOptions.map(selectedOption => selectedOption.label).join(', ');
@@ -512,6 +583,8 @@ export class EuiComboBox extends Component {
     let optionsList;
 
     if (!noSuggestions && isListOpen) {
+      const optionsListDataTestSubj = dataTestSubj ? `${dataTestSubj}-optionsList` : undefined;
+
       optionsList = (
         <EuiPortal>
           <EuiComboBoxOptionsList
@@ -520,7 +593,8 @@ export class EuiComboBox extends Component {
             selectedOptions={selectedOptions}
             onCreateOption={onCreateOption}
             searchValue={searchValue}
-            matchingOptions={this.matchingOptions}
+            matchingOptions={this.state.matchingOptions}
+            activeOptionIndex={this.state.activeOptionIndex}
             listRef={this.optionsListRef}
             optionRef={this.optionRef}
             onOptionClick={this.onOptionClick}
@@ -532,8 +606,10 @@ export class EuiComboBox extends Component {
             renderOption={renderOption}
             width={width}
             scrollToIndex={activeOptionIndex}
-            onScroll={this.focusActiveOption}
             rowHeight={rowHeight}
+            data-test-subj={optionsListDataTestSubj}
+            fullWidth={fullWidth}
+            rootId={this.rootId}
           />
         </EuiPortal>
       );
@@ -541,25 +617,43 @@ export class EuiComboBox extends Component {
 
     return (
       <div
+        {...rest}
         className={classes}
-        onFocus={this.onComboBoxFocus}
         onKeyDown={this.onKeyDown}
         ref={this.comboBoxRef}
-        {...rest}
+        data-test-subj={dataTestSubj}
+        onBlur={this.onContainerBlur}
+        role="combobox"
+        aria-haspopup="listbox"
+        aria-expanded={isListOpen}
       >
         <EuiComboBoxInput
           id={id}
           placeholder={placeholder}
           selectedOptions={selectedOptions}
           onRemoveOption={this.onRemoveOption}
+          onBlur={this.onComboBoxBlur}
           onClick={this.onComboBoxClick}
           onChange={this.onSearchChange}
-          onFocus={this.onFocus}
+          onFocus={this.onComboBoxFocus}
           value={value}
           searchValue={searchValue}
           autoSizeInputRef={this.autoSizeInputRef}
           inputRef={this.searchInputRef}
           updatePosition={this.updateListPosition}
+          onClear={isClearable && !isDisabled ? this.clearSelectedOptions : undefined}
+          hasSelectedOptions={selectedOptions.length > 0}
+          isListOpen={isListOpen}
+          onOpenListClick={this.onOpenListClick}
+          onCloseListClick={this.onCloseListClick}
+          singleSelection={singleSelection}
+          isDisabled={isDisabled}
+          toggleButtonRef={this.toggleButtonRef}
+          fullWidth={fullWidth}
+          noIcon={!!noSuggestions}
+          rootId={this.rootId}
+          focusedOptionId={this.hasActiveOption() ? this.rootId(`_option-${this.state.activeOptionIndex}`) : null}
+          compressed={compressed}
         />
 
         {optionsList}

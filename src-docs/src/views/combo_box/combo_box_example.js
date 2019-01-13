@@ -11,6 +11,7 @@ import {
 } from '../../components';
 
 import {
+  EuiLink,
   EuiCallOut,
   EuiCode,
   EuiComboBox,
@@ -58,6 +59,10 @@ import Virtualized from './virtualized';
 const virtualizedSource = require('!!raw-loader!./virtualized');
 const virtualizedHtml = renderToHtml(Virtualized);
 
+import Disabled from './disabled';
+const disabledSource = require('!!raw-loader!./disabled');
+const disabledHtml = renderToHtml(Disabled);
+
 export const ComboBoxExample = {
   title: 'Combo Box',
   intro: (
@@ -99,6 +104,22 @@ export const ComboBoxExample = {
     props: { EuiComboBox },
     demo: <ComboBox />,
   }, {
+    title: 'Disabled',
+    source: [{
+      type: GuideSectionTypes.JS,
+      code: disabledSource,
+    }, {
+      type: GuideSectionTypes.HTML,
+      code: disabledHtml,
+    }],
+    text: (
+      <p>
+        Set the prop <EuiCode>isDisabled</EuiCode> to make the combo box disabled.
+      </p>
+    ),
+    props: { EuiComboBox },
+    demo: <Disabled />,
+  }, {
     title: 'Virtualized',
     source: [{
       type: GuideSectionTypes.JS,
@@ -109,7 +130,7 @@ export const ComboBoxExample = {
     }],
     text: (
       <p>
-        <EuiCode>EuiComboBoxList</EuiCode> uses <Link to="https://github.com/bvaughn/react-virtualized">react-virtualized</Link>{' '}
+        <EuiCode>EuiComboBoxList</EuiCode> uses <EuiLink href="https://github.com/bvaughn/react-virtualized">react-virtualized</EuiLink>{' '}
         to only render visible options to be super fast no matter how many options there are.
       </p>
     ),
@@ -204,8 +225,10 @@ export const ComboBoxExample = {
     }],
     text: (
       <p>
-        To only allow the user to select a single option, provide
-        the <EuiCode>singleSelection</EuiCode> prop.
+        To only allow the user to select a single option, provide the{' '}
+        <EuiCode>singleSelection</EuiCode> prop. You may want to render the selected option as
+        plain text instead of pill form. To do this, pass{' '}
+        <EuiCode>{'singleSelection={{ asPlainText: true }}'}</EuiCode>
       </p>
     ),
     props: { EuiComboBox },
@@ -237,7 +260,7 @@ export const ComboBoxExample = {
     }],
     text: (
       <p>
-        Alternatively, provide thhe <EuiCode>noSuggestions</EuiCode> prop to hide the suggestions list
+        Alternatively, provide the <EuiCode>noSuggestions</EuiCode> prop to hide the suggestions list
         and <em>only</em> allow the creation of custom options.
       </p>
     ),

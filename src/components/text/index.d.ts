@@ -1,17 +1,16 @@
-/// <reference path="../common.d.ts" />
+import { CommonProps } from '../common';
+import { SFC, HTMLAttributes } from 'react';
 
 declare module '@elastic/eui' {
-  import { SFC, HTMLAttributes } from 'react';
-
   /**
    * text type defs
    *
    * @see './text.js'
    * @see './text_color.js'
    */
-  type EuiTextSize = 's' | 'xs';
+  type TEXT_SIZES = 's' | 'xs';
 
-  type EuiTextColor =
+  type COLORS =
     | 'default'
     | 'subdued'
     | 'secondary'
@@ -22,9 +21,17 @@ declare module '@elastic/eui' {
 
   type EuiTextProps = CommonProps &
     HTMLAttributes<HTMLDivElement> & {
-      size?: EuiTextSize;
-      color?: EuiTextColor;
+      size?: TEXT_SIZES;
+      color?: COLORS;
+      grow?: boolean;
     };
 
+  type EuiTextColorProps = CommonProps &
+    HTMLAttributes<HTMLDivElement> &
+    HTMLAttributes<HTMLSpanElement> & {
+    color?: COLORS;
+  };
+
   export const EuiText: SFC<EuiTextProps>;
+  export const EuiTextColor: SFC<EuiTextColorProps>;
 }

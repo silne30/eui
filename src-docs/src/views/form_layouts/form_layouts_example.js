@@ -10,23 +10,20 @@ import {
   EuiCode,
   EuiForm,
   EuiFormRow,
-  EuiCheckboxGroup,
-  EuiFieldNumber,
-  EuiFieldPassword,
-  EuiFieldSearch,
+  EuiDescribedFormGroup,
   EuiFieldText,
   EuiPopover,
   EuiRange,
-  EuiRadioGroup,
-  EuiSelect,
   EuiSwitch,
-  EuiTextArea,
-  EuiFilePicker,
 } from '../../../../src/components';
 
 import FormRows from './form_rows';
 const formRowsSource = require('!!raw-loader!./form_rows');
 const formRowsHtml = renderToHtml(FormRows);
+
+import DescribedFormGroup from './described_form_group';
+const describedFormGroupSource = require('!!raw-loader!./described_form_group');
+const describedFormGroupHtml = renderToHtml(DescribedFormGroup);
 
 import FullWidth from './full_width';
 const fullWidthSource = require('!!raw-loader!./full_width');
@@ -48,6 +45,10 @@ import InlinePopover from './inline_popover';
 const inlinePopoverSource = require('!!raw-loader!./inline_popover');
 const inlinePopoverHtml = renderToHtml(InlinePopover);
 
+import FormCompressed from './form_compressed';
+const formCompressedSource = require('!!raw-loader!./form_compressed');
+const formCompressedHtml = renderToHtml(FormCompressed);
+
 export const FormLayoutsExample = {
   title: 'Form layouts',
   sections: [{
@@ -66,19 +67,8 @@ export const FormLayoutsExample = {
       </p>
     ),
     props: {
-      EuiCheckboxGroup,
-      EuiFieldNumber,
-      EuiFieldPassword,
-      EuiFieldSearch,
-      EuiFieldText,
       EuiForm,
       EuiFormRow,
-      EuiFilePicker,
-      EuiRange,
-      EuiRadioGroup,
-      EuiSelect,
-      EuiSwitch,
-      EuiTextArea,
     },
     demo: <FormRows />,
   }, {
@@ -99,12 +89,49 @@ export const FormLayoutsExample = {
       </p>
     ),
     props: {
-      EuiFieldSearch,
-      EuiRange,
-      EuiTextArea,
       EuiFormRow,
     },
     demo: <FullWidth />,
+  }, {
+    title: 'Compressed',
+    source: [{
+      type: GuideSectionTypes.JS,
+      code: formCompressedSource,
+    }, {
+      type: GuideSectionTypes.HTML,
+      code: formCompressedHtml,
+    }],
+    text: (
+      <p>
+        If the particular form is in an area with a small amount of real estate,
+        you can add the prop <EuiCode>compressed</EuiCode> to the <EuiCode>EuiFormRow</EuiCode>s and it
+        will pass down to the form controls.
+      </p>
+    ),
+    props: {
+      EuiFormRow,
+    },
+    demo: <FormCompressed />,
+  }, {
+    title: 'Described form groups',
+    source: [{
+      type: GuideSectionTypes.JS,
+      code: describedFormGroupSource,
+    }, {
+      type: GuideSectionTypes.HTML,
+      code: describedFormGroupHtml,
+    }],
+    text: (
+      <p>
+        Use <EuiCode>EuiDescribedFormGroup</EuiCode> component to associate multiple <EuiCode>EuiFormRow</EuiCode>s.
+        It can also simply be used with one <EuiCode>EuiFormRow</EuiCode> as a way to display help text (or additional
+        text) next to the field instead of below (on mobile, will revert to being stacked).
+      </p>
+    ),
+    props: {
+      EuiDescribedFormGroup,
+    },
+    demo: <DescribedFormGroup />,
   }, {
     title: 'In popover',
     text: (
@@ -190,4 +217,3 @@ export const FormLayoutsExample = {
     demo: <InlinePopover />,
   }],
 };
-

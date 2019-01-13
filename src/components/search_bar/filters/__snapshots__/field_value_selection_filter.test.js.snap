@@ -1,11 +1,104 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`FieldValueSelectionFilter render - all configurations 1`] = `
+exports[`FieldValueSelectionFilter active - field is global 1`] = `
 <EuiPopover
-  anchorPosition="downRight"
+  anchorPosition="downCenter"
   button={
     <EuiFilterButton
       color="text"
+      grow={true}
+      hasActiveFilters={true}
+      iconSide="right"
+      iconType="arrowDown"
+      onClick={[Function]}
+      type="button"
+    >
+      Tag
+    </EuiFilterButton>
+  }
+  closePopover={[Function]}
+  hasArrow={true}
+  id="field_value_selection_0"
+  isOpen={false}
+  ownFocus={true}
+  panelClassName="euiFilterGroup__popoverPanel"
+  panelPaddingSize="none"
+  withTitle={null}
+>
+  <div
+    className="euiFilterSelect__note"
+  >
+    <div
+      className="euiFilterSelect__noteContent"
+    >
+      <EuiLoadingChart
+        mono={false}
+        size="m"
+      />
+      <EuiSpacer
+        size="xs"
+      />
+      <p>
+        Loading...
+      </p>
+    </div>
+  </div>
+</EuiPopover>
+`;
+
+exports[`FieldValueSelectionFilter active - fields in options 1`] = `
+<EuiPopover
+  anchorPosition="downCenter"
+  button={
+    <EuiFilterButton
+      color="text"
+      grow={true}
+      hasActiveFilters={true}
+      iconSide="right"
+      iconType="arrowDown"
+      onClick={[Function]}
+      type="button"
+    >
+      Tag
+    </EuiFilterButton>
+  }
+  closePopover={[Function]}
+  hasArrow={true}
+  id="field_value_selection_0"
+  isOpen={false}
+  ownFocus={true}
+  panelClassName="euiFilterGroup__popoverPanel"
+  panelPaddingSize="none"
+  withTitle={null}
+>
+  <div
+    className="euiFilterSelect__note"
+  >
+    <div
+      className="euiFilterSelect__noteContent"
+    >
+      <EuiLoadingChart
+        mono={false}
+        size="m"
+      />
+      <EuiSpacer
+        size="xs"
+      />
+      <p>
+        Loading...
+      </p>
+    </div>
+  </div>
+</EuiPopover>
+`;
+
+exports[`FieldValueSelectionFilter inactive - field is global 1`] = `
+<EuiPopover
+  anchorPosition="downCenter"
+  button={
+    <EuiFilterButton
+      color="text"
+      grow={true}
       hasActiveFilters={false}
       iconSide="right"
       iconType="arrowDown"
@@ -16,6 +109,99 @@ exports[`FieldValueSelectionFilter render - all configurations 1`] = `
     </EuiFilterButton>
   }
   closePopover={[Function]}
+  hasArrow={true}
+  id="field_value_selection_0"
+  isOpen={false}
+  ownFocus={true}
+  panelClassName="euiFilterGroup__popoverPanel"
+  panelPaddingSize="none"
+  withTitle={null}
+>
+  <div
+    className="euiFilterSelect__note"
+  >
+    <div
+      className="euiFilterSelect__noteContent"
+    >
+      <EuiLoadingChart
+        mono={false}
+        size="m"
+      />
+      <EuiSpacer
+        size="xs"
+      />
+      <p>
+        Loading...
+      </p>
+    </div>
+  </div>
+</EuiPopover>
+`;
+
+exports[`FieldValueSelectionFilter inactive - fields in options 1`] = `
+<EuiPopover
+  anchorPosition="downCenter"
+  button={
+    <EuiFilterButton
+      color="text"
+      grow={true}
+      hasActiveFilters={false}
+      iconSide="right"
+      iconType="arrowDown"
+      onClick={[Function]}
+      type="button"
+    >
+      Tag
+    </EuiFilterButton>
+  }
+  closePopover={[Function]}
+  hasArrow={true}
+  id="field_value_selection_0"
+  isOpen={false}
+  ownFocus={true}
+  panelClassName="euiFilterGroup__popoverPanel"
+  panelPaddingSize="none"
+  withTitle={null}
+>
+  <div
+    className="euiFilterSelect__note"
+  >
+    <div
+      className="euiFilterSelect__noteContent"
+    >
+      <EuiLoadingChart
+        mono={false}
+        size="m"
+      />
+      <EuiSpacer
+        size="xs"
+      />
+      <p>
+        Loading...
+      </p>
+    </div>
+  </div>
+</EuiPopover>
+`;
+
+exports[`FieldValueSelectionFilter render - all configurations 1`] = `
+<EuiPopover
+  anchorPosition="downCenter"
+  button={
+    <EuiFilterButton
+      color="text"
+      grow={true}
+      hasActiveFilters={false}
+      iconSide="right"
+      iconType="arrowDown"
+      onClick={[Function]}
+      type="button"
+    >
+      Tag
+    </EuiFilterButton>
+  }
+  closePopover={[Function]}
+  hasArrow={true}
   id="field_value_selection_0"
   isOpen={false}
   ownFocus={true}
@@ -44,12 +230,13 @@ exports[`FieldValueSelectionFilter render - all configurations 1`] = `
 </EuiPopover>
 `;
 
-exports[`FieldValueSelectionFilter render - multi-select OR 1`] = `
+exports[`FieldValueSelectionFilter render - fields in options 1`] = `
 <EuiPopover
-  anchorPosition="downRight"
+  anchorPosition="downCenter"
   button={
     <EuiFilterButton
       color="text"
+      grow={true}
       hasActiveFilters={false}
       iconSide="right"
       iconType="arrowDown"
@@ -60,6 +247,53 @@ exports[`FieldValueSelectionFilter render - multi-select OR 1`] = `
     </EuiFilterButton>
   }
   closePopover={[Function]}
+  hasArrow={true}
+  id="field_value_selection_0"
+  isOpen={false}
+  ownFocus={true}
+  panelClassName="euiFilterGroup__popoverPanel"
+  panelPaddingSize="none"
+  withTitle={null}
+>
+  <div
+    className="euiFilterSelect__note"
+  >
+    <div
+      className="euiFilterSelect__noteContent"
+    >
+      <EuiLoadingChart
+        mono={false}
+        size="m"
+      />
+      <EuiSpacer
+        size="xs"
+      />
+      <p>
+        Loading...
+      </p>
+    </div>
+  </div>
+</EuiPopover>
+`;
+
+exports[`FieldValueSelectionFilter render - multi-select OR 1`] = `
+<EuiPopover
+  anchorPosition="downCenter"
+  button={
+    <EuiFilterButton
+      color="text"
+      grow={true}
+      hasActiveFilters={false}
+      iconSide="right"
+      iconType="arrowDown"
+      onClick={[Function]}
+      type="button"
+    >
+      Tag
+    </EuiFilterButton>
+  }
+  closePopover={[Function]}
+  hasArrow={true}
   id="field_value_selection_0"
   isOpen={false}
   ownFocus={true}
@@ -90,10 +324,11 @@ exports[`FieldValueSelectionFilter render - multi-select OR 1`] = `
 
 exports[`FieldValueSelectionFilter render - options as a function 1`] = `
 <EuiPopover
-  anchorPosition="downRight"
+  anchorPosition="downCenter"
   button={
     <EuiFilterButton
       color="text"
+      grow={true}
       hasActiveFilters={false}
       iconSide="right"
       iconType="arrowDown"
@@ -104,6 +339,7 @@ exports[`FieldValueSelectionFilter render - options as a function 1`] = `
     </EuiFilterButton>
   }
   closePopover={[Function]}
+  hasArrow={true}
   id="field_value_selection_0"
   isOpen={false}
   ownFocus={true}
@@ -134,10 +370,11 @@ exports[`FieldValueSelectionFilter render - options as a function 1`] = `
 
 exports[`FieldValueSelectionFilter render - options as an array 1`] = `
 <EuiPopover
-  anchorPosition="downRight"
+  anchorPosition="downCenter"
   button={
     <EuiFilterButton
       color="text"
+      grow={true}
       hasActiveFilters={false}
       iconSide="right"
       iconType="arrowDown"
@@ -148,6 +385,7 @@ exports[`FieldValueSelectionFilter render - options as an array 1`] = `
     </EuiFilterButton>
   }
   closePopover={[Function]}
+  hasArrow={true}
   id="field_value_selection_0"
   isOpen={false}
   ownFocus={true}

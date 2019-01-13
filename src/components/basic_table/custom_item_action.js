@@ -16,7 +16,7 @@ export class CustomItemAction extends Component {
     this.mounted = false;
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.mounted = true;
   }
 

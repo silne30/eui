@@ -9,10 +9,10 @@ You should check out our [living style guide][docs], which contains many example
 
 ## Installation
 
-To install the Elastic UI Framework, use the `npm` CLI.
+To install the Elastic UI Framework into an existing project, use the `yarn` CLI (`npm` is not supported).
 
 ```
-npm install @elastic/eui
+yarn add @elastic/eui
 ```
 
 ## Running Locally
@@ -55,6 +55,7 @@ You can find documentation around creating and submitting new components in [CON
 ### Consumption
 
 * [Consuming EUI][consuming]
+* [Using EUI with react-router][react-router]
 
 ### Maintenance
 
@@ -80,4 +81,5 @@ You can find documentation around creating and submitting new components in [CON
 [releasing-versions]: wiki/releasing-versions.md
 [testing]: wiki/testing.md
 [theming]: wiki/theming.md
+[react-router]: wiki/react-router.md
 [docs]: https://elastic.github.io/eui/

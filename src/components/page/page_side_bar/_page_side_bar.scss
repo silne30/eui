@@ -3,11 +3,11 @@
  */
 .euiPageSideBar {
   min-width: $euiSize * 12; /* 1 */
-  flex: 0 0 0; /* 1 */
+  flex: 0 1 0%; /* 1 */
   margin-right: $euiSizeL;
 }
 
-@include screenXSmall {
+@include euiBreakpoint('xs', 's') {
   .euiPageSideBar {
     width: 100%;
   }

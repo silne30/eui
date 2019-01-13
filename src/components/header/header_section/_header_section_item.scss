@@ -9,8 +9,7 @@
 
   &:after {
     position: absolute;
-    content: "";
-    width: 1px;
+    content: '';
     top: $euiSize;
     bottom: 0;
     background: $euiBorderColor;
@@ -18,19 +17,60 @@
   }
 }
 
-  .euiHeaderSectionItem__button {
-    height: $euiHeaderChildSize;
-    min-width: $euiHeaderChildSize;
-    text-align: center;
+.euiHeaderSectionItem__button {
+  height: $euiHeaderChildSize;
+  min-width: $euiHeaderChildSize;
+  text-align: center;
+  font-size: 0; // aligns icons better vertically
 
-    &:focus {
-      background: $euiFocusBackgroundColor;
-    }
+  &:focus {
+    background: $euiFocusBackgroundColor;
   }
+}
+
+.euiHeaderSectionItem--borderLeft {
+  &:after {
+    left: 0;
+    width: 1px;
+  }
+}
 
 .euiHeaderSectionItem--borderRight {
   &:after {
+    width: 1px;
     left: auto;
     right: 0;
+  }
+}
+
+.euiHeaderNotification {
+  position: absolute;
+  top: 18%;
+  right: 18%;
+  box-shadow: 0 0 0 1px $euiHeaderBackgroundColor;
+}
+
+@include euiBreakpoint('xs') {
+  .euiHeaderSectionItem,
+  .euiHeaderSectionItem__button {
+    height: $euiHeaderChildSize * .75;
+    min-width: $euiHeaderChildSize * .75;
+  }
+
+  .euiHeaderSectionItem--borderLeft,
+  .euiHeaderSectionItem--borderRight {
+    &:after {
+      display: none;
+    }
+  }
+
+  // On small screens just show a small dot indicating there are notifications
+  .euiHeaderNotification {
+    @include size($euiSizeS);
+
+    min-width: 0;
+    border-radius: $euiSizeS;
+    color: $euiColorAccent;
+    overflow: hidden;
   }
 }

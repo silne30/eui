@@ -13,6 +13,10 @@ import {
   EuiFlexItem,
 } from '../flex';
 
+import {
+  EuiMutationObserver,
+} from '../mutation_observer';
+
 const paddingSizeToClassNameMap = {
   none: null,
   xs: 'euiAccordion__padding--xs',
@@ -35,16 +39,29 @@ export class EuiAccordion extends Component {
     this.onToggle = this.onToggle.bind(this);
   }
 
-  componentDidUpdate() {
-    const height = this.state.isOpen ? this.childContent.clientHeight: 0;
+  setChildContentHeight = () => {
+    requestAnimationFrame(() => {
+      const height = this.childContent && this.state.isOpen ? this.childContent.clientHeight : 0;
+      this.childWrapper && this.childWrapper.setAttribute('style', `height: ${height}px`);
+    });
+  }
 
-    this.childWrapper.setAttribute('style', `height: ${height}px`);
+  componentDidMount() {
+    this.setChildContentHeight();
+  }
+
+  componentDidUpdate() {
+    this.setChildContentHeight();
   }
 
   onToggle() {
     this.setState(prevState => ({
       isOpen: !prevState.isOpen
     }));
+  }
+
+  setChildContentRef = (node) => {
+    this.childContent = node;
   }
 
   render() {
@@ -112,7 +129,7 @@ export class EuiAccordion extends Component {
               className={buttonClasses}
             >
               <EuiFlexGroup gutterSize="s" alignItems="center" responsive={false}>
-                <EuiFlexItem grow={false}>
+                <EuiFlexItem grow={false} className="euiAccordion__iconWrapper">
                   {icon}
                 </EuiFlexItem>
 
@@ -131,11 +148,18 @@ export class EuiAccordion extends Component {
           ref={node => { this.childWrapper = node; }}
           id={id}
         >
-          <div ref={node => { this.childContent = node; }}>
-            <div className={paddingClass}>
-              {children}
-            </div>
-          </div>
+          <EuiMutationObserver
+            observerOptions={{ childList: true, subtree: true }}
+            onMutation={this.setChildContentHeight}
+          >
+            {mutationRef => (
+              <div ref={ref => {this.setChildContentRef(ref); mutationRef(ref);}}>
+                <div className={paddingClass}>
+                  {children}
+                </div>
+              </div>
+            )}
+          </EuiMutationObserver>
         </div>
       </div>
     );

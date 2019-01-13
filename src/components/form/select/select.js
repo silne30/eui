@@ -21,13 +21,18 @@ export const EuiSelect = ({
   isLoading,
   hasNoInitialSelection,
   defaultValue,
+  compressed,
   value,
+  prepend,
+  append,
   ...rest
 }) => {
   const classes = classNames(
     'euiSelect',
     {
       'euiSelect--fullWidth': fullWidth,
+      'euiSelect--compressed': compressed,
+      'euiSelect--inGroup': prepend || append,
       'euiSelect-isLoading': isLoading,
     },
     className
@@ -43,16 +48,23 @@ export const EuiSelect = ({
   // React HTML input can not have both value and defaultValue properties.
   // https://reactjs.org/docs/uncontrolled-components.html#default-values
   let selectDefaultValue;
-  if (!value) {
+  if (value == null) {
     selectDefaultValue = defaultValue || '';
   }
 
+  const icon = {
+    type: 'arrowDown',
+    side: 'right',
+  };
+
   return (
     <EuiFormControlLayout
-      icon="arrowDown"
-      iconSide="right"
+      icon={icon}
       fullWidth={fullWidth}
       isLoading={isLoading}
+      compressed={compressed}
+      prepend={prepend}
+      append={append}
     >
       <EuiValidatableControl isInvalid={isInvalid}>
         <select
@@ -93,6 +105,24 @@ EuiSelect.propTypes = {
    */
   hasNoInitialSelection: PropTypes.bool,
   inputRef: PropTypes.func,
+  /**
+   * when `true` creates a shorter height input
+   */
+  compressed: PropTypes.bool,
+  /**
+   * Creates an input group with element(s) coming before select
+   */
+  prepend: PropTypes.oneOfType([
+    PropTypes.node,
+    PropTypes.arrayOf(PropTypes.node),
+  ]),
+  /**
+   * Creates an input group with element(s) coming after select
+   */
+  append: PropTypes.oneOfType([
+    PropTypes.node,
+    PropTypes.arrayOf(PropTypes.node),
+  ]),
 };
 
 EuiSelect.defaultProps = {
@@ -100,4 +130,5 @@ EuiSelect.defaultProps = {
   fullWidth: false,
   isLoading: false,
   hasNoInitialSelection: false,
+  compressed: false,
 };

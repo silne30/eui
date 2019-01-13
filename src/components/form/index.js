@@ -2,6 +2,7 @@ export {
   EuiCheckbox,
   EuiCheckboxGroup,
 } from './checkbox';
+export { EuiDescribedFormGroup } from './described_form_group';
 export { EuiFieldNumber } from './field_number';
 export { EuiFieldPassword } from './field_password';
 export { EuiFieldSearch } from './field_search';
@@ -19,6 +20,10 @@ export {
 } from './radio';
 export { EuiRange } from './range';
 export { EuiSelect } from './select';
+export {
+  EuiSuperSelect,
+  EuiSuperSelectControl,
+} from './super_select';
 export { EuiSwitch } from './switch';
 export { EuiTextArea } from './text_area';
 export { EuiValidatableControl } from './validatable_control';

@@ -1,8 +1,14 @@
+/**
+ * 1. Fix for IE where the image correctly resizes in width but doesn't collapse it's height
+      (https://github.com/philipwalton/flexbugs/issues/75#issuecomment-134702421)
+ */
+
 // Main <figure> that wraps images.
 .euiImage {
   display: inline-block;
   max-width: 100%;
   position: relative;
+  min-height: 1px; /* 1 */
 
   &.euiImage--hasShadow {
     .euiImage__img {
@@ -49,8 +55,8 @@
 }
 
 .euiImage__caption {
-  text-align: center;
   @include euiFontSizeS;
+  text-align: center;
 }
 
 .euiImage__icon {
@@ -86,6 +92,7 @@
     opacity: 0;
     transform: translateY($euiSizeXL * 2);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);

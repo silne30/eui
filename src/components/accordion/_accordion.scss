@@ -2,14 +2,20 @@
   text-align: left;
   width: 100%;
 
-  &:hover, &:focus {
+  &:hover {
     text-decoration: underline;
     cursor: pointer;
   }
 
   &:focus {
-    background-color: $euiFocusBackgroundColor;
+    .euiAccordion__iconWrapper {
+      @include euiFocusRing;
+
+      color: $euiColorPrimary;
+      border-radius: $euiBorderRadius;
+    }
   }
+
 }
 
 .euiAccordion__childWrapper {
@@ -18,11 +24,12 @@
   opacity: 0;
   overflow-y: hidden;
   transform: translatez(0);
+  // sass-lint:disable-block indentation
   transition:
     height $euiAnimSpeedNormal $euiAnimSlightResistance,
-    opacity $euiAnimSpeedNormal $euiAnimSlightResistance
-  ;
+    opacity $euiAnimSpeedNormal $euiAnimSlightResistance;
 }
+
 
 $paddingSizes: (
   xs: $euiSizeXS,

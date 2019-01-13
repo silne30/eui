@@ -76,6 +76,8 @@ export default class extends Component {
         selectedOptions={selectedOptions}
         onChange={this.onChange}
         onCreateOption={this.onCreateOption}
+        isClearable={true}
+        data-test-subj="demoComboBox"
       />
     );
   }

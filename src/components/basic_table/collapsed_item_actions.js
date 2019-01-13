@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { EuiContextMenuItem, EuiContextMenuPanel } from '../context_menu';
 import { EuiPopover } from '../popover';
 import { EuiButtonIcon } from '../button';
+import { EuiToolTip } from '../tool_tip';
 
 export class CollapsedItemActions extends Component {
 
@@ -43,6 +44,11 @@ export class CollapsedItemActions extends Component {
     }
   }
 
+  onClickItem = (onClickAction) => {
+    this.closePopover();
+    onClickAction();
+  }
+
   render() {
 
     const { actions, itemId, item, actionEnabled, onFocus, className } = this.props;
@@ -72,7 +78,7 @@ export class CollapsedItemActions extends Component {
             key={key}
             disabled={!enabled}
             icon={action.icon}
-            onClick={action.onClick.bind(null, item)}
+            onClick={this.onClickItem.bind(null, action.onClick.bind(null, item))}
           >
             {action.name}
           </EuiContextMenuItem>
@@ -84,13 +90,19 @@ export class CollapsedItemActions extends Component {
     const popoverButton = (
       <EuiButtonIcon
         className={className}
-        aria-label="actions"
-        iconType="gear"
+        aria-label="All actions"
+        iconType="boxesHorizontal"
         color="text"
         isDisabled={allDisabled}
         onClick={this.togglePopover.bind(this)}
         onFocus={onFocus}
       />
+    );
+
+    const withTooltip = !allDisabled && (
+      <EuiToolTip content="All actions" delay="long">
+        {popoverButton}
+      </EuiToolTip>
     );
 
     return (
@@ -99,7 +111,7 @@ export class CollapsedItemActions extends Component {
         popoverRef={this.registerPopoverDiv}
         id={`${itemId}-actions`}
         isOpen={isOpen}
-        button={popoverButton}
+        button={withTooltip || popoverButton}
         closePopover={this.closePopover}
         panelPaddingSize="none"
         anchorPosition="leftCenter"

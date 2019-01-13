@@ -77,16 +77,16 @@ export class SearchBar extends Component {
     };
   }
 
-  onParse = ({ error }) => {
-    this.setState({ error });
-  };
-
-  onChange = (query) => {
-    this.setState({
-      error: null,
-      result: EuiSearchBar.Query.execute(query, items, { defaultFields: ['owner', 'tag', 'type'] }),
-      query
-    });
+  onChange = ({ query, error }) => {
+    if (error) {
+      this.setState({ error });
+    } else {
+      this.setState({
+        error: null,
+        result: EuiSearchBar.Query.execute(query, items, { defaultFields: ['owner', 'tag', 'type'] }),
+        query
+      });
+    }
   };
 
   toggleIncremental = () => {
@@ -178,7 +178,6 @@ export class SearchBar extends Component {
         }}
         filters={filters}
         onChange={this.onChange}
-        onParse={this.onParse}
       />
     );
   }
@@ -276,7 +275,7 @@ export class SearchBar extends Component {
 
           <EuiTitle size="s">
             <h3>Elasticsearch Query DSL</h3>
-          </EuiTitle>`
+          </EuiTitle>
           <EuiSpacer size="s"/>
           <EuiCodeBlock language="js">
             {esQueryDsl ? JSON.stringify(esQueryDsl, null, 2) : ''}

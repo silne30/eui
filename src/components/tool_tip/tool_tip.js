@@ -8,9 +8,10 @@ import classNames from 'classnames';
 
 import { EuiPortal } from '../portal';
 import { EuiToolTipPopover } from './tool_tip_popover';
-import { calculatePopoverPosition } from '../../services';
+import { findPopoverPosition } from '../../services';
 
 import makeId from '../form/form_row/make_id';
+import { EuiMutationObserver } from '../mutation_observer';
 
 const positionsToClassNameMap = {
   top: 'euiToolTip--top',
@@ -21,6 +22,24 @@ const positionsToClassNameMap = {
 
 export const POSITIONS = Object.keys(positionsToClassNameMap);
 
+const delayToClassNameMap = {
+  regular: null,
+  long: 'euiToolTip--delayLong',
+};
+
+export const DELAY = Object.keys(delayToClassNameMap);
+
+const DEFAULT_TOOLTIP_STYLES = {
+  // position the tooltip content near the top-left
+  // corner of the window so it can't create scrollbars
+  // 50,50 because who knows what negative margins, padding, etc
+  top: 50,
+  left: 50,
+  // just in case, avoid any potential flicker by hiding
+  // the tooltip before it is positioned
+  opacity: 0
+};
+
 export class EuiToolTip extends Component {
   constructor(props) {
     super(props);
@@ -29,23 +48,74 @@ export class EuiToolTip extends Component {
       visible: false,
       hasFocus: false,
       calculatedPosition: this.props.position,
-      toolTipStyles: {},
+      toolTipStyles: DEFAULT_TOOLTIP_STYLES,
+      arrowStyles: {},
       id: this.props.id || makeId(),
     };
+  }
+
+  componentDidMount() {
+    this._isMounted = true;
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.visible === false && this.state.visible === true) {
+      requestAnimationFrame(this.testAnchor);
+    }
+  }
+
+  testAnchor = () => {
+    // when the tooltip is visible, this checks if the anchor is still part of document
+    // this fixes when the react root is removed from the dom without unmounting
+    // https://github.com/elastic/eui/issues/1105
+    if (document.body.contains(this.anchor) === false) {
+      // the anchor is no longer part of `document`
+      this.hideToolTip();
+    } else {
+      if (this.state.visible) {
+        // if still visible, keep checking
+        requestAnimationFrame(this.testAnchor);
+      }
+    }
+  }
+
+  setPopoverRef = ref => {
+    this.popover = ref;
+
+    // if the popover has been unmounted, clear
+    // any previous knowledge about its size
+    if (ref == null) {
+      this.setState({
+        toolTipStyles: DEFAULT_TOOLTIP_STYLES,
+        arrowStyles: {}
+      });
+    }
   }
 
   showToolTip = () => {
     this.setState({ visible: true });
   };
 
-  positionToolTip = (toolTipBounds) => {
-    const anchorBounds = this.anchor.getBoundingClientRect();
+  positionToolTip = () => {
     const requestedPosition = this.props.position;
 
-    const { position, left, top } = calculatePopoverPosition(anchorBounds, toolTipBounds, requestedPosition);
+    const { position, left, top, arrow } = findPopoverPosition({
+      anchor: this.anchor,
+      popover: this.popover,
+      position: requestedPosition,
+      offset: 16, // offset popover 16px from the anchor
+      arrowConfig: {
+        arrowWidth: 12,
+        arrowBuffer: 4
+      }
+    });
 
     const toolTipStyles = {
-      top: top + window.scrollY,
+      top,
       left,
     };
 
@@ -53,11 +123,14 @@ export class EuiToolTip extends Component {
       visible: true,
       calculatedPosition: position,
       toolTipStyles,
+      arrowStyles: arrow,
     });
   };
 
   hideToolTip = () => {
-    this.setState({ visible: false });
+    if (this._isMounted) {
+      this.setState({ visible: false });
+    }
   };
 
   onFocus = () => {
@@ -82,37 +155,58 @@ export class EuiToolTip extends Component {
         this.hideToolTip();
       }
     }
+
+    if (this.props.onMouseOut) {
+      this.props.onMouseOut();
+    }
   };
 
   render() {
     const {
       children,
       className,
+      anchorClassName,
       content,
       title,
+      delay,
       ...rest
     } = this.props;
+
+    const { arrowStyles, id, toolTipStyles, visible } = this.state;
 
     const classes = classNames(
       'euiToolTip',
       positionsToClassNameMap[this.state.calculatedPosition],
+      delayToClassNameMap[delay],
       className
     );
 
+    const anchorClasses = classNames(
+      'euiToolTipAnchor',
+      anchorClassName,
+    );
+
     let tooltip;
-    if (this.state.visible) {
+    if (visible && (content || title)) {
       tooltip = (
         <EuiPortal>
           <EuiToolTipPopover
             className={classes}
-            style={this.state.toolTipStyles}
+            style={toolTipStyles}
             positionToolTip={this.positionToolTip}
+            popoverRef={this.setPopoverRef}
             title={title}
-            id={this.state.id}
+            id={id}
             role="tooltip"
             {...rest}
           >
-            {content}
+            <div style={arrowStyles} className="euiToolTip__arrow"/>
+            <EuiMutationObserver
+              observerOptions={{ subtree: true, childList: true, characterData: true, attributes: true }}
+              onMutation={this.positionToolTip}
+            >
+              {mutationRef => <div ref={mutationRef}>{content}</div>}
+            </EuiMutationObserver>
           </EuiToolTipPopover>
         </EuiPortal>
       );
@@ -121,14 +215,21 @@ export class EuiToolTip extends Component {
     const anchor = (
       <span
         ref={anchor => this.anchor = anchor}
-        className="euiToolTipAnchor"
+        className={anchorClasses}
+        onMouseOver={this.showToolTip}
+        onMouseOut={this.onMouseOut}
       >
+        {/**
+          * We apply onFocus, onBlur, etc to the children element because that's the element
+          * the user will be interacting with, as opposed to the enclosing anchor element.
+          * For example, if the inner component is a button and the user tabs to it, we want
+          * the enter key to trigger the button. That won't work if the enclosing anchor
+          * element has focus.
+          */}
         {cloneElement(children, {
           onFocus: this.showToolTip,
           onBlur: this.hideToolTip,
           'aria-describedby': this.state.id,
-          onMouseOver: this.showToolTip,
-          onMouseOut: this.onMouseOut
         })}
       </span>
     );
@@ -150,7 +251,7 @@ EuiToolTip.propTypes = {
   /**
    * The main content of your tooltip.
    */
-  content: PropTypes.node.isRequired,
+  content: PropTypes.node,
 
   /**
    * An optional title for your tooltip.
@@ -161,6 +262,11 @@ EuiToolTip.propTypes = {
    * Suggested position. If there is not enough room for it this will be changed.
    */
   position: PropTypes.oneOf(POSITIONS),
+
+  /**
+   * Delay before showing tooltip. Good for repeatable items.
+   */
+  delay: PropTypes.oneOf(DELAY),
 
   /**
    * Passes onto the tooltip itself, not the trigger.
@@ -175,4 +281,5 @@ EuiToolTip.propTypes = {
 
 EuiToolTip.defaultProps = {
   position: 'top',
+  delay: 'regular',
 };

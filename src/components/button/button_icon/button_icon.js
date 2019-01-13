@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import { getSecureRelForTarget } from '../../../services';
 
 import {
+  ICON_SIZES,
   ICON_TYPES,
   EuiIcon,
 } from '../../icon';
@@ -25,11 +26,14 @@ const accessibleButtonIcon = (props, propName, componentName) => {
 };
 
 const colorToClassNameMap = {
-  primary: 'euiButtonIcon--primary',
   danger: 'euiButtonIcon--danger',
   disabled: 'euiButtonIcon--disabled',
   ghost: 'euiButtonIcon--ghost',
+  primary: 'euiButtonIcon--primary',
+  subdued: 'euiButtonIcon--subdued',
+  success: 'euiButtonIcon--success',
   text: 'euiButtonIcon--text',
+  warning: 'euiButtonIcon--warning',
 };
 
 export const COLORS = Object.keys(colorToClassNameMap);
@@ -37,6 +41,7 @@ export const COLORS = Object.keys(colorToClassNameMap);
 export const EuiButtonIcon = ({
   className,
   iconType,
+  iconSize,
   color,
   isDisabled,
   href,
@@ -61,13 +66,15 @@ export const EuiButtonIcon = ({
       <EuiIcon
         className="euiButtonIcon__icon"
         type={iconType}
-        size="m"
+        size={iconSize}
         aria-hidden="true"
       />
     );
   }
 
-  if (href) {
+  // <a> elements don't respect the `disabled` attribute. So if we're disabled, we'll just pretend
+  // this is a button and piggyback off its disabled styles.
+  if (href && !isDisabled) {
     const secureRel = getSecureRelForTarget(target, rel);
 
     return (
@@ -101,6 +108,7 @@ EuiButtonIcon.propTypes = {
   children: PropTypes.node,
   className: PropTypes.string,
   iconType: PropTypes.oneOf(ICON_TYPES),
+  iconSize: PropTypes.oneOf(ICON_SIZES),
   color: PropTypes.oneOf(COLORS),
   isDisabled: PropTypes.bool,
   'aria-label': accessibleButtonIcon,
@@ -115,4 +123,5 @@ EuiButtonIcon.propTypes = {
 EuiButtonIcon.defaultProps = {
   type: 'button',
   color: 'primary',
+  iconSize: 'm',
 };

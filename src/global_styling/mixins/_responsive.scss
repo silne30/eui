@@ -1,35 +1,53 @@
-// Responsiveness
+// This file makes use of double quotes to format errors with nested single quotes
+// This file makes use of warn tags to properly announce deprecation
+// The indentation linting freaks out on comments above else statements and is disabled.
 
-$breakpoints: ("xSmall": 575px, "small": 768px, "medium": 992px, "large": 1200px) !default;
+// sass-lint:disable quotes, no-warn, indentation
 
+@import '../variables/responsive';
 
-@mixin screenXSmall {
-  @media only screen and (max-width: map-get($breakpoints, "small")) {
-     @content;
-  }
-}
+// A sem-complicated mixin for breakpoints, that takes any number of
+// named breakpoints that exists in $euiBreakpoints.
 
+@mixin euiBreakpoint($sizes...) {
+  // Loop through each size parameter
+  @each $size in $sizes {
+    // Store the location of the size in the list to check against
+    $index: index($euiBreakpointKeys, $size);
 
-@mixin screenSmall {
-  @media only screen and (min-width: map-get($breakpoints, "small") + 1) and (max-width: map-get($breakpoints, "medium") - 1) {
-     @content;
-  }
-}
+    // Check to make sure it exists in the allowed breakpoint names
+    @if ( $index ) {
 
-@mixin screenMedium {
-  @media only screen and (min-width: map-get($breakpoints, "medium")) and (max-width: map-get($breakpoints, "large") - 1) {
-    @content;
-  }
-}
+      // Set the min size to the value of the size
+      $minSize: map-get($euiBreakpoints, $size);
 
-@mixin screenLarge {
-  @media only screen and (min-width: map-get($breakpoints, "large")) {
-    @content;
-  }
-}
+      // If it is the last item, don't give it a max-width
+      @if ( $index == length($euiBreakpointKeys) ) {
+        @media only screen and (min-width: $minSize) {
+          @content;
+        }
+      // If it's not the last item, add a max-width
+      } @else {
 
-@mixin screenSmallMediumLarge {
-  @media only screen and (min-width: map-get($breakpoints, "small")) {
-    @content;
+        // Set the max size to the value of the next size (-1px as to not overlap)
+        $maxSize: map-get($euiBreakpoints, nth($euiBreakpointKeys, $index + 1)) - 1px;
+
+        // If it's the the first item, don't set a min-width
+        @if ( $index == 1 ) {
+          @media only screen and (max-width: $maxSize) {
+            @content;
+          }
+        // Otherwise it should have a min and max width
+        } @else {
+          @media only screen and (min-width: $minSize) and (max-width: $maxSize) {
+            @content;
+          }
+        }
+      }
+    // If it's not a known breakpoint, throw a warning
+    } @else {
+      @warn "euiBreakpoint(): '#{$size}' is not a valid size in $euiBreakpoints.
+        The acceptable values are '#{$euiBreakpointKeys}'";
+    }
   }
 }

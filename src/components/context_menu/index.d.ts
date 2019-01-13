@@ -1,4 +1,4 @@
-/// <reference path="../common.d.ts" />
+import { CommonProps, RefCallback, NoArgCallback, Omit } from '../common';
 
 import {
   SFC,
@@ -53,12 +53,21 @@ declare module '@elastic/eui' {
    * @see './context_menu_item.js`
    */
 
-  export type EuiContextMenuItemIcon = ReactElement<any> | string;
+  export type EuiContextMenuItemIcon = ReactElement<any> | string | HTMLElement;
 
-  export interface EuiContextMenuItemProps {
+  export interface EuiContextMenuItemProps extends CommonProps {
     icon?: EuiContextMenuItemIcon;
     hasPanel?: boolean;
+    disabled?: boolean;
+    onClick?: () => void;
     buttonRef?: RefCallback<HTMLButtonElement>;
+    toolTipContent?: ReactNode;
+    toolTipTitle?: ReactNode;
+    toolTipPosition?: string;
+    href?: string;
+    target?: string;
+    rel?: string;
+    children?: ReactNode;
   }
 
   export const EuiContextMenuItem: SFC<
@@ -85,9 +94,10 @@ declare module '@elastic/eui' {
 
   interface EuiContextMenuPanelDescriptor {
     id: EuiContextMenuPanelId;
-    title: string;
+    title?: string;
     items?: EuiContextMenuPanelItemDescriptor[];
     content?: React.ReactNode;
+    width?: number;
   }
 
   export type EuiContextMenuProps = CommonProps &

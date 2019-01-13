@@ -19,6 +19,8 @@ import {
   EuiSpacer,
   EuiTable,
   EuiTableBody,
+  EuiTableFooter,
+  EuiTableFooterCell,
   EuiTableHeader,
   EuiTableHeaderCell,
   EuiTableHeaderCellCheckbox,
@@ -37,6 +39,8 @@ import {
   SortableProperties,
 } from '../../../../../src/services';
 
+import { isFunction } from '../../../../../src/services/predicate';
+
 export default class extends Component {
   constructor(props) {
     super(props);
@@ -45,7 +49,7 @@ export default class extends Component {
       itemIdToSelectedMap: {},
       itemIdToOpenActionsPopoverMap: {},
       sortedColumn: 'title',
-      itemsPerPage: 20,
+      itemsPerPage: 10
     };
 
     this.items = [{
@@ -67,7 +71,11 @@ export default class extends Component {
       health: <EuiHealth color="success">Healthy</EuiHealth>,
     }, {
       id: 2,
-      title: <span>A very long line in an ELEMENT which will wrap on narrower screens and NOT become truncated and replaced by an ellipsis</span>,
+      title:
+  <span>
+          A very long line in an ELEMENT which will wrap on narrower screens and NOT become
+          truncated and replaced by an ellipsis
+  </span>,
       type: 'user',
       dateCreated: <span>Tue Dec 01 2016 &nbsp; <EuiBadge color="secondary">New!</EuiBadge></span>,
       magnitude: 10,
@@ -75,7 +83,11 @@ export default class extends Component {
     }, {
       id: 3,
       title: {
-        value: <span>A very long line in an ELEMENT which will not wrap on narrower screens and instead will become truncated and replaced by an ellipsis</span>,
+        value:
+  <span>
+            A very long line in an ELEMENT which will not wrap on narrower screens and instead
+            will become truncated and replaced by an ellipsis
+  </span>,
         truncateText: true,
       },
       type: 'user',
@@ -213,6 +225,7 @@ export default class extends Component {
     }, {
       id: 'title',
       label: 'Title',
+      footer: <em>Title</em>,
       alignment: LEFT_ALIGNMENT,
       isSortable: true,
       hideForMobile: true,
@@ -221,20 +234,30 @@ export default class extends Component {
       label: 'Title',
       isMobileHeader: true,
       render: (title, item) => (
-        <span><EuiIcon type={item.type} size="m" style={{ verticalAlign: "text-top" }} /> {title}</span>
+        <span><EuiIcon type={item.type} size="m" style={{ verticalAlign: 'text-top' }} /> {title}</span>
       ),
     }, {
       id: 'health',
       label: 'Health',
+      footer: '',
       alignment: LEFT_ALIGNMENT,
     }, {
       id: 'dateCreated',
       label: 'Date created',
+      footer: 'Date created',
       alignment: LEFT_ALIGNMENT,
       isSortable: true,
     }, {
       id: 'magnitude',
       label: 'Orders of magnitude',
+      footer: ({ items, pagination }) => {
+        const { pageIndex, pageSize } = pagination;
+        const startIndex = pageIndex * pageSize;
+        const pageOfItems = items.slice(startIndex, Math.min(startIndex + pageSize, items.length));
+        return (
+          <strong>Total: {pageOfItems.reduce((acc, cur) => acc + cur.magnitude, 0)}</strong>
+        );
+      },
       alignment: RIGHT_ALIGNMENT,
       isSortable: true,
     }, {
@@ -327,16 +350,19 @@ export default class extends Component {
   };
 
   closePopover = itemId => {
-    this.setState(previousState => {
-      const newItemIdToOpenActionsPopoverMap = {
-        ...previousState.itemIdToOpenActionsPopoverMap,
-        [itemId]: false,
-      };
+    // only update the state if this item's popover is open
+    if (this.isPopoverOpen(itemId)) {
+      this.setState(previousState => {
+        const newItemIdToOpenActionsPopoverMap = {
+          ...previousState.itemIdToOpenActionsPopoverMap,
+          [itemId]: false,
+        };
 
-      return {
-        itemIdToOpenActionsPopoverMap: newItemIdToOpenActionsPopoverMap,
-      };
-    });
+        return {
+          itemIdToOpenActionsPopoverMap: newItemIdToOpenActionsPopoverMap,
+        };
+      });
+    }
   };
 
   isPopoverOpen = itemId => {
@@ -535,6 +561,61 @@ export default class extends Component {
     return rows;
   }
 
+  renderFooterCells() {
+    const footers = [];
+
+    const items = this.items;
+    const pagination = {
+      pageIndex: this.pager.getCurrentPageIndex(),
+      pageSize: this.state.itemsPerPage,
+      totalItemCount: this.pager.getTotalPages()
+    };
+
+    this.columns.forEach(column => {
+      const footer = this.getColumnFooter(column, { items, pagination });
+      if (column.isMobileHeader) {
+        return; // exclude columns that only exist for mobile headers
+      }
+
+      if (footer) {
+        footers.push(
+          <EuiTableFooterCell
+            key={`footer_${column.id}`}
+            align={column.alignment}
+          >
+            {footer}
+          </EuiTableFooterCell>
+        );
+      } else {
+        footers.push(
+          <EuiTableFooterCell
+            key={`footer_empty_${footers.length - 1}`}
+            align={column.alignment}
+          >
+            {undefined}
+          </EuiTableFooterCell>
+        );
+      }
+    });
+
+    return footers;
+  }
+
+  getColumnFooter = (column, { items, pagination }) => {
+    if (column.footer === null) {
+      return null;
+    }
+
+    if (column.footer) {
+      if (isFunction(column.footer)) {
+        return column.footer({ items, pagination });
+      }
+      return column.footer;
+    }
+
+    return undefined;
+  }
+
   render() {
     let optionalActionButtons;
 
@@ -575,6 +656,10 @@ export default class extends Component {
           <EuiTableBody>
             {this.renderRows()}
           </EuiTableBody>
+
+          <EuiTableFooter>
+            {this.renderFooterCells()}
+          </EuiTableFooter>
         </EuiTable>
 
         <EuiSpacer size="m" />

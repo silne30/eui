@@ -9,35 +9,46 @@ import {
 import {
   EuiCode,
   EuiIcon,
+  EuiToken,
+  EuiLink,
 } from '../../../../src/components';
+
+const iconHtmlWarning = () => (
+  <p>
+    HTML preview disabled. Icons use SVG and are not usable
+    usable without React unless you load the icons manually through a
+    separate asset loader.
+  </p>
+);
+
+const iconsHtml = renderToHtml(iconHtmlWarning);
 
 import Icons from './icons';
 const iconsSource = require('!!raw-loader!./icons');
-const iconsHtml = renderToHtml(Icons);
+
+import Tokens from './tokens';
+const tokensSource = require('!!raw-loader!./tokens');
 
 import Apps from './apps';
 const appsSource = require('!!raw-loader!./apps');
-const appsHtml = renderToHtml(Apps);
 
 import Ml from './ml';
 const mlSource = require('!!raw-loader!./ml');
-const mlHtml = renderToHtml(Ml);
 
 import Logos from './logos';
 const logosSource = require('!!raw-loader!./logos');
-const logosHtml = renderToHtml(Logos);
+
+import LogosThird from './logos_third';
+const logosThirdSource = require('!!raw-loader!./logos_third');
 
 import IconSizes from './icon_sizes';
 const iconSizesSource = require('!!raw-loader!./icon_sizes');
-const iconSizesHtml = renderToHtml(IconSizes);
 
 import IconColors from './icon_colors';
 const iconColorsSource = require('!!raw-loader!./icon_colors');
-const iconColorsHtml = renderToHtml(IconColors);
 
 import Accessibility from './accessibility';
 const accessibilitySource = require('!!raw-loader!./accessibility');
-const accessibilityHtml = renderToHtml(Accessibility);
 
 export const IconExample = {
   title: 'Icons',
@@ -80,7 +91,7 @@ export const IconExample = {
       code: appsSource,
     }, {
       type: GuideSectionTypes.HTML,
-      code: appsHtml,
+      code: iconsHtml,
     }],
     text: (
       <p>
@@ -90,13 +101,44 @@ export const IconExample = {
     ),
     demo: <Apps />,
   }, {
+    title: 'Tokens',
+    source: [{
+      type: GuideSectionTypes.JS,
+      code: tokensSource,
+    }, {
+      type: GuideSectionTypes.HTML,
+      code: iconsHtml,
+    }],
+    text: (
+      <div>
+        <p>
+          Tokens are most commonly used in search to help visually classify results.
+          The tokens included in EUI can be used to identify a number of code-based
+          search results.
+        </p>
+
+        <p>
+          An <EuiCode>EuiToken</EuiCode> accepts any valid <EuiCode>EuiIcon</EuiCode> as its
+          <EuiCode>iconType</EuiCode> property. However, icons designed specifically for
+          use in the <EuiCode>EuiToken</EuiCode> are prefixed with &quot;token&quot; in their name.
+        </p>
+
+        <p>
+          Multiple variants are available including: <EuiCode>shape</EuiCode>, <EuiCode>size</EuiCode>,
+          <EuiCode>color</EuiCode>, <EuiCode>hideBorder</EuiCode>, and <EuiCode>fill</EuiCode>.
+        </p>
+      </div>
+    ),
+    props: { EuiToken },
+    demo: <Tokens />,
+  }, {
     title: 'Machine learning icons',
     source: [{
       type: GuideSectionTypes.JS,
       code: mlSource,
     }, {
       type: GuideSectionTypes.HTML,
-      code: mlHtml,
+      code: iconsHtml,
     }],
     text: (
       <p>
@@ -106,13 +148,13 @@ export const IconExample = {
     ),
     demo: <Ml />,
   }, {
-    title: 'Logos',
+    title: 'Elastic logos',
     source: [{
       type: GuideSectionTypes.JS,
       code: logosSource,
     }, {
       type: GuideSectionTypes.HTML,
-      code: logosHtml,
+      code: iconsHtml,
     }],
     text: (
       <p>
@@ -121,13 +163,28 @@ export const IconExample = {
     ),
     demo: <Logos />,
   }, {
+    title: 'Third party logos',
+    source: [{
+      type: GuideSectionTypes.JS,
+      code: logosThirdSource,
+    }, {
+      type: GuideSectionTypes.HTML,
+      code: iconsHtml,
+    }],
+    text: (
+      <p>
+        Product logos follow similar rules as app logos.
+      </p>
+    ),
+    demo: <LogosThird />,
+  }, {
     title: 'Sizes',
     source: [{
       type: GuideSectionTypes.JS,
       code: iconSizesSource,
     }, {
       type: GuideSectionTypes.HTML,
-      code: iconSizesHtml,
+      code: iconsHtml,
     }],
     text: (
       <p>
@@ -143,14 +200,17 @@ export const IconExample = {
       code: iconColorsSource,
     }, {
       type: GuideSectionTypes.HTML,
-      code: iconColorsHtml,
+      code: iconsHtml,
     }],
     text: (
       <p>
-        Use the <EuiCode>color</EuiCode> prop to assign a color for your icons. It
-        can accept named colors from our pallete or a three or six color hex code.
-        The default behavior is to inherit the text color as the SVG
-        color <EuiCode>fill</EuiCode> property via <EuiCode>currentColor</EuiCode> in CSS.
+        The default behavior of icons is to inherit from the text color. You can
+        use the <EuiCode>color</EuiCode> prop to assign a custom color which
+        accepts a named color from our palette or a valid&nbsp;
+        <EuiLink target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value">CSS color data type</EuiLink>
+        &nbsp;which will be passed down through the inline-style <EuiCode>fill</EuiCode>&nbsp;
+        property. <strong>We recommend relying on the EUI named color palette</strong>&nbsp;
+        unless the custom color is initiated by the user (like as a graph color).
       </p>
     ),
     demo: <IconColors />,
@@ -161,7 +221,7 @@ export const IconExample = {
       code: accessibilitySource,
     }, {
       type: GuideSectionTypes.HTML,
-      code: accessibilityHtml,
+      code: iconsHtml,
     }],
     text: (
       <p>

@@ -13,18 +13,15 @@ import PropTypes from 'prop-types';
 import { Query } from './query';
 import { EuiFlexItem } from '../flex/flex_item';
 
+export { Query, AST as Ast } from './query';
+
 export const QueryType = PropTypes.oneOfType([ PropTypes.instanceOf(Query), PropTypes.string ]);
 
 export const SearchBarPropTypes = {
   /**
-   * (query: Query) => void
-   */
-  onChange: PropTypes.func.isRequired,
-
-  /**
    (query?: Query, queryText: string, error?: string) => void
    */
-  onParse: PropTypes.func,
+  onChange: PropTypes.func.isRequired,
 
   /**
    The initial query the bar will hold when first mounted
@@ -57,15 +54,17 @@ export const SearchBarPropTypes = {
    * Tools which go to the right of the search bar.
    */
   toolsRight: PropTypes.node,
+
+  /**
+   * Date formatter to use when parsing date values
+   */
+  dateFormat: PropTypes.object
 };
 
 const parseQuery = (query, props) => {
-  const parseDate = props.box ? props.box.parseDate : undefined;
   const schema = props.box ? props.box.schema : undefined;
-  const parseOptions = {
-    parseDate,
-    schema
-  };
+  const dateFormat = props.dateFormat;
+  const parseOptions = { schema, dateFormat };
   if (!query) {
     return Query.parse('', parseOptions);
   }
@@ -74,7 +73,7 @@ const parseQuery = (query, props) => {
 
 export class EuiSearchBar extends Component {
 
-  static propTypes = SearchBoxConfigPropTypes;
+  static propTypes = SearchBarPropTypes;
 
   static Query = Query;
 
@@ -88,41 +87,52 @@ export class EuiSearchBar extends Component {
     };
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.query) {
-      const query = parseQuery(nextProps.query, this.props);
-      this.setState({
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.query && (!prevState.query || nextProps.query.text !== prevState.query.text)) {
+      const query = parseQuery(nextProps.query, nextProps);
+      return {
         query,
         queryText: query.text,
         error: null
-      });
+      };
+    }
+    return null;
+  }
+
+  notifyControllingParent(newState) {
+    const oldState = this.state;
+    const { query, queryText, error } = newState;
+
+    const isQueryDifferent = oldState.queryText !== queryText;
+
+    const oldError = oldState.error ? oldState.error.message : null;
+    const newError = error ? error.message : null;
+    const isErrorDifferent = oldError !== newError;
+
+    if (isQueryDifferent || isErrorDifferent) {
+      this.props.onChange({ query, queryText, error });
     }
   }
 
   onSearch = (queryText) => {
     try {
       const query = parseQuery(queryText, this.props);
-      if (this.props.onParse) {
-        this.props.onParse({ query, queryText });
-      }
+      this.notifyControllingParent({ query, queryText, error: null });
       this.setState({ query, queryText, error: null });
-      this.props.onChange(query);
     } catch (e) {
       const error = { message: e.message };
-      if (this.props.onParse) {
-        this.props.onParse({ queryText, error });
-      }
+      this.notifyControllingParent({ query: null, queryText, error });
       this.setState({ queryText, error });
     }
   };
 
   onFiltersChange = (query) => {
+    this.notifyControllingParent({ query, queryText: query.text, error: null });
     this.setState({
       query,
       queryText: query.text,
       error: null
     });
-    this.props.onChange(query);
   };
 
   renderTools(tools) {

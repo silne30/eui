@@ -1,7 +1,10 @@
+/* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { requiredProps } from '../../test';
-import { shallow } from 'enzyme';
+import { mount, shallow } from 'enzyme';
 import { EuiSearchBar } from './search_bar';
+import { Query } from './query';
+import { ENTER } from '../../services/key_codes';
 
 describe('SearchBar', () => {
   test('render - no config, no query', () => {
@@ -74,5 +77,26 @@ describe('SearchBar', () => {
     );
 
     expect(component).toMatchSnapshot();
+  });
+
+  describe('controlled input', () => {
+    test('calls onChange callback when the query is modified', () => {
+      const onChange = jest.fn();
+
+      const component = mount(
+        <EuiSearchBar
+          query="status:active"
+          onChange={onChange}
+          box={{ 'data-test-subj': 'searchbar' }}
+        />
+      );
+
+      component.find('input[data-test-subj="searchbar"]').simulate('keyup', { keyCode: ENTER, target: { value: 'status:inactive' } });
+
+      expect(onChange).toHaveBeenCalledTimes(1);
+      const [[{ query, queryText }]] = onChange.mock.calls;
+      expect(query).toBeInstanceOf(Query);
+      expect(queryText).toBe('status:inactive');
+    });
   });
 });

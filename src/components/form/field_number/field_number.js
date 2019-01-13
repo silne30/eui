@@ -22,11 +22,16 @@ export const EuiFieldNumber = ({
   isInvalid,
   fullWidth,
   isLoading,
+  compressed,
+  prepend,
+  append,
   ...rest
 }) => {
   const classes = classNames('euiFieldNumber', className, {
     'euiFieldNumber--withIcon': icon,
     'euiFieldNumber--fullWidth': fullWidth,
+    'euiFieldNumber--compressed': compressed,
+    'euiFieldNumber--inGroup': prepend || append,
     'euiFieldNumber-isLoading': isLoading,
   });
 
@@ -35,6 +40,9 @@ export const EuiFieldNumber = ({
       icon={icon}
       fullWidth={fullWidth}
       isLoading={isLoading}
+      compressed={compressed}
+      prepend={prepend}
+      append={append}
     >
       <EuiValidatableControl isInvalid={isInvalid}>
         <input
@@ -82,10 +90,29 @@ EuiFieldNumber.propTypes = {
   isInvalid: PropTypes.bool,
   fullWidth: PropTypes.bool,
   isLoading: PropTypes.bool,
+  /**
+   * when `true` creates a shorter height input
+   */
+  compressed: PropTypes.bool,
+  /**
+   * Creates an input group with element(s) coming before input
+   */
+  prepend: PropTypes.oneOfType([
+    PropTypes.node,
+    PropTypes.arrayOf(PropTypes.node),
+  ]),
+  /**
+   * Creates an input group with element(s) coming after input
+   */
+  append: PropTypes.oneOfType([
+    PropTypes.node,
+    PropTypes.arrayOf(PropTypes.node),
+  ]),
 };
 
 EuiFieldNumber.defaultProps = {
   value: undefined,
   fullWidth: false,
   isLoading: false,
+  compressed: false,
 };

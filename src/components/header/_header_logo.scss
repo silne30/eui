@@ -5,13 +5,44 @@
 
   position: relative;
   height: $euiHeaderChildSize;
-  padding: $euiSize $euiSizeL;
+  line-height: $euiHeaderChildSize;
+  padding: 0 $euiSize;
   display: inline-block;
   vertical-align: middle;
+  white-space: nowrap;
+
+  &:focus,
+  &:hover {
+    text-decoration: none;
+  }
 }
 
-  .euiHeaderLogo__icon {
-    height: $euiSizeXL;
-    width: $euiSizeL;
-    opacity: 1;
+.euiHeaderLogo__icon {
+  opacity: 1;
+  position: relative;
+  top: -2px;
+}
+
+.euiHeaderLogo__text {
+  @include euiTitle('s');
+  padding-left: $euiSize;
+  font-weight: $euiFontWeightLight;
+}
+
+@include euiBreakpoint('xs') {
+  .euiHeaderLogo {
+    height: $euiHeaderChildSize * .75;
+    line-height: $euiHeaderChildSize * .75;
+    padding: 0 $euiSizeM;
   }
+
+  .euiHeaderLogo__icon.euiIcon--xLarge {
+    width: $euiSizeL;
+    height: $euiSizeL;
+  }
+
+  .euiHeaderLogo__text {
+    @include euiTitle('xs');
+    font-weight: $euiFontWeightRegular;
+  }
+}

@@ -4,13 +4,8 @@ exports[`EuiSearchFilters render - no filters 1`] = `<EuiFilterGroup />`;
 
 exports[`EuiSearchFilters render - with filters 1`] = `
 <EuiFilterGroup>
-  <div
+  <React.Fragment
     key="filter_0"
-    style={
-      Object {
-        "display": "inline-block",
-      }
-    }
   >
     <IsFilter
       config={
@@ -40,16 +35,12 @@ exports[`EuiSearchFilters render - with filters 1`] = `
         }
       }
     />
-  </div>
-  <div
+  </React.Fragment>
+  <React.Fragment
     key="filter_1"
-    style={
-      Object {
-        "display": "inline-block",
-      }
-    }
   >
     <FieldValueSelectionFilter
+      autoClose={true}
       config={
         Object {
           "field": "tag",
@@ -78,6 +69,6 @@ exports[`EuiSearchFilters render - with filters 1`] = `
         }
       }
     />
-  </div>
+  </React.Fragment>
 </EuiFilterGroup>
 `;

@@ -1,4 +1,7 @@
-export { EuiButton } from './button';
+export {
+  COLORS,
+  EuiButton
+} from './button';
 
 export {
   EuiButtonEmpty,
@@ -7,3 +10,11 @@ export {
 export {
   EuiButtonIcon,
 } from './button_icon';
+
+export {
+  EuiButtonToggle,
+} from './button_toggle';
+
+export {
+  EuiButtonGroup,
+} from './button_group';

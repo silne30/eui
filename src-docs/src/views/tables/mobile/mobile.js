@@ -111,11 +111,13 @@ export class Table extends Component {
       name: 'Clone',
       description: 'Clone this person',
       icon: 'copy',
+      type: 'icon',
       onClick: this.cloneUser
     }, {
       name: 'Delete',
       description: 'Delete this person',
       icon: 'trash',
+      type: 'icon',
       color: 'danger',
       onClick: this.deleteUser
     }];
@@ -189,7 +191,6 @@ export class Table extends Component {
     };
 
     const selection = {
-      itemId: 'id',
       selectable: (user) => user.online,
       selectableMessage: (selectable) => !selectable ? 'User is currently offline' : undefined,
       onSelectionChange: this.onSelectionChange
@@ -219,6 +220,7 @@ export class Table extends Component {
 
         <EuiBasicTable
           items={pageOfItems}
+          itemId="id"
           columns={columns}
           pagination={pagination}
           sorting={sorting}

@@ -5,18 +5,19 @@ import React, {
 import {
   EuiButton,
   EuiButtonEmpty,
+  EuiCodeBlock,
+  EuiFlexGroup,
+  EuiFlexItem,
   EuiFlyout,
   EuiFlyoutBody,
   EuiFlyoutFooter,
   EuiFlyoutHeader,
-  EuiTitle,
-  EuiFlexGroup,
-  EuiFlexItem,
+  EuiPopover,
   EuiSpacer,
-  EuiTabs,
   EuiTab,
+  EuiTabs,
   EuiText,
-  EuiTextColor,
+  EuiTitle,
 } from '../../../../src/components';
 
 export class FlyoutComplicated extends Component {
@@ -27,6 +28,7 @@ export class FlyoutComplicated extends Component {
       isFlyoutVisible: false,
       isSwitchChecked: true,
       selectedTabId: '1',
+      isPopoverOpen: false,
     };
 
     this.tabs = [{
@@ -53,6 +55,14 @@ export class FlyoutComplicated extends Component {
 
   showFlyout() {
     this.setState({ isFlyoutVisible: true });
+  }
+
+  closePopover = () => {
+    this.setState({ isPopoverOpen: false });
+  }
+
+  togglePopover = () => {
+    this.setState(({ isPopoverOpen }) => ({ isPopoverOpen: !isPopoverOpen }));
   }
 
   onSelectedTabChanged = id => {
@@ -132,6 +142,11 @@ export class FlyoutComplicated extends Component {
       </EuiText>
     );
 
+    const htmlCode = `<!--I'm an example of HTML-->
+<div>
+  asdf
+</div>
+`;
 
     let flyout;
 
@@ -139,26 +154,35 @@ export class FlyoutComplicated extends Component {
       flyout = (
         <EuiFlyout
           onClose={this.closeFlyout}
+          hideCloseButton
+          aria-labelledby="flyoutComplicatedTitle"
         >
-          <EuiFlyoutHeader>
-            <EuiTitle>
-              <h2>
+          <EuiFlyoutHeader hasBorder>
+            <EuiTitle size="m">
+              <h2 id="flyoutComplicatedTitle">
                 Flyout header
               </h2>
             </EuiTitle>
             <EuiSpacer size="s" />
-            <EuiTextColor color="subdued">
-              <EuiText>
-                <p>Put navigation items in the header, and cross tab actions in a footer.</p>
-              </EuiText>
-            </EuiTextColor>
-            <EuiSpacer size="s" />
-            <EuiTabs>
+            <EuiText color="subdued">
+              <p>Put navigation items in the header, and cross tab actions in a footer.</p>
+            </EuiText>
+            <EuiTabs style={{ marginBottom: '-25px' }}>
               {this.renderTabs()}
             </EuiTabs>
           </EuiFlyoutHeader>
           <EuiFlyoutBody>
+            <EuiPopover
+              closePopover={this.closePopover}
+              button={<EuiButton onClick={this.togglePopover}>Even popovers can be included</EuiButton>}
+              isOpen={this.state.isPopoverOpen}
+            >
+              <p>This is the popover content, notice how it can overflow the flyout!</p>
+            </EuiPopover>
             {flyoutContent}
+            <EuiCodeBlock language="html">
+              {htmlCode}
+            </EuiCodeBlock>
           </EuiFlyoutBody>
           <EuiFlyoutFooter>
             <EuiFlexGroup justifyContent="spaceBetween">
@@ -184,10 +208,11 @@ export class FlyoutComplicated extends Component {
         </EuiFlyout>
       );
     }
+
     return (
       <div>
         <EuiButton onClick={this.showFlyout}>
-          Show Flyout
+          Show flyout
         </EuiButton>
 
         {flyout}

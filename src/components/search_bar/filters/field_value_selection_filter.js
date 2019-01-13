@@ -13,6 +13,7 @@ import { EuiIcon } from '../../icon/icon';
 import { Query } from '../query';
 
 const FieldValueOptionType = PropTypes.shape({
+  field: PropTypes.string,
   value: PropTypes.any.isRequired,
   name: PropTypes.string,
   view: PropTypes.node
@@ -25,9 +26,11 @@ const FieldValueOptionsType = PropTypes.oneOfType([
 
 export const FieldValueSelectionFilterConfigType = PropTypes.shape({
   type: EuiPropTypes.is('field_value_selection').isRequired,
-  field: PropTypes.string.isRequired,
+  field: PropTypes.string,
+  autoClose: PropTypes.boolean,
   name: PropTypes.string.isRequired,
   options: FieldValueOptionsType.isRequired,
+  filterWith: PropTypes.oneOfType([ PropTypes.func, PropTypes.oneOf([ 'prefix', 'includes' ]) ]),
   cache: PropTypes.number,
   multiSelect: PropTypes.oneOfType([ PropTypes.bool, PropTypes.oneOf([ 'and', 'or' ]) ]),
   loadingMessage: PropTypes.string,
@@ -46,6 +49,7 @@ const FieldValueSelectionFilterPropTypes = {
 const defaults = {
   config: {
     multiSelect: true,
+    filterWith: 'prefix',
     loadingMessage: 'Loading...',
     noOptionsMessage: 'No options found',
     searchThreshold: 10,
@@ -55,6 +59,10 @@ const defaults = {
 export class FieldValueSelectionFilter extends Component {
 
   static propTypes = FieldValueSelectionFilterPropTypes;
+
+  static defaultProps = {
+    autoClose: true,
+  }
 
   constructor(props) {
     super(props);
@@ -102,21 +110,39 @@ export class FieldValueSelectionFilter extends Component {
     });
   }
 
-  filterOptions(prefix = '') {
+  filterOptions(q = '') {
     this.setState(prevState => {
       if (isNil(prevState.options)) {
         return {};
       }
+
+      const predicate = this.getOptionFilter();
+
       return {
         options: {
           ...prevState.options,
-          shown: prevState.options.all.filter(option => {
-            const name = this.resolveOptionName(option);
-            return name.toLowerCase().startsWith(prefix.toLowerCase());
+          shown: prevState.options.all.filter((option, i, options) => {
+            const name = this.resolveOptionName(option).toLowerCase();
+            const query = q.toLowerCase();
+            return predicate(name, query, options);
           })
         }
       };
     });
+  }
+
+  getOptionFilter() {
+    const filterWith = this.props.config.filterWith || defaults.config.filterWith;
+
+    if (typeof filterWith === 'function') {
+      return filterWith;
+    }
+
+    if (filterWith === 'includes') {
+      return (name, query) => name.includes(query);
+    }
+
+    return (name, query) => name.startsWith(query);
   }
 
   resolveOptionsLoader() {
@@ -154,24 +180,30 @@ export class FieldValueSelectionFilter extends Component {
 
   onOptionClick(field, value, checked) {
     const multiSelect = this.resolveMultiSelect();
-    if (!multiSelect) {
-      // we're closing popover only if the user can only select one item... if the
-      // user can select more, we'll leave it open so she can continue selecting
+    const { autoClose } = this.props;
+
+    // we're closing popover only if the user can only select one item... if the
+    // user can select more, we'll leave it open so she can continue selecting
+
+    if (!multiSelect && autoClose) {
       this.closePopover();
       const query = checked ?
         this.props.query.removeSimpleFieldClauses(field) :
         this.props.query.removeSimpleFieldClauses(field).addSimpleFieldValue(field, value);
+
       this.props.onChange(query);
     } else {
       if (multiSelect === 'or') {
         const query = checked ?
           this.props.query.removeOrFieldValue(field, value) :
           this.props.query.addOrFieldValue(field, value);
+
         this.props.onChange(query);
       } else {
         const query = checked ?
           this.props.query.removeSimpleFieldValue(field, value) :
           this.props.query.addSimpleFieldValue(field, value);
+
         this.props.onChange(query);
       }
     }
@@ -209,20 +241,25 @@ export class FieldValueSelectionFilter extends Component {
   render() {
     const { index, query, config } = this.props;
     const multiSelect = this.resolveMultiSelect();
-    const active = multiSelect === 'or' ?
-      query.hasOrFieldClause(config.field) :
-      query.hasSimpleFieldClause(config.field);
+
+    const activeTop = this.isActiveField(config.field);
+    const activeItem = this.state.options
+      ? this.state.options.all.some(item => this.isActiveField(item.field))
+      : false;
+
+    const active = activeTop || activeItem;
+
     const button = (
       <EuiFilterButton
         iconType="arrowDown"
         iconSide="right"
         onClick={this.onButtonClick.bind(this)}
         hasActiveFilters={active}
+        grow
       >
         {config.name}
       </EuiFilterButton>
     );
-
 
     const searchBox = this.renderSearchBox();
     const content = this.renderContent(config.field, query, config, multiSelect);
@@ -238,7 +275,7 @@ export class FieldValueSelectionFilter extends Component {
         closePopover={this.closePopover.bind(this)}
         panelPaddingSize="none"
         withTitle={withTitle}
-        anchorPosition="downRight"
+        anchorPosition="downCenter"
         panelClassName="euiFilterGroup__popoverPanel"
       >
         {searchBox}
@@ -276,14 +313,18 @@ export class FieldValueSelectionFilter extends Component {
       return this.renderNoOptions();
     }
     const items = this.state.options.shown.reduce((items, option, index) => {
+      const optionField = option.field || field;
+
       const clause = multiSelect === 'or' ?
-        query.getOrFieldClause(field, option.value) :
-        query.getSimpleFieldClause(field, option.value);
+        query.getOrFieldClause(optionField, option.value) :
+        query.getSimpleFieldClause(optionField, option.value);
+
       const checked = this.resolveChecked(clause);
       const onClick = () => {
         // clicking a checked item will uncheck it and effective remove the filter (value = undefined)
-        this.onOptionClick(field, option.value, checked);
+        this.onOptionClick(optionField, option.value, checked);
       };
+
       const item = (
         <EuiFilterSelectItem
           key={index}
@@ -353,5 +394,16 @@ export class FieldValueSelectionFilter extends Component {
         </div>
       </div>
     );
+  }
+
+  isActiveField(field) {
+    const { query } = this.props;
+    const multiSelect = this.resolveMultiSelect();
+
+    if (multiSelect === 'or') {
+      return query.hasOrFieldClause(field);
+    }
+
+    return query.hasSimpleFieldClause(field);
   }
 }

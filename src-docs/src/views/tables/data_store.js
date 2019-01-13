@@ -32,7 +32,7 @@ const createCountries = () => [
 ];
 
 const firstNames = ['Very long first name that will wrap or be truncated', 'Another very long first name which will wrap or be truncated',
-  'Clinton', 'Igor', 'Karl', 'Drew', 'Honza', 'Rashid', 'Jordan', 'John'];
+  'Clinton', 'Igor', undefined, 'Drew', null, 'Rashid', undefined, 'John'];
 
 const lastNames = ['Very long last name that will wrap or be truncated', 'Another very long last name which will wrap or be truncated',
   'Gormley', 'Motov', 'Minarik', 'Raines', 'Král', 'Khan', 'Sissel', 'Dorlus'];
@@ -50,7 +50,7 @@ const createUsers = (countries) => {
       github: index < 10 ? github[index] : github[index - 10],
       dateOfBirth: dob,
       nationality: random.oneToOne(countries.map(country => country.code), index),
-      online: index % 2 === 0
+      online: index % 2 === 0,
     };
   });
 };

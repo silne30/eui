@@ -1,9 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import { getSecureRelForTarget } from '../../services';
 
 import { EuiText } from '../text';
 import { EuiTitle } from '../title';
+import { EuiBetaBadge } from '../badge/beta_badge';
 
 const textAlignToClassNameMap = {
   left: 'euiCard--leftAligned',
@@ -13,30 +15,68 @@ const textAlignToClassNameMap = {
 
 export const ALIGNMENTS = Object.keys(textAlignToClassNameMap);
 
+const layoutToClassNameMap = {
+  vertical: '',
+  horizontal: 'euiCard--horizontal',
+};
+
+export const LAYOUT_ALIGNMENTS = Object.keys(layoutToClassNameMap);
+const oneOfLayouts = PropTypes.oneOf(LAYOUT_ALIGNMENTS);
+
+const cardLayout = (props, propName, componentName, ...rest) => {
+  const oneOfResult = oneOfLayouts(props, propName, componentName, ...rest);
+  if (oneOfResult) return oneOfResult;
+
+  if (props[propName] === 'horizontal') {
+    if (props.image || props.footer) {
+      return new Error(
+        `${componentName}: '${propName} = horizontal' cannot be used in conjunction with 'image', 'footer', or 'textAlign'.`
+      );
+    }
+  }
+};
+
 export const EuiCard = ({
   className,
   description,
   title,
+  titleElement,
   icon,
   image,
   footer,
   onClick,
   href,
+  rel,
+  target,
   textAlign,
   isClickable,
+  betaBadgeLabel,
+  betaBadgeTooltipContent,
+  betaBadgeTitle,
+  layout,
+  bottomGraphic,
   ...rest,
 }) => {
   const classes = classNames(
     'euiCard',
     textAlignToClassNameMap[textAlign],
+    layoutToClassNameMap[layout],
     {
       'euiCard--isClickable': onClick || href || isClickable,
+      'euiCard--hasBetaBadge': betaBadgeLabel,
+      'euiCard--hasIcon': icon,
+      'euiCard--hasBottomGraphic': bottomGraphic,
     },
     className,
   );
 
+  let secureRel;
+  if (href) {
+    secureRel = getSecureRelForTarget(target, rel);
+  }
+
   let imageNode;
-  if (image) {
+  if (image && layout === 'vertical') {
     imageNode = (
       <img className="euiCard__image" src={image} alt="" />
     );
@@ -57,12 +97,40 @@ export const EuiCard = ({
     OuterElement = 'button';
   }
 
+  let TitleElement = titleElement;
+  if (OuterElement === 'button') {
+    TitleElement = 'span';
+  }
+
   let optionalCardTop;
-  if (image || icon) {
+  if (imageNode || iconNode) {
     optionalCardTop = (
       <span className="euiCard__top">
         {imageNode}
         {iconNode}
+      </span>
+    );
+  }
+
+  let optionalBetaBadge;
+  if (betaBadgeLabel) {
+    optionalBetaBadge = (
+      <span className="euiCard__betaBadgeWrapper">
+        <EuiBetaBadge
+          label={betaBadgeLabel}
+          title={betaBadgeTitle}
+          tooltipContent={betaBadgeTooltipContent}
+          className="euiCard__betaBadge"
+        />
+      </span>
+    );
+  }
+
+  let optionalBottomGraphic;
+  if (bottomGraphic) {
+    optionalBottomGraphic = (
+      <span className="euiCard__graphic">
+        {bottomGraphic}
       </span>
     );
   }
@@ -72,14 +140,17 @@ export const EuiCard = ({
       onClick={onClick}
       className={classes}
       href={href}
+      target={target}
+      rel={secureRel}
       {...rest}
     >
+      {optionalBetaBadge}
 
       {optionalCardTop}
 
       <span className="euiCard__content">
         <EuiTitle className="euiCard__title">
-          <span>{title}</span>
+          <TitleElement>{title}</TitleElement>
         </EuiTitle>
 
         <EuiText size="s" className="euiCard__description">
@@ -87,9 +158,13 @@ export const EuiCard = ({
         </EuiText>
       </span>
 
-      <span className="euiCard__footer">
-        {footer}
-      </span>
+      {layout === 'vertical' &&
+        <span className="euiCard__footer">
+          {footer}
+        </span>
+      }
+
+      {optionalBottomGraphic}
     </OuterElement>
   );
 };
@@ -97,6 +172,11 @@ export const EuiCard = ({
 EuiCard.propTypes = {
   className: PropTypes.string,
   title: PropTypes.node.isRequired,
+  /**
+   * Determines the title's heading element. Will force to 'span' if
+   * the card is a button.
+   */
+  titleElement: PropTypes.oneOf(['h2', 'h3', 'h4', 'h5', 'h6', 'span']),
   description: PropTypes.node.isRequired,
 
   /**
@@ -119,9 +199,39 @@ EuiCard.propTypes = {
    */
   onClick: PropTypes.func,
   href: PropTypes.string,
+  target: PropTypes.string,
+  rel: PropTypes.string,
   textAlign: PropTypes.oneOf(ALIGNMENTS),
+
+  /**
+   * Change to "horizontal" if you need the icon to be left of the content
+   */
+  layout: cardLayout,
+
+  /**
+   * Add a badge to the card to label it as "Beta" or other non-GA state
+   */
+  betaBadgeLabel: PropTypes.string,
+
+  /**
+   * Add a description to the beta badge (will appear in a tooltip)
+   */
+  betaBadgeTooltipContent: PropTypes.node,
+
+  /**
+   * Optional title will be supplied as tooltip title or title attribute otherwise the label will be used
+   */
+  betaBadgeTitle: PropTypes.string,
+
+  /**
+   * Add a decorative bottom graphic to the card.
+   * This should be used sparingly, consult the Kibana Design team before use.
+   */
+  bottomGraphic: PropTypes.node,
 };
 
 EuiCard.defaultProps = {
   textAlign: 'center',
+  layout: 'vertical',
+  titleElement: 'span',
 };

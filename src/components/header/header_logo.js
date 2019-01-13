@@ -6,7 +6,7 @@ import {
   EuiIcon,
 } from '../icon';
 
-export const EuiHeaderLogo = ({ iconType, iconTitle, href, className, ...rest }) => {
+export const EuiHeaderLogo = ({ iconType, iconTitle, href, children, className, ...rest }) => {
   const classes = classNames('euiHeaderLogo', className);
 
   return (
@@ -17,14 +17,22 @@ export const EuiHeaderLogo = ({ iconType, iconTitle, href, className, ...rest })
         type={iconType}
         title={iconTitle}
       />
+
+      {children &&
+        <span className="euiHeaderLogo__text">{children}</span>
+      }
     </a>
   );
 };
 
 EuiHeaderLogo.propTypes = {
   href: PropTypes.string,
+  children: PropTypes.node,
+  iconType: PropTypes.string,
+  iconTitle: PropTypes.string,
 };
 
 EuiHeaderLogo.defaultProps = {
-  iconType: 'logoElastic'
+  iconType: 'logoElastic',
+  iconTitle: 'Elastic',
 };
