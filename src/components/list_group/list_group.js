@@ -11,9 +11,11 @@ export const EuiListGroup = ({
   className,
   flush,
   bordered,
+  wrapText,
   listItems,
   maxWidth,
   style,
+  showToolTips,
   ...rest,
 }) => {
 
@@ -43,13 +45,23 @@ export const EuiListGroup = ({
         return [
           <EuiListGroupItem
             key={`title-${index}`}
+            showToolTip={showToolTips}
+            wrapText={wrapText}
             {...item}
           />
         ];
       })
     );
   } else {
-    childrenOrListItems = children;
+    if (showToolTips) {
+      childrenOrListItems = React.Children.map(children, child => {
+        return React.cloneElement(child, {
+          showToolTip: true
+        });
+      });
+    } else {
+      childrenOrListItems = children;
+    }
   }
 
   return (
@@ -64,14 +76,7 @@ export const EuiListGroup = ({
 };
 
 EuiListGroup.propTypes = {
-  listItems: PropTypes.arrayOf(PropTypes.shape({
-    label: PropTypes.node,
-    href: PropTypes.string,
-    extraAction: PropTypes.object,
-    iconType: PropTypes.string,
-    isActive: PropTypes.boolean,
-    isDisabled: PropTypes.boolean,
-  })),
+  listItems: PropTypes.arrayOf(PropTypes.shape(EuiListGroupItem.propTypes)),
   children: PropTypes.node,
   className: PropTypes.string,
 
@@ -84,6 +89,16 @@ EuiListGroup.propTypes = {
    * Add a border to the list container
    */
   bordered: PropTypes.bool,
+
+  /**
+   * Allow link text to wrap
+   */
+  wrapText: PropTypes.bool,
+
+  /**
+   * Display tooltips on all list items
+   */
+  showToolTips: PropTypes.bool,
 
   /**
    * Sets the max-width of the page,
@@ -102,5 +117,7 @@ EuiListGroup.propTypes = {
 EuiListGroup.defaultProps = {
   flush: false,
   bordered: false,
+  wrapText: false,
   maxWidth: true,
+  showToolTips: false,
 };

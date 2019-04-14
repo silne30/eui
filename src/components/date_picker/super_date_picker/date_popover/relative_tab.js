@@ -47,29 +47,39 @@ export class EuiRelativeTab extends Component {
   };
 
   handleChange = () => {
-    if (this.state.count === '') {
+    if (this.state.count === '' || this.state.count < 0) {
       return;
     }
     this.props.onChange(toRelativeStringFromParts(this.state));
   }
 
   render() {
-    const formatedValue = dateMath.parse(this.props.value).format(this.props.dateFormat);
+    const isInvalid = this.state.count < 0;
+    const parsedValue = dateMath.parse(this.props.value);
+    const formatedValue = isInvalid || !parsedValue || !parsedValue.isValid()
+      ? ''
+      : parsedValue.format(this.props.dateFormat);
     return (
       <EuiForm className="euiDatePopoverContent__padded">
         <EuiFlexGroup gutterSize="s" responsive={false}>
           <EuiFlexItem>
-            <EuiFormRow>
+            <EuiFormRow
+              isInvalid={isInvalid}
+              error={isInvalid ? 'Must be >= 0' : null}
+            >
               <EuiFieldNumber
                 aria-label="Count of"
+                data-test-subj={`superDatePickerRelativeDateInputNumber`}
                 value={this.state.count}
                 onChange={this.onCountChange}
+                isInvalid={isInvalid}
               />
             </EuiFormRow>
           </EuiFlexItem>
           <EuiFlexItem>
             <EuiFormRow>
               <EuiSelect
+                data-test-subj={`superDatePickerRelativeDateInputUnitSelector`}
                 value={this.state.unit}
                 options={relativeOptions}
                 onChange={this.onUnitChange}
@@ -82,6 +92,7 @@ export class EuiRelativeTab extends Component {
         </EuiFormRow>
         <EuiFormRow>
           <EuiSwitch
+            data-test-subj={`superDatePickerRelativeDateRoundSwitch`}
             label={`Round to the ${timeUnits[this.state.unit.substring(0, 1)]}`}
             checked={this.state.round}
             onChange={this.onRoundChange}

@@ -1,23 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`EuiQuickSelect is rendered 1`] = `
-<React.Fragment>
+<Fragment>
   <EuiFlexGroup
     alignItems="center"
-    component="div"
-    direction="row"
     gutterSize="s"
-    justifyContent="flexStart"
     responsive={false}
-    wrap={false}
   >
-    <EuiFlexItem
-      component="div"
-      grow={true}
-    >
+    <EuiFlexItem>
       <EuiTitle
         size="xxxs"
-        textTransform="none"
       >
         <span>
           Quick select
@@ -25,7 +17,6 @@ exports[`EuiQuickSelect is rendered 1`] = `
       </EuiTitle>
     </EuiFlexItem>
     <EuiFlexItem
-      component="div"
       grow={false}
     >
       <EuiToolTip
@@ -44,7 +35,6 @@ exports[`EuiQuickSelect is rendered 1`] = `
       </EuiToolTip>
     </EuiFlexItem>
     <EuiFlexItem
-      component="div"
       grow={false}
     >
       <EuiToolTip
@@ -67,23 +57,16 @@ exports[`EuiQuickSelect is rendered 1`] = `
     size="s"
   />
   <EuiFlexGroup
-    alignItems="stretch"
-    component="div"
-    direction="row"
     gutterSize="s"
-    justifyContent="flexStart"
     responsive={false}
-    wrap={false}
   >
-    <EuiFlexItem
-      component="div"
-      grow={true}
-    >
+    <EuiFlexItem>
       <EuiFormRow
         compressed={true}
         describedByIds={Array []}
         fullWidth={false}
         hasEmptyLabelSpace={false}
+        labelType="label"
       >
         <EuiSelect
           aria-label="Quick time tense"
@@ -108,15 +91,13 @@ exports[`EuiQuickSelect is rendered 1`] = `
         />
       </EuiFormRow>
     </EuiFlexItem>
-    <EuiFlexItem
-      component="div"
-      grow={true}
-    >
+    <EuiFlexItem>
       <EuiFormRow
         compressed={true}
         describedByIds={Array []}
         fullWidth={false}
         hasEmptyLabelSpace={false}
+        labelType="label"
       >
         <EuiFieldNumber
           aria-label="Quick time value"
@@ -128,15 +109,13 @@ exports[`EuiQuickSelect is rendered 1`] = `
         />
       </EuiFormRow>
     </EuiFlexItem>
-    <EuiFlexItem
-      component="div"
-      grow={true}
-    >
+    <EuiFlexItem>
       <EuiFormRow
         compressed={true}
         describedByIds={Array []}
         fullWidth={false}
         hasEmptyLabelSpace={false}
+        labelType="label"
       >
         <EuiSelect
           aria-label="Quick time units"
@@ -182,13 +161,13 @@ exports[`EuiQuickSelect is rendered 1`] = `
       </EuiFormRow>
     </EuiFlexItem>
     <EuiFlexItem
-      component="div"
       grow={false}
     >
       <EuiFormRow
         describedByIds={Array []}
         fullWidth={false}
         hasEmptyLabelSpace={false}
+        labelType="label"
       >
         <EuiButton
           className="euiQuickSelect__applyButton"
@@ -207,29 +186,20 @@ exports[`EuiQuickSelect is rendered 1`] = `
   </EuiFlexGroup>
   <EuiHorizontalRule
     margin="s"
-    size="full"
   />
-</React.Fragment>
+</Fragment>
 `;
 
 exports[`EuiQuickSelect prevQuickSelect 1`] = `
-<React.Fragment>
+<Fragment>
   <EuiFlexGroup
     alignItems="center"
-    component="div"
-    direction="row"
     gutterSize="s"
-    justifyContent="flexStart"
     responsive={false}
-    wrap={false}
   >
-    <EuiFlexItem
-      component="div"
-      grow={true}
-    >
+    <EuiFlexItem>
       <EuiTitle
         size="xxxs"
-        textTransform="none"
       >
         <span>
           Quick select
@@ -237,7 +207,6 @@ exports[`EuiQuickSelect prevQuickSelect 1`] = `
       </EuiTitle>
     </EuiFlexItem>
     <EuiFlexItem
-      component="div"
       grow={false}
     >
       <EuiToolTip
@@ -256,7 +225,6 @@ exports[`EuiQuickSelect prevQuickSelect 1`] = `
       </EuiToolTip>
     </EuiFlexItem>
     <EuiFlexItem
-      component="div"
       grow={false}
     >
       <EuiToolTip
@@ -279,23 +247,16 @@ exports[`EuiQuickSelect prevQuickSelect 1`] = `
     size="s"
   />
   <EuiFlexGroup
-    alignItems="stretch"
-    component="div"
-    direction="row"
     gutterSize="s"
-    justifyContent="flexStart"
     responsive={false}
-    wrap={false}
   >
-    <EuiFlexItem
-      component="div"
-      grow={true}
-    >
+    <EuiFlexItem>
       <EuiFormRow
         compressed={true}
         describedByIds={Array []}
         fullWidth={false}
         hasEmptyLabelSpace={false}
+        labelType="label"
       >
         <EuiSelect
           aria-label="Quick time tense"
@@ -320,15 +281,13 @@ exports[`EuiQuickSelect prevQuickSelect 1`] = `
         />
       </EuiFormRow>
     </EuiFlexItem>
-    <EuiFlexItem
-      component="div"
-      grow={true}
-    >
+    <EuiFlexItem>
       <EuiFormRow
         compressed={true}
         describedByIds={Array []}
         fullWidth={false}
         hasEmptyLabelSpace={false}
+        labelType="label"
       >
         <EuiFieldNumber
           aria-label="Quick time value"
@@ -340,15 +299,13 @@ exports[`EuiQuickSelect prevQuickSelect 1`] = `
         />
       </EuiFormRow>
     </EuiFlexItem>
-    <EuiFlexItem
-      component="div"
-      grow={true}
-    >
+    <EuiFlexItem>
       <EuiFormRow
         compressed={true}
         describedByIds={Array []}
         fullWidth={false}
         hasEmptyLabelSpace={false}
+        labelType="label"
       >
         <EuiSelect
           aria-label="Quick time units"
@@ -394,13 +351,13 @@ exports[`EuiQuickSelect prevQuickSelect 1`] = `
       </EuiFormRow>
     </EuiFlexItem>
     <EuiFlexItem
-      component="div"
       grow={false}
     >
       <EuiFormRow
         describedByIds={Array []}
         fullWidth={false}
         hasEmptyLabelSpace={false}
+        labelType="label"
       >
         <EuiButton
           className="euiQuickSelect__applyButton"
@@ -419,7 +376,6 @@ exports[`EuiQuickSelect prevQuickSelect 1`] = `
   </EuiFlexGroup>
   <EuiHorizontalRule
     margin="s"
-    size="full"
   />
-</React.Fragment>
+</Fragment>
 `;

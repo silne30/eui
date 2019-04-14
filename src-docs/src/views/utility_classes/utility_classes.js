@@ -16,7 +16,7 @@ export default () => (
 
     <EuiTextColor color="danger">
       <EuiCode className="eui-textInheritColor">.eui-textInheritColor</EuiCode> will
-      force text to inherit it&apos;s color from it&apos;s parent.
+      force text to inherit its color from its parent.
     </EuiTextColor>
 
     <EuiSpacer />
@@ -146,6 +146,10 @@ export default () => (
     <EuiSpacer />
 
     <EuiCode className="eui-displayInlineBlock">.eui-displayInlineBlock</EuiCode>
+
+    <EuiSpacer />
+
+    <EuiCode className="eui-fullWidth">.eui-fullWidth (similar to eui-displayBlock but adds 100% width)</EuiCode>
 
     <h4>Responsive</h4>
 

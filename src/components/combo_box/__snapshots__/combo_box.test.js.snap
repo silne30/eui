@@ -42,6 +42,7 @@ exports[`EuiComboBox is rendered 1`] = `
           aria-label="Open list of options"
           class="euiFormControlLayoutCustomIcon euiFormControlLayoutCustomIcon--clickable"
           data-test-subj="comboBoxToggleListButton"
+          type="button"
         >
           <svg
             aria-hidden="true"
@@ -76,7 +77,6 @@ exports[`props full width is rendered 1`] = `
   aria-expanded={false}
   aria-haspopup="listbox"
   className="euiComboBox euiComboBox--fullWidth"
-  onBlur={[Function]}
   onKeyDown={[Function]}
   role="combobox"
 >
@@ -119,7 +119,6 @@ exports[`props isClearable=false disallows user from clearing input when no opti
   aria-expanded={false}
   aria-haspopup="listbox"
   className="euiComboBox"
-  onBlur={[Function]}
   onKeyDown={[Function]}
   role="combobox"
 >
@@ -155,7 +154,6 @@ exports[`props isClearable=false disallows user from clearing input when options
   aria-expanded={false}
   aria-haspopup="listbox"
   className="euiComboBox"
-  onBlur={[Function]}
   onKeyDown={[Function]}
   role="combobox"
 >
@@ -200,7 +198,6 @@ exports[`props isDisabled is rendered 1`] = `
   aria-expanded={false}
   aria-haspopup="listbox"
   className="euiComboBox euiComboBox-isDisabled"
-  onBlur={[Function]}
   onKeyDown={[Function]}
   role="combobox"
 >
@@ -280,6 +277,7 @@ exports[`props options list is rendered 1`] = `
           aria-label="Close list of options"
           class="euiFormControlLayoutCustomIcon euiFormControlLayoutCustomIcon--clickable"
           data-test-subj="comboBoxToggleListButton"
+          type="button"
         >
           <svg
             aria-hidden="true"
@@ -332,7 +330,6 @@ exports[`props selectedOptions are rendered 1`] = `
   aria-expanded={false}
   aria-haspopup="listbox"
   className="euiComboBox"
-  onBlur={[Function]}
   onKeyDown={[Function]}
   role="combobox"
 >
@@ -378,14 +375,13 @@ exports[`props singleSelection is rendered 1`] = `
   aria-expanded={false}
   aria-haspopup="listbox"
   className="euiComboBox"
-  onBlur={[Function]}
   onKeyDown={[Function]}
   role="combobox"
 >
   <EuiComboBoxInput
     autoSizeInputRef={[Function]}
     compressed={false}
-    focusedOptionId="htmlid__option-2"
+    focusedOptionId={null}
     fullWidth={false}
     hasSelectedOptions={true}
     inputRef={[Function]}
@@ -421,14 +417,13 @@ exports[`props singleSelection selects existing option when opened 1`] = `
   aria-expanded={true}
   aria-haspopup="listbox"
   className="euiComboBox euiComboBox-isOpen"
-  onBlur={[Function]}
   onKeyDown={[Function]}
   role="combobox"
 >
   <EuiComboBoxInput
     autoSizeInputRef={[Function]}
     compressed={false}
-    focusedOptionId="htmlid__option-2"
+    focusedOptionId={null}
     fullWidth={false}
     hasSelectedOptions={true}
     inputRef={[Function]}
@@ -458,7 +453,7 @@ exports[`props singleSelection selects existing option when opened 1`] = `
   />
   <EuiPortal>
     <EuiComboBoxOptionsList
-      activeOptionIndex={2}
+      activeOptionIndex={-1}
       areAllOptionsSelected={false}
       data-test-subj=""
       fullWidth={false}
@@ -540,7 +535,7 @@ exports[`props singleSelection selects existing option when opened 1`] = `
       position="bottom"
       rootId={[Function]}
       rowHeight={27}
-      scrollToIndex={2}
+      scrollToIndex={-1}
       searchValue=""
       selectedOptions={
         Array [

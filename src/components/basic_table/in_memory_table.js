@@ -62,6 +62,7 @@ const InMemoryTablePropTypes = {
       pageSizeOptions: PropTypes.arrayOf(PropTypes.number)
     }),
     PropTypes.shape({
+      initialPageIndex: PropTypes.number,
       initialPageSize: PropTypes.number,
       pageSizeOptions: PropTypes.arrayOf(PropTypes.number)
     })
@@ -72,6 +73,10 @@ const InMemoryTablePropTypes = {
       sort: PropertySortType
     })
   ]),
+  /**
+   * Set `allowNeutralSort` to false to force column sorting. Defaults to true.
+   */
+  allowNeutralSort: PropTypes.bool,
   selection: SelectionType,
   itemId: ItemIdType,
   rowProps: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
@@ -97,6 +102,7 @@ const getInitialPagination = (pagination) => {
   }
 
   const {
+    initialPageIndex = 0,
     initialPageSize,
     pageSizeOptions = paginationBarDefaults.pageSizeOptions,
     hidePerPageOptions
@@ -110,7 +116,7 @@ const getInitialPagination = (pagination) => {
   const defaultPageSize = pageSizeOptions ? pageSizeOptions[0] : paginationBarDefaults.pageSizeOptions[0];
 
   return {
-    pageIndex: 0,
+    pageIndex: initialPageIndex,
     pageSize: initialPageSize || defaultPageSize,
     pageSizeOptions,
     hidePerPageOptions
@@ -163,9 +169,10 @@ export class EuiInMemoryTable extends Component {
   constructor(props) {
     super(props);
 
-    const { search, pagination, sorting } = props;
+    const { search, pagination, sorting, allowNeutralSort } = props;
     const { pageIndex, pageSize, pageSizeOptions, hidePerPageOptions } = getInitialPagination(pagination);
     const { sortField, sortDirection } = getInitialSorting(sorting);
+
 
     this.state = {
       prevProps: {
@@ -177,6 +184,7 @@ export class EuiInMemoryTable extends Component {
       pageSizeOptions,
       sortField,
       sortDirection,
+      allowNeutralSort: (allowNeutralSort === false) ? false : true,
       hidePerPageOptions
     };
   }
@@ -191,10 +199,19 @@ export class EuiInMemoryTable extends Component {
       size: pageSize
     } = page;
 
-    const {
+    let {
       field: sortField,
       direction: sortDirection
     } = sort;
+
+    // Allow going back to 'neutral' sorting
+    if (this.state.allowNeutralSort &&
+      this.state.sortField === sortField
+      && this.state.sortDirection === 'desc'
+      && sortDirection === 'asc') {
+      sortField = '';
+      sortDirection = '';
+    }
 
     this.setState({
       pageIndex,
@@ -327,6 +344,7 @@ export class EuiInMemoryTable extends Component {
       search, // eslint-disable-line no-unused-vars
       onTableChange, // eslint-disable-line no-unused-vars
       executeQueryOptions, // eslint-disable-line no-unused-vars
+      allowNeutralSort, // eslint-disable-line no-unused-vars
       ...rest
     } = this.props;
 
@@ -352,12 +370,12 @@ export class EuiInMemoryTable extends Component {
     // Data loaded from a server can have a default sort order which is meaningful to the
     // user, but can't be reproduced with client-side sort logic. So we allow the table to display
     // rows in the order in which they're initially loaded by providing an undefined sorting prop.
-    // Once a user sorts a column, this will become a fully-defined sorting prop.
     const sorting = !hasSorting ? undefined : {
       sort: (!sortField && !sortDirection) ? undefined : {
         field: sortField,
         direction: sortDirection,
       },
+      allowNeutralSort: this.state.allowNeutralSort,
     };
 
     const searchBar = this.renderSearchBar();

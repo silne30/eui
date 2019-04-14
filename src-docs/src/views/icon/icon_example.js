@@ -64,8 +64,8 @@ export const IconExample = {
       <div>
         <p>
           <EuiCode>EuiIcon</EuiCode> can build out an icon from our SVG
-          icon library. Icons are resized and recolored (through a
-          CSS <EuiCode>Fill</EuiCode>) decleration.
+          icon library. Icons are resized and recolored through a
+          CSS <EuiCode>Fill</EuiCode> declaration.
         </p>
         <p>
           New icons should be placed in
@@ -158,7 +158,8 @@ export const IconExample = {
     }],
     text: (
       <p>
-        Product logos follow similar rules as app logos.
+        Product logos follow similar rules as app logos. Note the use of <EuiCode>.euiIcon__fillNegative</EuiCode> on
+        portions of the SVGs to handle flipping colors for dark mode.
       </p>
     ),
     demo: <Logos />,
@@ -171,11 +172,6 @@ export const IconExample = {
       type: GuideSectionTypes.HTML,
       code: iconsHtml,
     }],
-    text: (
-      <p>
-        Product logos follow similar rules as app logos.
-      </p>
-    ),
     demo: <LogosThird />,
   }, {
     title: 'Sizes',
@@ -189,7 +185,7 @@ export const IconExample = {
     text: (
       <p>
         Use the <EuiCode>size</EuiCode> prop to automatically size your icons.
-        Medium is the default, and will output a <EuiCode>16x16</EuiCode> icons.
+        Medium is the default, and will output a <EuiCode>16x16</EuiCode> icon.
       </p>
     ),
     demo: <IconSizes />,
@@ -225,7 +221,7 @@ export const IconExample = {
     }],
     text: (
       <p>
-        You can title the SVG by passing the `aria-label` prop to <EuiCode>EuiCode</EuiCode>. No value is set by default.
+        You can title the SVG by passing the <EuiCode>aria-label</EuiCode> prop to <EuiCode>EuiCode</EuiCode>. No value is set by default.
       </p>
     ),
     demo: <Accessibility />,

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
-import { timeUnits } from '../time_units';
+import { timeUnits, timeUnitsPlural } from '../time_units';
 
 import { EuiFlexGroup, EuiFlexItem } from '../../../flex';
 import { EuiTitle } from '../../../title';
@@ -10,27 +10,50 @@ import { EuiButton } from '../../../button';
 
 const refreshUnitsOptions = Object.keys(timeUnits)
   .filter(timeUnit => {
-    return timeUnit === 'h' || timeUnit === 'm';
+    return timeUnit === 'h' || timeUnit === 'm' || timeUnit === 's';
   })
   .map(timeUnit => {
-    return { value: timeUnit, text: `${timeUnits[timeUnit]}s` };
+    return { value: timeUnit, text: timeUnitsPlural[timeUnit] };
   });
 
-const MILLISECONDS_IN_MINUTE = 1000 * 60;
+const MILLISECONDS_IN_SECOND = 1000;
+const MILLISECONDS_IN_MINUTE = MILLISECONDS_IN_SECOND * 60;
 const MILLISECONDS_IN_HOUR = MILLISECONDS_IN_MINUTE * 60;
 
-function convertMilliseconds(milliseconds) {
+function fromMilliseconds(milliseconds) {
+  function round(value) {
+    return parseFloat(value.toFixed(2));
+  }
   if (milliseconds > MILLISECONDS_IN_HOUR) {
     return {
       units: 'h',
-      value: milliseconds / MILLISECONDS_IN_HOUR
+      value: round(milliseconds / MILLISECONDS_IN_HOUR)
+    };
+  }
+
+  if (milliseconds > MILLISECONDS_IN_MINUTE) {
+    return {
+      units: 'm',
+      value: round(milliseconds / MILLISECONDS_IN_MINUTE)
     };
   }
 
   return {
-    units: 'm',
-    value: milliseconds / MILLISECONDS_IN_MINUTE
+    units: 's',
+    value: round(milliseconds / MILLISECONDS_IN_SECOND)
   };
+}
+
+function toMilliseconds(units, value) {
+  switch (units) {
+    case 'h':
+      return Math.round(value * MILLISECONDS_IN_HOUR);
+    case 'm':
+      return Math.round(value * MILLISECONDS_IN_MINUTE);
+    case 's':
+    default:
+      return Math.round(value * MILLISECONDS_IN_SECOND);
+  }
 }
 
 export class EuiRefreshInterval extends Component {
@@ -38,7 +61,7 @@ export class EuiRefreshInterval extends Component {
   constructor(props) {
     super(props);
 
-    const { value, units } = convertMilliseconds(props.refreshInterval);
+    const { value, units } = fromMilliseconds(props.refreshInterval);
     this.state = {
       value,
       units,
@@ -46,7 +69,7 @@ export class EuiRefreshInterval extends Component {
   }
 
   onValueChange = (evt) => {
-    const sanitizedValue = parseInt(evt.target.value, 10);
+    const sanitizedValue = parseFloat(evt.target.value);
     this.setState({
       value: isNaN(sanitizedValue) ? '' : sanitizedValue,
     }, this.applyRefreshInterval);
@@ -63,9 +86,7 @@ export class EuiRefreshInterval extends Component {
       return;
     }
 
-    const valueInMilliSeconds = this.state.units === 'h'
-      ? this.state.value * MILLISECONDS_IN_HOUR
-      : this.state.value * MILLISECONDS_IN_MINUTE;
+    const valueInMilliSeconds = toMilliseconds(this.state.units, this.state.value);
 
     this.props.applyRefreshInterval({
       refreshInterval: valueInMilliSeconds,
@@ -75,6 +96,7 @@ export class EuiRefreshInterval extends Component {
 
   toogleRefresh = () => {
     this.props.applyRefreshInterval({
+      refreshInterval: toMilliseconds(this.state.units, this.state.value),
       isPaused: !this.props.isPaused
     });
   }

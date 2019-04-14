@@ -43,6 +43,11 @@ export const propsInfo = {
           required: false,
           type: { name: 'boolean | #Sorting' }
         },
+        allowNeutralSort: {
+          description: 'Enables/disables unsorting of table columns. Defaults to true.',
+          required: false,
+          type: { name: 'boolean' }
+        },
         search: {
           description: 'Configures a search bar for the table',
           required: false,
@@ -64,6 +69,12 @@ export const propsInfo = {
     __docgenInfo: {
       _euiObjectType: 'type',
       props: {
+        initialPageIndex: {
+          description: 'Configures the default page to show',
+          defaultValue: { value: 0 },
+          required: false,
+          type: { name: 'number' }
+        },
         initialPageSize: {
           description: 'Configures the default page size to show, must be one of "pageSizeOptions"',
           required: false,

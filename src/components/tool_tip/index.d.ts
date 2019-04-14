@@ -1,4 +1,5 @@
-import { ReactElement, ReactNode, SFC } from 'react';
+export { EuiToolTipPopover } from './tool_tip_popover';
+import { ReactElement, ReactNode, FunctionComponent } from 'react';
 import { EuiIcon } from '../icon';
 import { Omit, PropsOf } from '../common';
 
@@ -14,6 +15,7 @@ declare module '@elastic/eui' {
     | 'long';
 
   export interface EuiToolTipProps {
+    anchorClassName?: string;
     children: ReactElement<any>;
     className?: string;
     content?: ReactNode;
@@ -22,7 +24,7 @@ declare module '@elastic/eui' {
     id?: string;
     position?: ToolTipPositions;
   }
-  export const EuiToolTip: SFC<EuiToolTipProps>;
+  export const EuiToolTip: FunctionComponent<EuiToolTipProps>;
 
   export interface EuiIconTipProps {
     color?: string;
@@ -31,5 +33,5 @@ declare module '@elastic/eui' {
     'aria-label'?: string;
     iconProps?: PropsOf<typeof EuiIcon>;
   }
-  export const EuiIconTip: SFC<Omit<EuiToolTipProps, 'children'> & EuiIconTipProps>;
+  export const EuiIconTip: FunctionComponent<Omit<EuiToolTipProps, 'children'> & EuiIconTipProps>;
 }

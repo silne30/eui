@@ -1,8 +1,10 @@
 import { CommonProps, NoArgCallback } from '../common';
+/// <reference path="../focus_trap/index.d.ts" />
 /// <reference path="../panel/index.d.ts" />
 
-import { FocusTarget } from 'focus-trap';
-import { SFC, ReactNode, HTMLAttributes } from 'react';
+import { FunctionComponent, ReactNode, HTMLAttributes } from 'react';
+import { EuiPopoverTitleProps } from './popover_title';
+import { EuiPopoverFooterProps } from './popover_footer';
 
 declare module '@elastic/eui' {
   /**
@@ -38,13 +40,24 @@ declare module '@elastic/eui' {
     anchorPosition?: PopoverAnchorPosition;
     panelClassName?: string;
     panelPaddingSize?: PanelPaddingSize;
+    repositionOnScroll?: boolean;
   }
 
-  export const EuiPopover: SFC<
+  export const EuiPopover: FunctionComponent<
     CommonProps & HTMLAttributes<HTMLDivElement> & EuiPopoverProps
   >;
 
-  export const EuiPopoverTitle: SFC<
-    CommonProps & HTMLAttributes<HTMLDivElement>
-  >;
+  /**
+   * Popover title type defs
+   *
+   * @see './popover_title.js'
+   */
+  export const EuiPopoverTitle: EuiPopoverTitleProps;
+
+  /**
+   * Popover footer type defs
+   *
+   * @see './popover_footer.js'
+   */
+  export const EuiPopoverFooter: EuiPopoverFooterProps;
 }

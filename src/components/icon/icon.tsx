@@ -1,4 +1,4 @@
-import React, { SFC, SVGAttributes } from 'react';
+import React, { FunctionComponent, SVGAttributes } from 'react';
 import classNames from 'classnames';
 
 import { CommonProps, keysOf } from '../common';
@@ -16,6 +16,7 @@ import arrowUp from './assets/arrow_up.svg';
 import asterisk from './assets/asterisk.svg';
 import auditbeatApp from './assets/app_auditbeat.svg';
 import beaker from './assets/beaker.svg';
+import bell from './assets/bell.svg';
 import bolt from './assets/bolt.svg';
 import boxesHorizontal from './assets/boxes_horizontal.svg';
 import boxesVertical from './assets/boxes_vertical.svg';
@@ -25,6 +26,7 @@ import brush from './assets/brush.svg';
 import bullseye from './assets/bullseye.svg';
 import calendar from './assets/calendar.svg';
 import canvasApp from './assets/app_canvas.svg';
+import codeApp from './assets/app_code.svg';
 import check from './assets/check.svg';
 import checkInCircleFilled from './assets/checkInCircleFilled.svg';
 import clock from './assets/clock.svg';
@@ -43,6 +45,7 @@ import cross from './assets/cross.svg';
 import crossClusterReplicationApp from './assets/app_cross_cluster_replication.svg';
 import crosshairs from './assets/crosshairs.svg';
 import crossInACircleFilled from './assets/crossInACircleFilled.svg';
+import cut from './assets/cut.svg';
 import dashboardApp from './assets/app_dashboard.svg';
 import database from './assets/database.svg';
 import dataVisualizer from './assets/ml_data_visualizer.svg';
@@ -84,6 +87,7 @@ import folderOpen from './assets/folder_open.svg';
 import fullScreen from './assets/full_screen.svg';
 import gear from './assets/gear.svg';
 import gisApp from './assets/app_gis.svg';
+import glasses from './assets/glasses.svg';
 import globe from './assets/globe.svg';
 import grab from './assets/grab.svg';
 import grabHorizontal from './assets/grab_horizontal.svg';
@@ -178,6 +182,8 @@ import managementApp from './assets/app_management.svg';
 import mapMarker from './assets/map_marker.svg';
 import memory from './assets/memory.svg';
 import merge from './assets/merge.svg';
+import menuLeft from './assets/menuLeft.svg';
+import menuRight from './assets/menuRight.svg';
 import metricbeatApp from './assets/app_metricbeat.svg';
 import minusInCircle from './assets/minus_in_circle.svg';
 import minusInCircleFilled from './assets/minus_in_circle_filled.svg';
@@ -209,6 +215,7 @@ import securityAnalyticsApp from './assets/app_security_analytics.svg';
 import securityApp from './assets/app_security.svg';
 import shard from './assets/shard.svg';
 import share from './assets/share.svg';
+import snowflake from './assets/snowflake.svg';
 import sortable from './assets/sortable.svg';
 import sortDown from './assets/sort_down.svg';
 import sortLeft from './assets/sortLeft.svg';
@@ -229,6 +236,8 @@ import stop from './assets/stop.svg';
 import stopFilled from './assets/stop_filled.svg';
 import storage from './assets/storage.svg';
 import string from './assets/string.svg';
+import submodule from './assets/submodule.svg';
+import symlink from './assets/symlink.svg';
 import tableOfContents from './assets/tableOfContents.svg';
 import tag from './assets/tag.svg';
 import tear from './assets/tear.svg';
@@ -236,6 +245,7 @@ import temperature from './assets/temperature.svg';
 import timelionApp from './assets/app_timelion.svg';
 import trash from './assets/trash.svg';
 import upgradeAssistantApp from './assets/app_upgrade_assistant.svg';
+import uptimeApp from './assets/app_uptime.svg';
 import user from './assets/user.svg';
 import usersRolesApp from './assets/app_users_roles.svg';
 import vector from './assets/vector.svg';
@@ -305,6 +315,7 @@ const typeToIconMap = {
   asterisk,
   auditbeatApp,
   beaker,
+  bell,
   bolt,
   boxesHorizontal,
   boxesVertical,
@@ -314,6 +325,7 @@ const typeToIconMap = {
   bullseye,
   calendar,
   canvasApp,
+  codeApp,
   check,
   checkInCircleFilled,
   clock,
@@ -332,6 +344,7 @@ const typeToIconMap = {
   crossClusterReplicationApp,
   crosshairs,
   crossInACircleFilled,
+  cut,
   dashboardApp,
   database,
   dataVisualizer,
@@ -373,6 +386,7 @@ const typeToIconMap = {
   fullScreen,
   gear,
   gisApp,
+  glasses,
   globe,
   grab,
   grabHorizontal,
@@ -467,6 +481,8 @@ const typeToIconMap = {
   mapMarker,
   memory,
   merge,
+  menuLeft,
+  menuRight,
   metricbeatApp,
   minusInCircle,
   minusInCircleFilled,
@@ -497,6 +513,7 @@ const typeToIconMap = {
   securityApp,
   shard,
   share,
+  snowflake,
   sortable,
   sortDown,
   sortLeft,
@@ -517,6 +534,8 @@ const typeToIconMap = {
   stopFilled,
   storage,
   string,
+  submodule,
+  symlink,
   tableOfContents,
   tag,
   tear,
@@ -553,6 +572,7 @@ const typeToIconMap = {
   trash,
   upgradeAssistantApp,
   pinFilled,
+  uptimeApp,
   user,
   usersRolesApp,
   vector,
@@ -583,7 +603,7 @@ export const TYPES: IconType[] = keysOf(typeToIconMap);
 
 export type IconType = keyof typeof typeToIconMap;
 
-const colorToClassMap: { [color: string]: string | null; } = {
+const colorToClassMap: { [color: string]: string | null } = {
   default: null,
   primary: 'euiIcon--primary',
   secondary: 'euiIcon--secondary',
@@ -625,7 +645,7 @@ export interface EuiIconProps {
 
 type Props = CommonProps & SVGAttributes<SVGElement> & EuiIconProps;
 
-export const EuiIcon: SFC<Props> = ({
+export const EuiIcon: FunctionComponent<Props> = ({
   type,
   size = 'm',
   color,
@@ -645,7 +665,9 @@ export const EuiIcon: SFC<Props> = ({
   }
 
   // These icons are a little special and get some extra CSS flexibility
-  const isAppIcon = type && (/.+App$/.test(type) || /.+Job$/.test(type) || (type === 'dataVisualizer'));
+  const isAppIcon =
+    type &&
+    (/.+App$/.test(type) || /.+Job$/.test(type) || type === 'dataVisualizer');
 
   const classes = classNames(
     'euiIcon',
@@ -665,7 +687,7 @@ export const EuiIcon: SFC<Props> = ({
   //     which is how SVGs behave in Chrome, Safari, and FF.
   //   - If tab index is -1, then the consumer wants the icon to not be focusable.
   //   - For all other values, the consumer wants the icon to be focusable.
-  const focusable = (tabIndex == null || tabIndex === -1) ? 'false' : 'true';
+  const focusable = tabIndex == null || tabIndex === -1 ? 'false' : 'true';
 
   return (
     <Svg
@@ -676,8 +698,4 @@ export const EuiIcon: SFC<Props> = ({
       {...rest}
     />
   );
-};
-
-EuiIcon.defaultProps = {
-  size: 'm',
 };

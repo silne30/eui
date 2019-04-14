@@ -61,6 +61,11 @@ export {
 } from './combo_box';
 
 export {
+  EuiContext,
+  EuiI18nConsumer
+} from './context';
+
+export {
   EuiContextMenu,
   EuiContextMenuPanel,
   EuiContextMenuItem,
@@ -74,6 +79,7 @@ export {
   EuiDatePicker,
   EuiDatePickerRange,
   EuiSuperDatePicker,
+  EuiSuperUpdateButton,
 } from './date_picker';
 
 export {
@@ -85,6 +91,12 @@ export {
   EuiDescriptionListTitle,
   EuiDescriptionListDescription,
 } from './description_list';
+
+export {
+  EuiDragDropContext,
+  EuiDraggable,
+  EuiDroppable,
+} from './drag_and_drop';
 
 export {
   EuiEmptyPrompt,
@@ -123,9 +135,14 @@ export {
 } from './flyout';
 
 export {
+  EuiFocusTrap
+} from './focus_trap';
+
+export {
   EuiCheckbox,
   EuiCheckboxGroup,
   EuiDescribedFormGroup,
+  EuiDualRange,
   EuiFieldNumber,
   EuiFieldPassword,
   EuiFieldSearch,
@@ -182,8 +199,14 @@ export {
 } from './image';
 
 export {
+  EuiI18n,
+  EuiI18nNumber,
+} from './i18n';
+
+export {
   EuiLoadingKibana,
   EuiLoadingChart,
+  EuiLoadingContent,
   EuiLoadingSpinner,
 } from './loading';
 
@@ -215,7 +238,13 @@ export {
 
 export {
   EuiMutationObserver,
-} from './mutation_observer';
+} from './observer/mutation_observer';
+
+export {
+  EuiNavDrawer,
+  EuiNavDrawerGroup,
+  EuiNavDrawerFlyout,
+} from './nav_drawer';
 
 export {
   EuiOutsideClickDetector,
@@ -249,6 +278,7 @@ export {
 export {
   EuiPopover,
   EuiPopoverTitle,
+  EuiPopoverFooter,
   EuiWrappingPopover,
 } from './popover';
 
@@ -261,10 +291,22 @@ export {
 } from './progress';
 
 export {
+  EuiResizeObserver,
+} from './observer/resize_observer';
+
+export {
   EuiSearchBar,
   Query,
   Ast
 } from './search_bar';
+
+export {
+  EuiSelectable,
+  EuiSelectableList,
+  EuiSelectableListItem,
+  EuiSelectableMessage,
+  EuiSelectableSearch,
+} from './selectable';
 
 export {
   EuiSideNav,

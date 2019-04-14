@@ -20,12 +20,7 @@
  * apply the above workaround to them.
  */
 
-import {
-  Component,
-  cloneElement,
-  KeyboardEvent,
-  ReactElement,
-} from 'react';
+import { Component, cloneElement, KeyboardEvent, ReactElement } from 'react';
 
 import { keyCodes } from '../../services';
 
@@ -34,7 +29,7 @@ interface Props {
 }
 
 export class EuiKeyboardAccessible extends Component<Props> {
-  onKeyDown = (e: KeyboardEvent) => {
+  onKeyDown = (e: KeyboardEvent<any>) => {
     // Prevent a scroll from occurring if the user has hit space.
     if (e.keyCode === keyCodes.SPACE) {
       e.preventDefault();
@@ -43,9 +38,9 @@ export class EuiKeyboardAccessible extends Component<Props> {
     if (this.props.children.props.onKeyDown) {
       this.props.children.props.onKeyDown(e);
     }
-  }
+  };
 
-  onKeyUp = (e: KeyboardEvent) => {
+  onKeyUp = (e: KeyboardEvent<any>) => {
     // Support keyboard accessibility by emulating mouse click on ENTER or SPACE keypress.
     if (e.keyCode === keyCodes.ENTER || e.keyCode === keyCodes.SPACE) {
       // Delegate to the click handler on the element.
@@ -55,7 +50,7 @@ export class EuiKeyboardAccessible extends Component<Props> {
     if (this.props.children.props.onKeyUp) {
       this.props.children.props.onKeyUp(e);
     }
-  }
+  };
 
   applyKeyboardAccessibility = (child: ReactElement<any>) => {
     // Add attributes required for accessibility unless they are already specified.
@@ -68,7 +63,7 @@ export class EuiKeyboardAccessible extends Component<Props> {
     };
 
     return cloneElement(child, props);
-  }
+  };
 
   render() {
     return this.applyKeyboardAccessibility(this.props.children);
@@ -81,11 +76,17 @@ EuiKeyboardAccessible.propTypes = {
   children: keyboardInaccessibleElement,
 };
 
-function keyboardInaccessibleElement(props: Props, propName: string, componentName: string) {
+function keyboardInaccessibleElement(
+  props: Props,
+  propName: string,
+  componentName: string
+) {
   const child = props.children;
 
   if (!child) {
-    throw new Error(`${componentName} needs to wrap an element with which the user interacts.`);
+    throw new Error(
+      `${componentName} needs to wrap an element with which the user interacts.`
+    );
   }
 
   // The whole point of this component is to hack in functionality that native buttons provide
@@ -95,15 +96,21 @@ function keyboardInaccessibleElement(props: Props, propName: string, componentNa
   }
 
   if (child.type === 'a' && child.props.href !== undefined) {
-    throw new Error(`${componentName} doesn't need to be used on a link if it has a href attribute.`);
+    throw new Error(
+      `${componentName} doesn't need to be used on a link if it has a href attribute.`
+    );
   }
 
   // We're emulating a click action, so we should already have a regular click handler defined.
   if (!child.props.onClick) {
-    throw new Error(`${componentName} needs to wrap an element which has an onClick prop assigned.`);
+    throw new Error(
+      `${componentName} needs to wrap an element which has an onClick prop assigned.`
+    );
   }
 
   if (typeof child.props.onClick !== 'function') {
-    throw new Error(`${componentName}'s child's onClick prop needs to be a function.`);
+    throw new Error(
+      `${componentName}'s child's onClick prop needs to be a function.`
+    );
   }
 }
