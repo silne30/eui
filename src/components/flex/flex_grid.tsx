@@ -13,7 +13,7 @@ export interface EuiFlexGridProps {
 }
 
 const gutterSizeToClassNameMap = {
-  none: null,
+  none: 'euiFlexGrid--gutterNone',
   s: 'euiFlexGrid--gutterSmall',
   m: 'euiFlexGrid--gutterMedium',
   l: 'euiFlexGrid--gutterLarge',
@@ -32,8 +32,8 @@ const columnsToClassNameMap = {
   4: 'euiFlexGrid--fourths',
 };
 
-export const COLUMNS = keysOf(columnsToClassNameMap).map(columns =>
-  parseInt(columns, 10)
+export const COLUMNS = Object.keys(columnsToClassNameMap).map(
+  (columns: string) => parseInt(columns, 10)
 ) as FlexGridColumns[];
 
 export const EuiFlexGrid: FunctionComponent<

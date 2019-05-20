@@ -8,22 +8,14 @@ import { EuiModalHeader } from './modal_header';
 import { EuiModalHeaderTitle } from './modal_header_title';
 import { EuiModalBody } from './modal_body';
 
-import {
-  EuiButton,
-  EuiButtonEmpty,
-} from '../button';
+import { EuiButton, EuiButtonEmpty } from '../button';
 
-import {
-  EuiText,
-} from '../text';
+import { EuiText } from '../text';
 
 export const CONFIRM_BUTTON = 'confirm';
 export const CANCEL_BUTTON = 'cancel';
 
-const CONFIRM_MODAL_BUTTONS = [
-  CONFIRM_BUTTON,
-  CANCEL_BUTTON,
-];
+const CONFIRM_MODAL_BUTTONS = [CONFIRM_BUTTON, CANCEL_BUTTON];
 
 export class EuiConfirmModal extends Component {
   componentDidMount() {
@@ -36,14 +28,17 @@ export class EuiConfirmModal extends Component {
     requestAnimationFrame(() => {
       if (defaultFocusedButton === CANCEL_BUTTON && this.cancelButton) {
         this.cancelButton.focus();
-      } else if (defaultFocusedButton === CONFIRM_BUTTON && this.confirmButton) {
+      } else if (
+        defaultFocusedButton === CONFIRM_BUTTON &&
+        this.confirmButton
+      ) {
         this.confirmButton.focus();
       }
     });
   }
 
-  confirmRef = node => this.confirmButton = node;
-  cancelRef = node => this.cancelButton = node;
+  confirmRef = node => (this.confirmButton = node);
+  cancelRef = node => (this.cancelButton = node);
 
   render() {
     const {
@@ -53,6 +48,7 @@ export class EuiConfirmModal extends Component {
       onConfirm,
       cancelButtonText,
       confirmButtonText,
+      confirmButtonDisabled,
       className,
       buttonColor,
       defaultFocusedButton, // eslint-disable-line no-unused-vars
@@ -82,18 +78,12 @@ export class EuiConfirmModal extends Component {
     }
 
     return (
-      <EuiModal
-        className={classes}
-        onClose={onCancel}
-        {...rest}
-      >
+      <EuiModal className={classes} onClose={onCancel} {...rest}>
         {modalTitle}
 
         {message && (
           <EuiModalBody>
-            <EuiText data-test-subj="confirmModalBodyText">
-              {message}
-            </EuiText>
+            <EuiText data-test-subj="confirmModalBodyText">{message}</EuiText>
           </EuiModalBody>
         )}
 
@@ -101,8 +91,7 @@ export class EuiConfirmModal extends Component {
           <EuiButtonEmpty
             data-test-subj="confirmModalCancelButton"
             onClick={onCancel}
-            buttonRef={this.cancelRef}
-          >
+            buttonRef={this.cancelRef}>
             {cancelButtonText}
           </EuiButtonEmpty>
 
@@ -112,7 +101,7 @@ export class EuiConfirmModal extends Component {
             fill
             buttonRef={this.confirmRef}
             color={buttonColor}
-          >
+            isDisabled={confirmButtonDisabled}>
             {confirmButtonText}
           </EuiButton>
         </EuiModalFooter>
@@ -128,6 +117,7 @@ EuiConfirmModal.propTypes = {
   confirmButtonText: PropTypes.node,
   onCancel: PropTypes.func,
   onConfirm: PropTypes.func,
+  confirmButtonDisabled: PropTypes.bool,
   className: PropTypes.string,
   defaultFocusedButton: PropTypes.oneOf(CONFIRM_MODAL_BUTTONS),
   buttonColor: PropTypes.string,

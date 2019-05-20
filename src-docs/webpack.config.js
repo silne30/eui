@@ -3,20 +3,31 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
+const isDevelopment =
+  process.env.NODE_ENV !== 'production' && process.env.CI == null;
+
+function useCache(loaders) {
+  if (isDevelopment) {
+    return ['cache-loader'].concat(loaders);
+  }
+
+  return loaders;
+}
+
 module.exports = {
   mode: 'development',
 
   devtool: 'source-map',
 
   entry: {
-    guide: './index.js'
+    guide: './index.js',
   },
 
   context: path.resolve(__dirname, 'src'),
 
   output: {
     path: path.resolve(__dirname, '../docs'),
-    filename: 'bundle.js'
+    filename: 'bundle.js',
   },
 
   resolve: {
@@ -24,29 +35,40 @@ module.exports = {
   },
 
   module: {
-    rules: [{
-      test: /\.(js|tsx?)$/,
-      loader: 'babel-loader',
-      exclude: /node_modules/
-    }, {
-      test: /\.scss$/,
-      loaders: ['style-loader/useable', 'css-loader', 'postcss-loader', 'sass-loader'],
-      exclude: /node_modules/
-    }, {
-      test: /\.css$/,
-      loaders: ['style-loader/useable', 'css-loader'],
-      exclude: /node_modules/
-    }, {
-      test: /\.(woff|woff2|ttf|eot|ico)(\?|$)/,
-      loader: 'file-loader',
-    }, {
-      test: /\.(png|jp(e*)g|svg)$/,
-      loader: 'url-loader',
-      options: {
-        limit: 8000, // Convert images < 8kb to base64 strings
-        name: 'images/[hash]-[name].[ext]'
+    rules: [
+      {
+        test: /\.(js|tsx?)$/,
+        loaders: useCache(['babel-loader']),
+        exclude: /node_modules/,
       },
-    }],
+      {
+        test: /\.scss$/,
+        loaders: useCache([
+          'style-loader/useable',
+          'css-loader',
+          'postcss-loader',
+          'sass-loader',
+        ]),
+        exclude: /node_modules/,
+      },
+      {
+        test: /\.css$/,
+        loaders: useCache(['style-loader/useable', 'css-loader']),
+        exclude: /node_modules/,
+      },
+      {
+        test: /\.(woff|woff2|ttf|eot|ico)(\?|$)/,
+        loader: 'file-loader',
+      },
+      {
+        test: /\.(png|jp(e*)g|svg)$/,
+        loader: 'url-loader',
+        options: {
+          limit: 8000, // Convert images < 8kb to base64 strings
+          name: 'images/[hash]-[name].[ext]',
+        },
+      },
+    ],
   },
 
   plugins: [
@@ -55,12 +77,14 @@ module.exports = {
       favicon: 'favicon.ico',
       inject: 'body',
       cache: true,
-      showErrors: true
+      showErrors: true,
     }),
+
     new CircularDependencyPlugin({
       exclude: /node_modules/,
       failOnError: true,
     }),
+
     // run TypeScript and tslint during webpack build
     new ForkTsCheckerWebpackPlugin({
       tsconfig: path.resolve(__dirname, '..', 'tsconfig.json'),
@@ -74,6 +98,6 @@ module.exports = {
     host: '0.0.0.0',
     allowedHosts: ['*'],
     port: 8030,
-    disableHostCheck: true
-  }
+    disableHostCheck: true,
+  },
 };

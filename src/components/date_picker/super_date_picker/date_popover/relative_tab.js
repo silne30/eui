@@ -1,4 +1,3 @@
-
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import dateMath from '@elastic/datemath';
@@ -10,15 +9,18 @@ import {
   EuiSelect,
   EuiFieldNumber,
   EuiFieldText,
-  EuiSwitch
+  EuiSwitch,
 } from '../../../form';
+import { EuiSpacer } from '../../../spacer';
 
 import { timeUnits } from '../time_units';
 import { relativeOptions } from '../relative_options';
-import { parseRelativeParts, toRelativeStringFromParts } from '../relative_utils';
+import {
+  parseRelativeParts,
+  toRelativeStringFromParts,
+} from '../relative_utils';
 
 export class EuiRelativeTab extends Component {
-
   constructor(props) {
     super(props);
 
@@ -27,23 +29,32 @@ export class EuiRelativeTab extends Component {
     };
   }
 
-  onCountChange = (evt) => {
+  onCountChange = evt => {
     const sanitizedValue = parseInt(evt.target.value, 10);
-    this.setState({
-      count: isNaN(sanitizedValue) ? '' : sanitizedValue,
-    }, this.handleChange);
-  }
+    this.setState(
+      {
+        count: isNaN(sanitizedValue) ? '' : sanitizedValue,
+      },
+      this.handleChange
+    );
+  };
 
-  onUnitChange = (evt) => {
-    this.setState({
-      unit: evt.target.value,
-    }, this.handleChange);
-  }
+  onUnitChange = evt => {
+    this.setState(
+      {
+        unit: evt.target.value,
+      },
+      this.handleChange
+    );
+  };
 
-  onRoundChange = (evt) => {
-    this.setState({
-      round: evt.target.checked,
-    }, this.handleChange);
+  onRoundChange = evt => {
+    this.setState(
+      {
+        round: evt.target.checked,
+      },
+      this.handleChange
+    );
   };
 
   handleChange = () => {
@@ -51,22 +62,24 @@ export class EuiRelativeTab extends Component {
       return;
     }
     this.props.onChange(toRelativeStringFromParts(this.state));
-  }
+  };
 
   render() {
     const isInvalid = this.state.count < 0;
-    const parsedValue = dateMath.parse(this.props.value);
-    const formatedValue = isInvalid || !parsedValue || !parsedValue.isValid()
-      ? ''
-      : parsedValue.format(this.props.dateFormat);
+    const parsedValue = dateMath.parse(this.props.value, {
+      roundUp: this.props.roundUp,
+    });
+    const formatedValue =
+      isInvalid || !parsedValue || !parsedValue.isValid()
+        ? ''
+        : parsedValue.format(this.props.dateFormat);
     return (
       <EuiForm className="euiDatePopoverContent__padded">
         <EuiFlexGroup gutterSize="s" responsive={false}>
           <EuiFlexItem>
             <EuiFormRow
               isInvalid={isInvalid}
-              error={isInvalid ? 'Must be >= 0' : null}
-            >
+              error={isInvalid ? 'Must be >= 0' : null}>
               <EuiFieldNumber
                 aria-label="Count of"
                 data-test-subj={`superDatePickerRelativeDateInputNumber`}
@@ -87,17 +100,15 @@ export class EuiRelativeTab extends Component {
             </EuiFormRow>
           </EuiFlexItem>
         </EuiFlexGroup>
-        <EuiFormRow>
-          <EuiFieldText value={formatedValue} readOnly />
-        </EuiFormRow>
-        <EuiFormRow>
-          <EuiSwitch
-            data-test-subj={`superDatePickerRelativeDateRoundSwitch`}
-            label={`Round to the ${timeUnits[this.state.unit.substring(0, 1)]}`}
-            checked={this.state.round}
-            onChange={this.onRoundChange}
-          />
-        </EuiFormRow>
+        <EuiSpacer size="s" />
+        <EuiSwitch
+          data-test-subj={`superDatePickerRelativeDateRoundSwitch`}
+          label={`Round to the ${timeUnits[this.state.unit.substring(0, 1)]}`}
+          checked={this.state.round}
+          onChange={this.onRoundChange}
+        />
+        <EuiSpacer size="m" />
+        <EuiFieldText value={formatedValue} readOnly />
       </EuiForm>
     );
   }
@@ -107,4 +118,5 @@ EuiRelativeTab.propTypes = {
   dateFormat: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
+  roundUp: PropTypes.bool,
 };

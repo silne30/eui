@@ -2,17 +2,11 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-// import { getSecureRelForTarget } from '../../services';
+import { EuiI18n } from '../i18n';
 import { EuiNotificationBadge } from '../badge/notification_badge';
-import {
-  COLORS,
-  ICON_SIDES,
-  EuiButtonEmpty,
-} from '../button/button_empty';
+import { COLORS, ICON_SIDES, EuiButtonEmpty } from '../button/button_empty';
 
-import {
-  ICON_TYPES,
-} from '../icon';
+import { IconPropType } from '../icon';
 
 export const EuiFilterButton = ({
   children,
@@ -28,26 +22,30 @@ export const EuiFilterButton = ({
   type,
   grow,
   noDivider,
+  withNext,
   textProps,
   ...rest
 }) => {
+  // != instead of !== to allow for null and undefined
+  const numFiltersDefined = numFilters != null;
 
   const classes = classNames(
     'euiFilterButton',
     {
       'euiFilterButton-isSelected': isSelected,
       'euiFilterButton-hasActiveFilters': hasActiveFilters,
-      'euiFilterButton--grow': grow,
-      'euiFilterButton--noDivider': noDivider,
+      'euiFilterButton-hasNotification': numFiltersDefined,
+      'euiFilterButton--hasIcon': iconType,
+      'euiFilterButton--noGrow': !grow,
+      'euiFilterButton--withNext': noDivider || withNext,
     },
-    className,
+    className
   );
 
-  // != instead of !== to allow for null and undefined
-  const numFiltersDefined = numFilters != null;
   const buttonTextClassNames = classNames(
-    { 'euiFilterButton__text-hasNotification': numFiltersDefined, },
-    textProps && textProps.className,
+    // 'euiFilterButton__textShift',
+    { 'euiFilterButton__text-hasNotification': numFiltersDefined },
+    textProps && textProps.className
   );
 
   let dataText;
@@ -57,18 +55,31 @@ export const EuiFilterButton = ({
 
   const buttonContents = (
     <Fragment>
-      <span className="euiFilterButton__textShift" data-text={dataText}>
+      <span
+        className="euiFilterButton__textShift"
+        data-text={dataText}
+        title={dataText}>
         {children}
       </span>
-      {numFiltersDefined &&
-        <EuiNotificationBadge
-          className="euiFilterButton__notification"
-          size="m"
-          color={isDisabled || !hasActiveFilters ? 'subdued' : 'accent'}
-        >
-          {numActiveFilters || numFilters}
-        </EuiNotificationBadge>
-      }
+
+      {numFiltersDefined && (
+        <EuiI18n
+          token="euiFilterButton.filterBadge"
+          values={{ count: numActiveFilters || numFilters, hasActiveFilters }}
+          default={({ count, hasActiveFilters }) =>
+            `${count} ${hasActiveFilters ? 'active' : 'available'} filters`
+          }>
+          {filterBadge => (
+            <EuiNotificationBadge
+              className="euiFilterButton__notification"
+              size="m"
+              aria-label={filterBadge}
+              color={isDisabled || !hasActiveFilters ? 'subdued' : 'accent'}>
+              {numActiveFilters || numFilters}
+            </EuiNotificationBadge>
+          )}
+        </EuiI18n>
+      )}
     </Fragment>
   );
 
@@ -81,8 +92,7 @@ export const EuiFilterButton = ({
       iconType={iconType}
       type={type}
       textProps={{ ...textProps, className: buttonTextClassNames }}
-      {...rest}
-    >
+      {...rest}>
       {buttonContents}
     </EuiButtonEmpty>
   );
@@ -95,7 +105,7 @@ EuiFilterButton.propTypes = {
   /**
    * Use any one of our icons
    */
-  iconType: PropTypes.oneOf(ICON_TYPES),
+  iconType: IconPropType,
   iconSide: PropTypes.oneOf(ICON_SIDES),
   color: PropTypes.oneOf(COLORS),
   /**
@@ -128,6 +138,11 @@ EuiFilterButton.propTypes = {
   /**
    * Remove border after button, good for opposite filters
    */
+  withNext: PropTypes.bool,
+  /**
+   * _DEPRECATED: use `withNext`_
+   * Remove border after button, good for opposite filters
+   */
   noDivider: PropTypes.bool,
 };
 
@@ -135,5 +150,5 @@ EuiFilterButton.defaultProps = {
   type: 'button',
   iconSide: 'right',
   color: 'text',
-  grow: false,
+  grow: true,
 };

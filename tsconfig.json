@@ -16,7 +16,7 @@
     "strict": true,
 
     // Output as ES Modules & esnext code, webpack will handle further conversion
-    "module": "es6",
+    "module": "esnext",
     "target": "esnext",
 
     // Allows default imports from modules with no default export. This does not affect code emit, just type checking.
@@ -36,9 +36,6 @@
 
     // Disallow inconsistently-cased references to the same file.
     "forceConsistentCasingInFileNames": true,
-
-    // Disable the breaking keyof behaviour introduced in TS 2.9.2 until EUI is updated to support that too
-    "keyofStringsOnly": true,
 
     // enables "core language features"
     "lib": [

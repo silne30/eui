@@ -50,11 +50,13 @@ IsFlag
 
 FieldClause "field"
   = space? "-" fv:FieldEQValue { return AST.Field.mustNot.eq(fv.field, fv.value); }
+  / space? "-" fv:FieldEXACTValue { return AST.Field.mustNot.exact(fv.field, fv.value); }
   / space? "-" fv:FieldGTValue { return AST.Field.mustNot.gt(fv.field, fv.value); }
   / space? "-" fv:FieldGTEValue { return AST.Field.mustNot.gte(fv.field, fv.value); }
   / space? "-" fv:FieldLTValue { return AST.Field.mustNot.lt(fv.field, fv.value); }
   / space? "-" fv:FieldLTEValue { return AST.Field.mustNot.lte(fv.field, fv.value); }
   / space? fv:FieldEQValue { return AST.Field.must.eq(fv.field, fv.value); }
+  / space? fv:FieldEXACTValue { return AST.Field.must.exact(fv.field, fv.value); }
   / space? fv:FieldGTValue { return AST.Field.must.gt(fv.field, fv.value); }
   / space? fv:FieldGTEValue { return AST.Field.must.gte(fv.field, fv.value); }
   / space? fv:FieldLTValue { return AST.Field.must.lt(fv.field, fv.value); }
@@ -62,6 +64,11 @@ FieldClause "field"
 
 FieldEQValue
   = field:fieldName ":" valueExpression:fieldContainsValue {
+  	return {field, value: resolveFieldValue(field, valueExpression, ctx) };
+  }
+
+FieldEXACTValue
+  = field:fieldName "=" valueExpression:fieldContainsValue {
   	return {field, value: resolveFieldValue(field, valueExpression, ctx) };
   }
 
@@ -127,7 +134,7 @@ containsValue
 
 phrase
   = '"' space? phrase:(
-  	phraseWord (space phraseWord)* { return unescapeValue(text()); }
+  	phraseWord? (space phraseWord)* { return unescapeValue(text()); }
   ) space? '"' { return Exp.string(phrase, location()); }
 
 phraseWord
@@ -147,7 +154,7 @@ word
 
 wordChar
   = alnum
-  / [-_*:]
+  / [-_*:/]
   / escapedChar
   / extendedGlyph
   
@@ -202,15 +209,15 @@ space "whitespace"
   = [ \\t\\n\\r]+
 `;
 
-const unescapeValue = (value) => {
+const unescapeValue = value => {
   return value.replace(/\\([:\-\\])/g, '$1');
 };
 
-const escapeValue = (value) => {
+const escapeValue = value => {
   return value.replace(/([:\-\\])/g, '\\$1');
 };
 
-const escapeFieldValue = (value) => {
+const escapeFieldValue = value => {
   return value.replace(/(\\)/g, '\\$1');
 };
 
@@ -218,7 +225,11 @@ const Exp = {
   date: (expression, location) => ({ type: 'date', expression, location }),
   number: (expression, location) => ({ type: 'number', expression, location }),
   string: (expression, location) => ({ type: 'string', expression, location }),
-  boolean: (expression, location) => ({ type: 'boolean', expression, location })
+  boolean: (expression, location) => ({
+    type: 'boolean',
+    expression,
+    location,
+  }),
 };
 
 const validateFlag = (flag, location, ctx) => {
@@ -226,19 +237,35 @@ const validateFlag = (flag, location, ctx) => {
     if (ctx.schema.flags && ctx.schema.flags.includes(flag)) {
       return;
     }
-    if (ctx.schema.fields && ctx.schema.fields[flag] && ctx.schema.fields[flag].type === 'boolean') {
+    if (
+      ctx.schema.fields &&
+      ctx.schema.fields[flag] &&
+      ctx.schema.fields[flag].type === 'boolean'
+    ) {
       return;
     }
     ctx.error(`Unknown flag \`${flag}\``);
   }
 };
 
-const validateFieldValue = (field, schemaField, expression, value, location, error) => {
+const validateFieldValue = (
+  field,
+  schemaField,
+  expression,
+  value,
+  location,
+  error
+) => {
   if (schemaField && schemaField.validate) {
     try {
       schemaField.validate(value);
     } catch (e) {
-      error(`Invalid value \`${expression}\` set for field \`${field}\` - ${e.message}`, location);
+      error(
+        `Invalid value \`${expression}\` set for field \`${field}\` - ${
+          e.message
+        }`,
+        location
+      );
     }
   }
 };
@@ -259,18 +286,24 @@ const resolveFieldValue = (field, valueExpression, ctx) => {
       expression = valueExpression.expression = expression.toString();
       type = valueExpression.type = 'string';
     } else {
-      const valueDesc = schemaField.valueDescription || `a ${schemaField.type} value`;
-      error(`Expected ${valueDesc} for field \`${field}\`, but found \`${expression}\``, location);
+      const valueDesc =
+        schemaField.valueDescription || `a ${schemaField.type} value`;
+      error(
+        `Expected ${valueDesc} for field \`${field}\`, but found \`${expression}\``,
+        location
+      );
     }
   }
-  switch(type) {
-
+  switch (type) {
     case 'date':
       let date = null;
       try {
         date = parseDate(expression);
       } catch (e) {
-        error(`Invalid data \`${expression}\` set for field \`${field}\``, location);
+        error(
+          `Invalid data \`${expression}\` set for field \`${field}\``,
+          location
+        );
       }
       validateFieldValue(field, schemaField, expression, date, location, error);
       return date;
@@ -278,18 +311,42 @@ const resolveFieldValue = (field, valueExpression, ctx) => {
     case 'number':
       const number = Number(expression);
       if (Number.isNaN(number)) {
-        error(`Invalid number \`${expression}\` set for field \`${field}\``, location);
+        error(
+          `Invalid number \`${expression}\` set for field \`${field}\``,
+          location
+        );
       }
-      validateFieldValue(field, schemaField, expression, number, location, error);
+      validateFieldValue(
+        field,
+        schemaField,
+        expression,
+        number,
+        location,
+        error
+      );
       return number;
 
     case 'boolean':
       const boolean = !!expression.match(/true|yes|on/i);
-      validateFieldValue(field, schemaField, expression, boolean, location, error);
+      validateFieldValue(
+        field,
+        schemaField,
+        expression,
+        boolean,
+        location,
+        error
+      );
       return boolean;
 
     default:
-      validateFieldValue(field, schemaField, expression, expression, location, error);
+      validateFieldValue(
+        field,
+        schemaField,
+        expression,
+        expression,
+        location,
+        error
+      );
       return expression;
   }
 };
@@ -307,16 +364,18 @@ const printValue = (value, options) => {
   }
 
   const escapeFn = options.escapeValue || escapeValue;
-  if (value.match(/\s/) || value.toLowerCase() === 'or') {
+  if (value.length === 0 || value.match(/\s/) || value.toLowerCase() === 'or') {
     return `"${escapeFn(value)}"`;
   }
   return escapeFn(value);
 };
 
-const resolveOperator = (operator) => {
+const resolveOperator = operator => {
   switch (operator) {
     case AST.Operator.EQ:
       return ':';
+    case AST.Operator.EXACT:
+      return '=';
     case AST.Operator.GT:
       return '>';
     case AST.Operator.GTE:
@@ -331,7 +390,6 @@ const resolveOperator = (operator) => {
 };
 
 export const defaultSyntax = Object.freeze({
-
   parse: (query, options = {}) => {
     const dateFormat = options.dateFormat || defaultDateFormat;
     const parseDate = dateValueParser(dateFormat);
@@ -343,7 +401,7 @@ export const defaultSyntax = Object.freeze({
       parseDate,
       resolveFieldValue,
       validateFlag,
-      schema: { strict: false, flags: [], fields: {}, ...schema }
+      schema: { strict: false, flags: [], fields: {}, ...schema },
     });
     return AST.create(clauses);
   },
@@ -358,24 +416,36 @@ export const defaultSyntax = Object.freeze({
           escapeValue: escapeFieldValue,
         };
         if (isArray(clause.value)) {
-          return `${text} ${prefix}${escapeValue(clause.field)}${op}(${clause.value.map(val => printValue(val, printFieldValueOptions)).join(' or ')})`; // eslint-disable-line max-len
+          return `${text} ${prefix}${escapeValue(
+            clause.field
+          )}${op}(${clause.value
+            .map(val => printValue(val, printFieldValueOptions))
+            .join(' or ')})`; // eslint-disable-line max-len
         }
-        return `${text} ${prefix}${escapeValue(clause.field)}${op}${printValue(clause.value, printFieldValueOptions)}`;
+        return `${text} ${prefix}${escapeValue(clause.field)}${op}${printValue(
+          clause.value,
+          printFieldValueOptions
+        )}`;
       case AST.Is.TYPE:
         return `${text} ${prefix}is:${escapeValue(clause.flag)}`;
       case AST.Term.TYPE:
         return `${text} ${prefix}${printValue(clause.value, options)}`;
       case AST.Group.TYPE:
-        return `(${clause.value.map(clause => defaultSyntax.printClause(clause, text, options).trim()).join(' OR ')})`;
+        return `(${clause.value
+          .map(clause =>
+            defaultSyntax.printClause(clause, text, options).trim()
+          )
+          .join(' OR ')})`;
       default:
         return text;
     }
   },
 
   print: (ast, options = {}) => {
-    return ast.clauses.reduce((text, clause) => {
-      return defaultSyntax.printClause(clause, text, options);
-    }, '').trim();
-  }
-
+    return ast.clauses
+      .reduce((text, clause) => {
+        return defaultSyntax.printClause(clause, text, options);
+      }, '')
+      .trim();
+  },
 });

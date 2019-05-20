@@ -4,7 +4,7 @@ import { isNil, isString } from '../../../services/predicate';
 import { astToEsQueryDsl } from './ast_to_es_query_dsl';
 import { astToEsQueryString } from './ast_to_es_query_string';
 import { dateValueParser } from './date_value';
-import { AST } from './ast';
+import { AST, Operator } from './ast';
 
 /**
  * This is the consumer interface for the query - it's effectively a wrapper construct around
@@ -12,7 +12,6 @@ import { AST } from './ast';
  * It is immutable - all mutating operations return a new (mutated) query instance.
  */
 export class Query {
-
   static parse(text, options, syntax = defaultSyntax) {
     return new Query(syntax.parse(text, options), syntax, text);
   }
@@ -58,8 +57,8 @@ export class Query {
     return new Query(ast, this.syntax);
   }
 
-  addSimpleFieldValue(field, value, must = true) {
-    const ast = this.ast.addSimpleFieldValue(field, value, must);
+  addSimpleFieldValue(field, value, must = true, operator = Operator.EQ) {
+    const ast = this.ast.addSimpleFieldValue(field, value, must, operator);
     return new Query(ast, this.syntax);
   }
 
@@ -176,5 +175,4 @@ export class Query {
     const q = isString(query) ? Query.parse(query) : query;
     return astToEsQueryString(q.ast, options);
   }
-
 }

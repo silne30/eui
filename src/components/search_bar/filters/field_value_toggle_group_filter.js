@@ -5,16 +5,21 @@ import { EuiPropTypes } from '../../../utils/prop_types';
 import { Query } from '../query';
 
 export const FieldValueToggleGroupFilterItemType = PropTypes.shape({
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]).isRequired,
+  value: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+    PropTypes.bool,
+  ]).isRequired,
   name: PropTypes.string.isRequired,
-  negatedName: PropTypes.string
+  negatedName: PropTypes.string,
+  operator: PropTypes.oneOf(['eq', 'exact', 'gt', 'gte', 'lt', 'lte']),
 });
 
 export const FieldValueToggleGroupFilterConfigType = PropTypes.shape({
   type: EuiPropTypes.is('field_value_toggle_group').isRequired,
   field: PropTypes.string.isRequired,
   items: PropTypes.arrayOf(FieldValueToggleGroupFilterItemType).isRequired,
-  available: PropTypes.func // () => boolean
+  available: PropTypes.func, // () => boolean
 });
 
 const FieldValueToggleGroupFilterPropTypes = {
@@ -25,7 +30,6 @@ const FieldValueToggleGroupFilterPropTypes = {
 };
 
 export class FieldValueToggleGroupFilter extends Component {
-
   static propTypes = FieldValueToggleGroupFilterPropTypes;
 
   constructor(props) {
@@ -38,17 +42,22 @@ export class FieldValueToggleGroupFilter extends Component {
       if (Query.isMust(clause)) {
         return { active: true, name: item.name };
       }
-      return { active: true, name: item.negatedName ? item.negatedName : `Not ${item.name}` };
+      return {
+        active: true,
+        name: item.negatedName ? item.negatedName : `Not ${item.name}`,
+      };
     }
     return { active: false, name: item.name };
   }
 
   valueChanged(item, active) {
     const { field } = this.props.config;
-    const { value } = item;
-    const query = active ?
-      this.props.query.removeSimpleFieldClauses(field) :
-      this.props.query.removeSimpleFieldClauses(field).addSimpleFieldValue(field, value);
+    const { value, operator } = item;
+    const query = active
+      ? this.props.query.removeSimpleFieldClauses(field)
+      : this.props.query
+          .removeSimpleFieldClauses(field)
+          .addSimpleFieldValue(field, value, true, operator);
     this.props.onChange(query);
   }
 
@@ -66,8 +75,7 @@ export class FieldValueToggleGroupFilter extends Component {
           key={key}
           onClick={onClick}
           hasActiveFilters={active}
-          noDivider={!isLastItem}
-        >
+          withNext={!isLastItem}>
           {name}
         </EuiFilterButton>
       );
